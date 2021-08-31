@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"net/http"
@@ -58,7 +59,6 @@ import (
 
 type Mytest struct {
 	Deals []Mytest2 `json:"Deals"`
-	LastName  string `json:"lastName"`
 }
 
 
@@ -107,15 +107,29 @@ func GetChainHead() {
 	for _, message := range messages.BlsMessages {
 		fmt.Printf("message: %+v\n", message.Method)
 		if (message.Method == 4) {
-			fmt.Printf("YEAAAAAAAAAAAAAAH: %+v\n", message.Method)
-			fmt.Printf("YEAAAAAAAAAAAAAAH: %+v\n", message.Cid())
-			fmt.Printf("YEAAAAAAAAAAAAAAH: %v\n", message.Params)
-			fmt.Printf("YEAAAAAAAAAAAAAAH: %v\n", string(message.Params))
+			fmt.Printf("DISP: %+v\n", message.Method)
+			fmt.Printf("From: %+v\n", message.From)
+			fmt.Printf("To: %+v\n", message.To)
+			fmt.Printf("DISP: %+v\n", message.Cid())
+			fmt.Printf("DISP: %v\n", message.Params)
+			fmt.Printf("DISP: %v\n", string(message.Params))
 
+			base64Text := make([]byte, base64.StdEncoding.EncodedLen(len(message.Params)))
+			l, _ := base64.StdEncoding.Decode(base64Text, message.Params)
+			log.Printf("\n\n\nXXX\n\n\nbase64: %s\n", base64Text[:l])
+			
+			xoxo, _ := message.MarshalJSON()
+			
+			fmt.Printf("DISP: %v\n", xoxo)
+			fmt.Printf("DISP: %v\n", string(xoxo))
+
+			// hello , _:= types.DecodeMessage(message.Params)
+
+			// fmt.Printf("Tes....t::: %v\n", hello.Serialize)
 			// dst := []byte{}
 			// test, _ := hex.Decode(dst, message.Params)
-			// fmt.Printf("YEAAAAAAAAAAAAAAH: %v\n", test)
-			// fmt.Printf("YEAAAAAAAAAAAAAAH: %v\n", dst)
+			// fmt.Printf("DISP: %v\n", test)
+			// fmt.Printf("DISP: %v\n", dst)
 			// var p Mytest
 			// err := json.Unmarshal(message.Params, &p)
 			// if err != nil {
@@ -132,9 +146,10 @@ func GetChainHead() {
 	// fmt.Printf("\n ::::>>\n %+v\n", test3)
 
 	blockCids, _ := api.ChainGetTipSetByHeight(context.Background(),  abi.ChainEpoch(1070273), types.TipSetKey{})
-	for _, cid := range blockCids {
-		fmt.Printf("tipset: %+v", cid)
-	}
+	fmt.Printf("\n blockCids ::::>>\n %+v\n", blockCids)
+	// for _, cid := range blockCids {
+	// 	fmt.Printf("tipset: %+v", cid)
+	// }
 	
 
 	// fmt.Printf("==>>\n %+v\n", messages)
