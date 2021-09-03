@@ -7,7 +7,7 @@ import (
 	"github.com/ConsenSys/fc-latency-map/filecoinmgr"
 )
 
-func main() {	
+func main() {
 	fMgr, err := filecoinmgr.NewFilecoinImpl("https://node.glif.io/space07/lotus/rpc/v0")
 	if err != nil {
 		log.Fatalf("connecting with lotus failed: %s", err)
@@ -17,5 +17,10 @@ func main() {
 		log.Fatalf("get block failed: %s", err)
 	}
 	fmt.Printf("blockHeight: %+v\n", blockHeight)
-	fMgr.GetVerifiedDeals(blockHeight, 20)
+	verifiedDeals, err := fMgr.GetVerifiedDeals(blockHeight, 100)
+	if err != nil {
+		log.Fatalf("get block failed: %s", err)
+	}
+	minersWithIPs := fMgr.GetMinerIPs(verifiedDeals)
+	fmt.Printf("miners with IPs: %+v\n", minersWithIPs)
 }

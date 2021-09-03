@@ -16,4 +16,6 @@ type FilecoinMgr interface {
 	// GetVerifiedDeals return verified deals for a range of block
 	GetVerifiedDeals(height abi.ChainEpoch, offset uint) ([]VerifiedDeal, error)
 
+	// GetMinerIPs return verified deals with miners IPs for a range of block
+	GetMinerIPs(verifiedDeals []VerifiedDeal) []MinerIp
 }

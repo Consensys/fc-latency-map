@@ -13,11 +13,17 @@ import (
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/filecoin-project/specs-actors/actors/builtin/market"
 	"github.com/ipfs/go-cid"
+	ma "github.com/multiformats/go-multiaddr"
 )
 
 type VerifiedDeal struct {
 	MessageCid cid.Cid
+	Provider   address.Address
+}
+
+type MinerIp struct {
 	Provider address.Address
+	MinerIPs []string
 }
 
 type FilecoinMgrImpl struct {
@@ -30,10 +36,10 @@ func NewFilecoinImpl(addr string) (FilecoinMgr, error) {
 	headers := http.Header{}
 	var api lotusapi.FullNodeStruct
 	closer, err := jsonrpc.NewMergeClient(
-		context.Background(), 
-		addr, 
-		"Filecoin", 
-		[]interface{}{&api.Internal, &api.CommonStruct.Internal}, 
+		context.Background(),
+		addr,
+		"Filecoin",
+		[]interface{}{&api.Internal, &api.CommonStruct.Internal},
 		headers,
 	)
 	if err != nil {
@@ -42,9 +48,8 @@ func NewFilecoinImpl(addr string) (FilecoinMgr, error) {
 	defer closer()
 
 	return &FilecoinMgrImpl{
-		addr:         addr,
-		api:         api,
-		
+		addr: addr,
+		api:  api,
 	}, nil
 }
 
@@ -67,9 +72,9 @@ func (fMgr *FilecoinMgrImpl) GetBlockHeight() (abi.ChainEpoch, error) {
 func (fMgr *FilecoinMgrImpl) GetVerifiedDeals(height abi.ChainEpoch, offset uint) ([]VerifiedDeal, error) {
 	verifiedDeals := []VerifiedDeal{}
 	for i := height - abi.ChainEpoch(offset); i <= height; i++ {
-		fmt.Printf("Block number: %v (%v / %v)\n", i, height - i, offset)
-		blockCids, _ := fMgr.api.ChainGetTipSetByHeight(context.Background(),  abi.ChainEpoch(i), types.TipSetKey{})
-		
+		fmt.Printf("Block number: %v (%v / %v)\n", i, height-i, offset)
+		blockCids, _ := fMgr.api.ChainGetTipSetByHeight(context.Background(), abi.ChainEpoch(i), types.TipSetKey{})
+
 		for _, cid := range blockCids.Cids() {
 			messages, err := fMgr.api.ChainGetBlockMessages(context.Background(), cid)
 			if err != nil {
@@ -77,23 +82,23 @@ func (fMgr *FilecoinMgrImpl) GetVerifiedDeals(height abi.ChainEpoch, offset uint
 			}
 			for _, message := range messages.BlsMessages {
 				// Method 4 is PublishStorageDeals
-				if (message.Method == 4) {
+				if message.Method == 4 {
 					var params market.PublishStorageDealsParams
 					err = params.UnmarshalCBOR(bytes.NewReader(message.Params))
 					if err != nil {
-							return []VerifiedDeal{}, err
+						return []VerifiedDeal{}, err
 					}
-	
+
 					for _, deal := range params.Deals {
 						proposal := deal.Proposal
-						if (proposal.VerifiedDeal) {
-	
+						if proposal.VerifiedDeal {
+
 							// TODO: Get deal Id
 							verifiedDeal := VerifiedDeal{
 								MessageCid: message.Cid(),
-								Provider: proposal.Provider,
+								Provider:   proposal.Provider,
 							}
-							if (!CheckIsVerifiedDeal(verifiedDeal, verifiedDeals)) {
+							if !CheckIsVerifiedDeal(verifiedDeal, verifiedDeals) {
 								fmt.Println("Verified deal found")
 								verifiedDeals = append(verifiedDeals, verifiedDeal)
 							}
@@ -104,20 +109,62 @@ func (fMgr *FilecoinMgrImpl) GetVerifiedDeals(height abi.ChainEpoch, offset uint
 		}
 	}
 
-
 	fmt.Printf("verifiedDeals: %+v\n", verifiedDeals)
 	return verifiedDeals, nil
 }
 
 func CheckIsVerifiedDeal(verifiedDeal VerifiedDeal, verifiedDeals []VerifiedDeal) bool {
 	for _, deal := range verifiedDeals {
-		if (deal.MessageCid == verifiedDeal.MessageCid && deal.Provider == verifiedDeal.Provider) {
+		if deal.MessageCid == verifiedDeal.MessageCid && deal.Provider == verifiedDeal.Provider {
 			return true
 		}
 	}
 	return false
 }
 
+func (fMgr *FilecoinMgrImpl) GetMinerIPs(verifiedDeals []VerifiedDeal) []MinerIp {
+	var m = []MinerIp{}
+	for _, deal := range verifiedDeals {
+		provider := deal.Provider
+		minerInfo, err := fMgr.api.StateMinerInfo(context.Background(), provider, types.TipSetKey{})
+		if err != nil {
+			continue
+		}
+		fmt.Printf("minerInfo: %+v\n", minerInfo)
+		m = append(m, MinerIp{
+			Provider: deal.Provider,
+			MinerIPs: ipAddress(fMgr.multiAddrs(deal.Provider)),
+		})
+	}
+	return m
+}
+
+func (fMgr *FilecoinMgrImpl) multiAddrs(addresss address.Address) []ma.Multiaddr {
+	var m []ma.Multiaddr
+
+	info, _ := fMgr.api.StateMinerInfo(context.Background(), addresss, types.TipSetKey{})
+
+	for _, v := range info.Multiaddrs {
+		fmt.Printf("info: %+v\n", info)
+		if a, err := ma.NewMultiaddrBytes(v); err == nil {
+			m = append(m, a)
+			fmt.Printf("multiAddr: %+v\n", a)
+		}
+	}
+	return m
+}
+
+func ipAddress(a []ma.Multiaddr) []string {
+	var ips []string
+	for _, v := range a {
+		if ip, err := v.ValueForProtocol(ma.P_IP4); err == nil {
+			ips = append(ips, ip)
+		} else if ip, err := v.ValueForProtocol(ma.P_IP6); err == nil {
+			ips = append(ips, ip)
+		}
+	}
+	return ips
+}
 
 // import (
 // 	"bytes"
@@ -135,11 +182,9 @@ func CheckIsVerifiedDeal(verifiedDeal VerifiedDeal, verifiedDeals []VerifiedDeal
 // 	"github.com/ipfs/go-cid"
 // )
 
-
 // type ActiveDeal struct {
 // 	Provider address.Address
 // }
-
 
 // func GetChainHead() string {
 // 	headers := http.Header{}
@@ -150,7 +195,6 @@ func CheckIsVerifiedDeal(verifiedDeal VerifiedDeal, verifiedDeals []VerifiedDeal
 // 		log.Fatalf("connecting with lotus failed: %s", err)
 // 	}
 // 	defer closer()
-
 
 // 	tipset, err := api.ChainHead(context.Background())
 // 	if err != nil {
@@ -178,20 +222,13 @@ func CheckIsVerifiedDeal(verifiedDeal VerifiedDeal, verifiedDeals []VerifiedDeal
 // 		log.Fatalf("calling chain head: %s", err)
 // 	}
 
-
 // 	fmt.Printf("==>>\n %+v\n", tipset.Cids()[0])
 // 	// fmt.Printf("Current chain head is: %s", tipset.String())\
 
-
 // 	cidTest, _ := cid.Decode("bafy2bzacecv2qq2ebppqu3mp23oeqwbf2n2xj65ds3il7yxhqhdecuuzty63s")
-
-	
 
 //        // Now you can call any API you're interested in.
 // 	messages, err := api.ChainGetBlockMessages(context.Background(), cidTest)
-
-
-
 
 // 	if err != nil {
 // 		log.Fatalf("calling chain get message: %s", err)
@@ -201,7 +238,7 @@ func CheckIsVerifiedDeal(verifiedDeal VerifiedDeal, verifiedDeals []VerifiedDeal
 // 		// Method 4 is PublishStorageDeals
 // 		if (message.Method == 4) {
 // 			fmt.Printf("Cid: %+v\n", message.Cid())
-			
+
 // 			var params market.PublishStorageDealsParams
 // 			err := params.UnmarshalCBOR(bytes.NewReader(message.Params))
 // 			if err != nil {
@@ -224,13 +261,11 @@ func CheckIsVerifiedDeal(verifiedDeal VerifiedDeal, verifiedDeals []VerifiedDeal
 // 				}
 // 			}
 
-
 // 			fmt.Printf("activeDeals: %+v\n", activeDeals)
 
 // 		}
 
 // 	}
-
 
 // 	// test3, _ := api.BeaconGetEntry(context.Background(), abi.ChainEpoch(1070159))
 // 	// fmt.Printf("\n ::::>>\n %+v\n", test3)
@@ -240,7 +275,6 @@ func CheckIsVerifiedDeal(verifiedDeal VerifiedDeal, verifiedDeals []VerifiedDeal
 // 	// for _, cid := range blockCids {
 // 	// 	fmt.Printf("tipset: %+v", cid)
 // 	// }
-	
 
 // 	// fmt.Printf("==>>\n %+v\n", messages)
 // 	// fmt.Printf("==>>\n %+v\n", messages.BlsMessages)
@@ -249,10 +283,8 @@ func CheckIsVerifiedDeal(verifiedDeal VerifiedDeal, verifiedDeals []VerifiedDeal
 
 // }
 
-
 // func main() {
-	
+
 // 	GetChainHead()
 
-	
 // }
