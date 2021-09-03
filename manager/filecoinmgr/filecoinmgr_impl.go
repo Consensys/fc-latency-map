@@ -68,7 +68,7 @@ func (fMgr *FilecoinMgrImpl) GetVerifiedDeals(height abi.ChainEpoch, offset uint
 	verifiedDeals := []VerifiedDeal{}
 	for i := height - abi.ChainEpoch(offset); i <= height; i++ {
 		fmt.Printf("Block number: %v (%v / %v)\n", i, height - i, offset)
-		blockCids, _ := fMgr.api.ChainGetTipSetByHeight(context.Background(),  abi.ChainEpoch(i), types.TipSetKey{})
+		blockCids, _ := fMgr.api.ChainGetTipSetByHeight(context.Background(), abi.ChainEpoch(i), types.TipSetKey{})
 		
 		for _, cid := range blockCids.Cids() {
 			messages, err := fMgr.api.ChainGetBlockMessages(context.Background(), cid)
@@ -77,7 +77,7 @@ func (fMgr *FilecoinMgrImpl) GetVerifiedDeals(height abi.ChainEpoch, offset uint
 			}
 			for _, message := range messages.BlsMessages {
 				// Method 4 is PublishStorageDeals
-				if (message.Method == 4) {
+				if message.Method == 4 {
 					var params market.PublishStorageDealsParams
 					err = params.UnmarshalCBOR(bytes.NewReader(message.Params))
 					if err != nil {
@@ -86,7 +86,7 @@ func (fMgr *FilecoinMgrImpl) GetVerifiedDeals(height abi.ChainEpoch, offset uint
 	
 					for _, deal := range params.Deals {
 						proposal := deal.Proposal
-						if (proposal.VerifiedDeal) {
+						if proposal.VerifiedDeal {
 	
 							// TODO: Get deal Id
 							verifiedDeal := VerifiedDeal{
