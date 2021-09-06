@@ -4,18 +4,20 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
+	"github.com/ConsenSys/fc-latency-map/manager/probes"
 )
 
 func main() {	
-	fMgr, err := filecoinmgr.NewFilecoinImpl("https://node.glif.io/space07/lotus/rpc/v0")
+
+	bestProbes, err := probes.GetProbes()
 	if err != nil {
-		log.Fatalf("connecting with lotus failed: %s", err)
+		log.Fatalf("bestProbes failed: %s", err)
 	}
-	blockHeight, err := fMgr.GetBlockHeight()
-	if err != nil {
-		log.Fatalf("get block failed: %s", err)
+
+	for i, probe := range bestProbes {
+
+		fmt.Printf("probe nb: %v\n", i)
+		fmt.Printf("ID: %v, Country: %v, IP: %v\n", probe.ID, probe.CountryCode, probe.AddressV4)
+		
 	}
-	fmt.Printf("blockHeight: %+v\n", blockHeight)
-	fMgr.GetVerifiedDeals(blockHeight, 20)
 }

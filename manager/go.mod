@@ -9,4 +9,7 @@ require (
 	github.com/filecoin-project/lotus v1.11.1
 	github.com/filecoin-project/specs-actors v0.9.14
 	github.com/ipfs/go-cid v0.0.7
+	github.com/keltia/ripe-atlas v0.0.0-20210506215806-13f0d38c56e7 // indirect
+	github.com/sirupsen/logrus v1.8.1 // indirect
+	github.com/spf13/viper v1.8.1 // indirect
 )
