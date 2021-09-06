@@ -23,4 +23,5 @@ func main() {
 	}
 	minersWithIPs := fMgr.GetMinerIPs(verifiedDeals)
 	fmt.Printf("miners with IPs: %+v\n", minersWithIPs)
+	fMgr.ExportJSON(minersWithIPs)
 }

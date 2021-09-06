@@ -14,6 +14,9 @@ import (
 	"github.com/filecoin-project/specs-actors/actors/builtin/market"
 	"github.com/ipfs/go-cid"
 	ma "github.com/multiformats/go-multiaddr"
+
+	"encoding/json"
+	"io/ioutil"
 )
 
 type VerifiedDeal struct {
@@ -164,6 +167,11 @@ func ipAddress(a []ma.Multiaddr) []string {
 		}
 	}
 	return ips
+}
+
+func (fMgr *FilecoinMgrImpl) ExportJSON(data []MinerIp) {
+	file, _ := json.MarshalIndent(data, "", " ")
+	_ = ioutil.WriteFile("miners.json", file, 0644)
 }
 
 // import (
