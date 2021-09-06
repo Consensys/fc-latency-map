@@ -33,4 +33,5 @@ func getMinersIP() {
 
 func Parse() error {
 	getMinersIP()
+	return nil
 }
