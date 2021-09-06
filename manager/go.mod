@@ -9,4 +9,5 @@ require (
 	github.com/filecoin-project/lotus v1.11.1
 	github.com/filecoin-project/specs-actors v0.9.14
 	github.com/ipfs/go-cid v0.0.7
+	github.com/multiformats/go-multiaddr v0.3.3
 )
