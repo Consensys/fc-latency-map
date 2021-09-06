@@ -18,11 +18,7 @@ type Ripe struct {
 func (r *Ripe) NewClient(t string, cfgs ...atlas.Config) error {
     if cfgs == nil {
         cfgs = append(cfgs, atlas.Config{
-            APIKey:    t, // "03e2af2b-0f70-48a9-9a7e-1089781f6e89",
-            // PoolSize:  3,
-            // AreaType:  "country",
-            // AreaValue: "fr",
-            // Tags:      "",
+            APIKey: t,
         })
     }
 
@@ -34,6 +30,7 @@ func (r *Ripe) NewClient(t string, cfgs ...atlas.Config) error {
     r.c = c
     ver := atlas.GetVersion()
     log.Println("api version ", ver)
+
     return nil
 }
 
@@ -67,7 +64,6 @@ func (r *Ripe) CreatePing(miners []Miner) (m *atlas.MeasurementResp, err error) 
             })
         }
     }
-
 
     mr := &atlas.MeasurementRequest{
         Definitions: d,

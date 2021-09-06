@@ -28,7 +28,7 @@ func TestRipe_GetMeasurementResult(t *testing.T) {
 }
 
 func TestRipe_CreatePing(t *testing.T) {
-    t.Skip(true)
+    // t.Skip(true)
 
     r := &Ripe{}
     err := r.NewClient(token)
