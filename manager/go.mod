@@ -16,4 +16,5 @@ require (
 	github.com/stretchr/testify v1.7.0
 	gorm.io/driver/sqlite v1.1.4 // indirect
 	gorm.io/gorm v1.21.14 // indirect
+	github.com/multiformats/go-multiaddr v0.3.3
 )
