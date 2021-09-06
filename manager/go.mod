@@ -1,4 +1,4 @@
-module github.com/ConsenSys/fc-latency-map
+module github.com/ConsenSys/fc-latency-map/manager
 
 go 1.16
 

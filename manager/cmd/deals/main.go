@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ConsenSys/fc-latency-map/filecoinmgr"
+	"github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
 )
 
 func main() {
