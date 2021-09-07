@@ -1,14 +1,18 @@
-package main
+package parser
 
 import (
 	"fmt"
 	"log"
 
+	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
 )
 
-func main() {
-	fMgr, err := filecoinmgr.NewFilecoinImpl("https://node.glif.io/space07/lotus/rpc/v0")
+var mgrConfig = config.Config()
+var nodeUrl string = mgrConfig.GetString("FILECOIN_NODE_URL")
+
+func getMinersIP() {
+	fMgr, err := filecoinmgr.NewFilecoinImpl(nodeUrl)
 	if err != nil {
 		log.Fatalf("connecting with lotus failed: %s", err)
 	}
@@ -24,4 +28,10 @@ func main() {
 	minersWithIPs := fMgr.GetMinerIPs(verifiedDeals)
 	fmt.Printf("miners with IPs: %+v\n", minersWithIPs)
 	fMgr.ExportJSON(minersWithIPs)
+}
+
+
+func Parse() error {
+	getMinersIP()
+	return nil
 }
