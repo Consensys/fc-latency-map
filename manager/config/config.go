@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Config() *viper.Viper {
+func NewConfig() *viper.Viper {
 	config := viper.New()
 	config.SetConfigFile(".env")
 	config.ReadInConfig()

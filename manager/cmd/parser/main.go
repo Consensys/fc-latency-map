@@ -8,13 +8,12 @@ import (
 
 func main() {
 	conf := config.NewConfig()
-
 	dbMgr, err := db.NewDatabaseMgrImpl(conf)
 	if err != nil {
 		panic("failed to connect database")
 	}
-
-	dbMgr.Create(&model.Miner{
+	db := dbMgr.GetDb()
+	db.Create(&model.Miner{
 		Address: "dummyAddress",
 		Ip:      "dummyIp",
 	})

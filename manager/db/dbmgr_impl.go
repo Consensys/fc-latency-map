@@ -16,12 +16,11 @@ func NewDatabaseMgrImpl(conf *viper.Viper) (DatabaseMgr, error) {
 	if err != nil {
 		panic("failed to connect database")
 	}
-
 	return &DatabaseMgrImpl{
 		Db: db,
 	}, nil
 }
 
-func (dbMgr *DatabaseMgrImpl) Create(value interface{}) (tx *gorm.DB) {
-	return dbMgr.Db.Create(value)
+func (dbMgr *DatabaseMgrImpl) GetDb() (db *gorm.DB) {
+	return dbMgr.Db
 }

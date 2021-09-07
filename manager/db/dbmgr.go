@@ -6,6 +6,6 @@ import (
 
 type DatabaseMgr interface {
 
-	// Insert a new value
-	Create(value interface{}) (tx *gorm.DB)
+	// Get database connection instance
+	GetDb() (db *gorm.DB)
 }
