@@ -1,3 +1,0 @@
-[submodule "extern/ripe-atlas"]
-	path = extern/ripe-atlas
-	url = git@github.com:nelsonstr/ripe-atlas.git
