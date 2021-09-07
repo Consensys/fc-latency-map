@@ -3,6 +3,7 @@ module github.com/ConsenSys/fc-latency-map/manager
 go 1.16
 
 require (
+	github.com/c-bata/go-prompt v0.2.6
 	github.com/filecoin-project/go-address v0.0.5
 	github.com/filecoin-project/go-jsonrpc v0.1.4-0.20210217175800-45ea43ac2bec
 	github.com/filecoin-project/go-state-types v0.1.1-0.20210810190654-139e0e79e69e
@@ -16,4 +17,4 @@ require (
 	github.com/stretchr/testify v1.7.0
 )
 
-replace github.com/keltia/ripe-atlas => ../../ripe-atlas
+replace github.com/keltia/ripe-atlas => ./extern/ripe-atlas
