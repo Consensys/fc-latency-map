@@ -10,6 +10,14 @@ require (
 	github.com/filecoin-project/specs-actors v0.9.14
 	github.com/ipfs/go-cid v0.0.7
 	github.com/keltia/ripe-atlas v0.0.0-20210506215806-13f0d38c56e7
+	github.com/mattn/go-sqlite3 v1.14.8 // indirect
+	github.com/sirupsen/logrus v1.8.1
+	github.com/spf13/viper v1.8.1
+	github.com/stretchr/testify v1.7.0
+	gorm.io/driver/sqlite v1.1.4 // indirect
+	gorm.io/gorm v1.21.14 // indirect
+	github.com/multiformats/go-multiaddr v0.3.3
+	github.com/keltia/ripe-atlas v0.0.0-20210506215806-13f0d38c56e7
 	github.com/stretchr/testify v1.7.0
 )
 
