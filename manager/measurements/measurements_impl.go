@@ -13,7 +13,8 @@ type Ripe struct {
 	c *atlas.Client
 }
 
-func (r *Ripe) NewClient(apiKey string, cfgs ...atlas.Config) error {
+func NewClient(apiKey string, cfgs ...atlas.Config) (*Ripe, error) {
+	r := &Ripe{}
 	if cfgs == nil {
 		cfgs = append(cfgs, atlas.Config{
 			APIKey: apiKey,
@@ -25,7 +26,7 @@ func (r *Ripe) NewClient(apiKey string, cfgs ...atlas.Config) error {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("connection to api")
-		return err
+		return nil, err
 	}
 	r.c = c
 
@@ -33,7 +34,7 @@ func (r *Ripe) NewClient(apiKey string, cfgs ...atlas.Config) error {
 		"version": atlas.GetVersion(),
 	}).Info("get api version")
 
-	return nil
+	return r, nil
 }
 
 func (r *Ripe) GetMeasurement(id int) (m *atlas.Measurement, err error) {
@@ -72,7 +73,7 @@ func (r *Ripe) CreatePing(miners []Miner, probes []atlas.ProbeSet) (*atlas.Measu
 
 	p, err := r.c.Ping(mr)
 	log.WithFields(log.Fields{
-		"id":           p.Measurements,
+		"id":           p,
 		"isOneOff":     isOneOff,
 		"pingInterval": pingInterval,
 		"measurement":  fmt.Sprintf("%#v\n", d),

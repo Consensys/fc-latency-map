@@ -16,8 +16,7 @@ var apiKey = mgrConfig.GetString("RIPE_API_KEY")
 func TestRipe_GetMeasurementResult(t *testing.T) {
 	// t.Skip(true)
 
-	r := &Ripe{}
-	err := r.NewClient(apiKey)
+	r, err := NewClient(apiKey)
 	assert.Nil(t, err)
 
 	// creatred online 32148976
@@ -34,8 +33,7 @@ func TestRipe_GetMeasurementResult(t *testing.T) {
 func TestRipe_CreatePing(t *testing.T) {
 	// t.Skip(true)
 
-	r := &Ripe{}
-	err := r.NewClient(apiKey)
+	r, err := NewClient(apiKey)
 	assert.Nil(t, err)
 
 	miners := []Miner{
@@ -49,7 +47,7 @@ func TestRipe_CreatePing(t *testing.T) {
 		{
 			Type:      "area",
 			Value:     "WW",
-			Requested: 1,
+			Requested: mgrConfig.GetInt("REQUESTED_PROBES"),
 		},
 	}
 

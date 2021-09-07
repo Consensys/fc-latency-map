@@ -16,9 +16,6 @@ type MeasurementResults struct {
 
 type API interface {
 
-	// NewClient connect with Measurement api.
-	NewClient(apiKey string, cfgs ...atlas.Config) error
-
 	// GetMeasurement returns Measurement from ID
 	GetMeasurement(id int) (m *atlas.Measurement, err error)
 
