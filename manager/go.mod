@@ -17,4 +17,4 @@ require (
 	github.com/stretchr/testify v1.7.0
 )
 
-replace github.com/keltia/ripe-atlas => ./extern/ripe-atlas
+replace github.com/keltia/ripe-atlas => ../extern/ripe-atlas
