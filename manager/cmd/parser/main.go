@@ -3,7 +3,8 @@ package main
 import (
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
-	"github.com/ConsenSys/fc-latency-map/manager/model"
+	"github.com/ConsenSys/fc-latency-map/manager/miners"
+	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
 func main() {
@@ -12,8 +13,8 @@ func main() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	db := dbMgr.GetDb()
-	db.Create(&model.Miner{
+	minerService := miners.NewMinerServiceImpl(dbMgr)
+	minerService.CreateMiner(&models.Miner{
 		Address: "dummyAddress",
 		Ip:      "dummyIp",
 	})

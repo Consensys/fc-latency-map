@@ -1,6 +1,7 @@
 package db
 
 import (
+	"github.com/ConsenSys/fc-latency-map/manager/models"
 	"github.com/spf13/viper"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -16,9 +17,14 @@ func NewDatabaseMgrImpl(conf *viper.Viper) (DatabaseMgr, error) {
 	if err != nil {
 		panic("failed to connect database")
 	}
+	migrate(db)
 	return &DatabaseMgrImpl{
 		Db: db,
 	}, nil
+}
+
+func migrate(db *gorm.DB) {
+	db.AutoMigrate(&models.Miner{})
 }
 
 func (dbMgr *DatabaseMgrImpl) GetDb() (db *gorm.DB) {
