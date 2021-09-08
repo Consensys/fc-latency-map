@@ -13,7 +13,6 @@ var (
 	basepath   = filepath.Dir(b)
 )
 
-
 type Ripe struct {
 	c         *atlas.Client
 	StartTime int
@@ -21,31 +20,31 @@ type Ripe struct {
 	IsOneOff  bool
 }
 
-func (r *Ripe) NewClient(t string, cfgs ...atlas.Config) error {
+func NewClient(t string, cfgs ...atlas.Config) (*Ripe, error) {
+	r := &Ripe{}
 	if cfgs == nil {
-			cfgs = append(cfgs, atlas.Config{
-					APIKey: t,
-			})
+		cfgs = append(cfgs, atlas.Config{
+			APIKey: t,
+		})
 	}
 
 	c, err := atlas.NewClient(cfgs...)
 	if err != nil {
-			log.Println("Connecting to Ripe Atlas API", err)
-			return err
+		log.Println("Connecting to Ripe Atlas API", err)
+		return nil, err
 	}
 	r.c = c
 	ver := atlas.GetVersion()
 	log.Println("api version ", ver)
 
-	return nil
+	return r, nil
 }
 
 func (r *Ripe) GetProbe(id int) (m *atlas.Probe, err error) {
 	return r.c.GetProbe(id)
 }
 
-
-func (r *Ripe) GetProbes(countryCode string) ([]atlas.Probe, error) {	
+func (r *Ripe) GetProbes(countryCode string) ([]atlas.Probe, error) {
 	opts := make(map[string]string)
 	opts["country_code"] = countryCode
 
@@ -73,7 +72,7 @@ func (r *Ripe) GetAllProbes() ([]atlas.Probe, error) {
 	countries[1] = "PT"
 
 	var bestProbes []atlas.Probe
-	
+
 	for _, country := range countries {
 		log.WithFields(log.Fields{
 			"country": country,
