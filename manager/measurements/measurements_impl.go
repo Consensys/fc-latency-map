@@ -44,7 +44,7 @@ func (r *Ripe) GetMeasurement(id int) (m *atlas.Measurement, err error) {
 func (r *Ripe) CreatePing(miners []Miner, probes []atlas.ProbeSet) (*atlas.MeasurementResp, error) {
 	var d []atlas.Definition
 
-	pingInterval := viper.GetInt("PING_INTERVAL")
+	pingInterval := viper.GetInt("RIPE_PING_INTERVAL")
 
 	for _, miner := range miners {
 		for _, ip := range miner.Ip {
@@ -61,7 +61,7 @@ func (r *Ripe) CreatePing(miners []Miner, probes []atlas.ProbeSet) (*atlas.Measu
 		}
 	}
 
-	isOneOff := viper.GetBool("ONE_OFF")
+	isOneOff := viper.GetBool("RIPE_ONE_OFF")
 
 	mr := &atlas.MeasurementRequest{
 		Definitions: d,

@@ -47,7 +47,7 @@ func TestRipe_CreatePing(t *testing.T) {
 		{
 			Type:      "area",
 			Value:     "WW",
-			Requested: mgrConfig.GetInt("REQUESTED_PROBES"),
+			Requested: mgrConfig.GetInt("RIPE_REQUESTED_PROBES"),
 		},
 	}
 
