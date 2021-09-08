@@ -1,16 +1,8 @@
 package probes
 
 import (
-	"path/filepath"
-	"runtime"
-
 	atlas "github.com/keltia/ripe-atlas"
 	log "github.com/sirupsen/logrus"
-)
-
-var (
-	_, b, _, _ = runtime.Caller(0)
-	basepath   = filepath.Dir(b)
 )
 
 type Ripe struct {
@@ -89,3 +81,25 @@ func (r *Ripe) GetAllProbes() ([]atlas.Probe, error) {
 	}
 	return bestProbes, nil
 }
+<<<<<<< HEAD
+
+func (r *Ripe) Update() {
+	// get countries from db
+	// countries := []string{"FR", "PT"}
+
+	probes, err := r.GetAllProbes() // by countries
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("GetAllProbes")
+		return
+	}
+
+	// update db probes
+
+	for i, probe := range probes {
+		log.Debug(i, probe)
+	}
+}
+=======
+>>>>>>> main
