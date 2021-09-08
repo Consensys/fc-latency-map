@@ -2,16 +2,14 @@ package main
 
 import (
 	"fmt"
-
 	"os"
 	"os/exec"
 	"runtime/debug"
 	"strings"
 
+	"github.com/ConsenSys/fc-latency-map/manager/probes"
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
-
-	"github.com/ConsenSys/fc-latency-map/manager/probes"
 )
 
 type LatencyMapCLI struct {
@@ -20,15 +18,14 @@ type LatencyMapCLI struct {
 
 // Start Client CLI
 func main() {
-	probe := probes.Ripe{}
-	err := probe.NewClient("")
+	probe, err := probes.NewClient("")
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("starting probes")
 	}
 	c := &LatencyMapCLI{
-		probes: probe,
+		probes: *probe,
 	}
 
 	defer func() {
