@@ -1,0 +1,43 @@
+// Creating tables
+Table miners {
+  id int [pk, increment] // auto-increment
+  address varchar
+  ip varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table locations {
+  id int [pk, increment] // auto-increment
+  latitude varchar
+  longitude varchar
+  country_code varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table probes {
+  id int [pk, increment] // auto-increment
+  location_id varchar
+  ripe_id number
+  ip varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table measurements {
+  id int [pk, increment] // auto-increment
+  miner_id number
+  probe_id number
+  measure_date timestamp
+  time_average number
+  created_at timestamp
+  updated_at timestamp
+}
+
+// Creating references
+// You can also define relaionship separately
+// > many-to-one; < one-to-many; - one-to-one
+Ref: probes.location_id > locations.id
+Ref: measurements.miner_id > miners.id  
+Ref: measurements.probe_id > probes.id
