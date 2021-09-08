@@ -1,3 +1,4 @@
 [submodule "extern/ripe-atlas"]
 	path = extern/ripe-atlas
+	branch = get-measurement-result-struct#11
 	url = https://github.com/nelsonstr/ripe-atlas.git
