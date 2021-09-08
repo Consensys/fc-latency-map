@@ -81,7 +81,6 @@ func (r *Ripe) GetAllProbes() ([]atlas.Probe, error) {
 	}
 	return bestProbes, nil
 }
-<<<<<<< HEAD
 
 func (r *Ripe) Update() {
 	// get countries from db
@@ -101,5 +100,3 @@ func (r *Ripe) Update() {
 		log.Debug(i, probe)
 	}
 }
-=======
->>>>>>> main
