@@ -12,7 +12,8 @@ type Ripe struct {
 	IsOneOff  bool
 }
 
-func (r *Ripe) NewClient(t string, cfgs ...atlas.Config) error {
+func NewClient(t string, cfgs ...atlas.Config) (*Ripe, error) {
+	r := &Ripe{}
 	if cfgs == nil {
 		cfgs = append(cfgs, atlas.Config{
 			APIKey: t,
@@ -22,13 +23,13 @@ func (r *Ripe) NewClient(t string, cfgs ...atlas.Config) error {
 	c, err := atlas.NewClient(cfgs...)
 	if err != nil {
 		log.Println("Connecting to Ripe Atlas API", err)
-		return err
+		return nil, err
 	}
 	r.c = c
 	ver := atlas.GetVersion()
 	log.Println("api version ", ver)
 
-	return nil
+	return r, nil
 }
 
 func (r *Ripe) GetProbe(id int) (m *atlas.Probe, err error) {
@@ -80,6 +81,7 @@ func (r *Ripe) GetAllProbes() ([]atlas.Probe, error) {
 	}
 	return bestProbes, nil
 }
+<<<<<<< HEAD
 
 func (r *Ripe) Update() {
 	// get countries from db
@@ -99,3 +101,5 @@ func (r *Ripe) Update() {
 		log.Debug(i, probe)
 	}
 }
+=======
+>>>>>>> main

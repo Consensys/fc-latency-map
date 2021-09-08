@@ -1,5 +1,8 @@
 # fc-latency-map
 
+
+
+
 ## Requirements
 * sqlite3
 ```bash
@@ -34,3 +37,10 @@ sqlite> select * from miners;
 ```bash
 sqlite> ^C^C^C
 ```
+
+
+### Configuration:
+
+Must have an ".env" file with the configurations to run.
+
+Is available an example of configuration on [.env.example](./manager/.env.example)
