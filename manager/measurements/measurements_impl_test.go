@@ -4,13 +4,14 @@ import (
 	"log"
 	"testing"
 
-	atlas "github.com/keltia/ripe-atlas"
 	"github.com/stretchr/testify/assert"
+
+	atlas "github.com/keltia/ripe-atlas"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 )
 
-var mgrConfig = config.Config()
+var mgrConfig = config.NewConfig()
 var apiKey = mgrConfig.GetString("RIPE_API_KEY")
 
 func TestRipe_GetMeasurementResult(t *testing.T) {
