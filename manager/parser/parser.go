@@ -8,7 +8,7 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
 )
 
-var mgrConfig = config.Config()
+var mgrConfig = config.NewConfig()
 var nodeUrl string = mgrConfig.GetString("FILECOIN_NODE_URL")
 
 func getMinersIP() {
@@ -29,7 +29,6 @@ func getMinersIP() {
 	fmt.Printf("miners with IPs: %+v\n", minersWithIPs)
 	fMgr.ExportJSON(minersWithIPs)
 }
-
 
 func Parse() error {
 	getMinersIP()
