@@ -25,6 +25,7 @@ func NewDatabaseMgrImpl(conf *viper.Viper) (DatabaseMgr, error) {
 
 func migrate(db *gorm.DB) {
 	db.AutoMigrate(&models.Miner{})
+	db.AutoMigrate(&models.Location{})
 }
 
 func (dbMgr *DatabaseMgrImpl) GetDb() (db *gorm.DB) {

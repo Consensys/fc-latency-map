@@ -6,13 +6,10 @@ import (
 
 type Miner struct {
 	Address string
-	Ip []string
+	Ip      []string
 }
 
 type API interface {
-
-	// NewClient connect with Probe api.
-	NewClient(apiToken string, cfgs ...atlas.Config) error
 
 	// GetProbe returns Probe from ID
 	GetProbe(id int) (m *atlas.Probe, err error)
@@ -25,5 +22,4 @@ type API interface {
 
 	// GetAllProbes returns all Probes
 	GetAllProbes() ([]atlas.Probe, error)
-
 }

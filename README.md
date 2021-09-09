@@ -1,40 +1,34 @@
-# fc-latency-map
+# FC Latency Map
 
-## Requirements
-* sqlite3
-```bash
-sudo apt install sqlite3
+## Description
+
+FC Latency Map are services for [Filecoin](https://filecoin.io/) blockchain to get latencies of active miners.
+
+It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of every active miners from relevant location on the world.
+
+Get the project:
+
+```
+git clone https://github.com/ConsenSys/fc-latency-map.git
 ```
 
-## SQLite commands
-1. Open database
-```bash
-sqlite3 data/database.db
+## Manager
 
-SQLite version 3.31.1 2020-01-27 19:55:54
-Enter ".help" for usage hints.
-sqlite>
+### Quickstart
+
+Start the Manager cli:
+
+```
+cd manager
+cp .env.example .env
 ```
 
-2. View tables
-```bash
-sqlite> .tables
+Edit .env to add a valid Ripe Atlas API Key, then execute:
 
->>> miners
+```
+go run cmd/cli/cli.go
 ```
 
-3. Select miners
-```bash
-sqlite> select * from miners;
+### Documentation
 
->>> 1|2021-09-07 17:04:53.41480159+02:00|2021-09-07 17:04:53.41480159+02:00||dummyAddress|dummyIp
-```
-
-4. Close database
-```bash
-sqlite> .quit
-```
-or
-```bash
-sqlite> ^C^C^C
-```
+[./manager/README.md](./manager/README.md)

@@ -28,7 +28,8 @@ func getMinersIP(
 		log.Fatalf("get block failed: %s", err)
 	}
 	fmt.Printf("blockHeight: %+v\n", blockHeight)
-	verifiedDeals, err := fMgr.GetVerifiedDeals(blockHeight, 10)
+	offset := conf.GetUint("FILECOIN_BLOCKS_OFFSET")
+	verifiedDeals, err := fMgr.GetVerifiedDeals(blockHeight, offset)
 	if err != nil {
 		log.Fatalf("get block failed: %s", err)
 	}

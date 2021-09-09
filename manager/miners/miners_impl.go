@@ -3,10 +3,10 @@ package miners
 import (
 	"log"
 
+	"github.com/ConsenSys/fc-latency-map/manager/addresses"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	fmgr "github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
-	"github.com/ConsenSys/fc-latency-map/manager/util"
 )
 
 type MinerServiceImpl struct {
@@ -30,7 +30,7 @@ func (srv *MinerServiceImpl) GetMinerIPs(deals []fmgr.VerifiedDeal) []*models.Mi
 			log.Printf("unable to get miner info: %s", provider)
 			continue
 		}
-		ips := util.IpAddress(util.MultiAddrs(minerInfo.Multiaddrs))
+		ips := addresses.IpAddress(addresses.MultiAddrs(minerInfo.Multiaddrs))
 		ip := ""
 		if len(ips) > 0 {
 			ip = ips[0]
