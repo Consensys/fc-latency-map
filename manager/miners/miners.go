@@ -7,6 +7,6 @@ import (
 
 type MinerService interface {
 
-	// NewClient connect with Probe api.
+	// GetMinerIPs returns miners IP addresses
 	GetMinerIPs(deals []fmgr.VerifiedDeal) []*models.Miner
 }

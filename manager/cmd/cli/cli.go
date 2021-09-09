@@ -7,10 +7,13 @@ import (
 	"runtime/debug"
 	"strings"
 
+	"github.com/ConsenSys/fc-latency-map/manager/config"
+	"github.com/ConsenSys/fc-latency-map/manager/db"
+	"github.com/ConsenSys/fc-latency-map/manager/locations"
+	"github.com/ConsenSys/fc-latency-map/manager/models"
+	"github.com/ConsenSys/fc-latency-map/manager/probes"
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
-
-	"github.com/ConsenSys/fc-latency-map/manager/probes"
 )
 
 const (
@@ -26,6 +29,7 @@ const (
 
 type LatencyMapCLI struct {
 	probes probes.Ripe
+	locations locations.LocationServiceImpl
 }
 
 // Start Client CLI
@@ -94,22 +98,54 @@ func (c *LatencyMapCLI) executor(in string) {
 	in = strings.TrimSpace(in)
 	blocks := strings.Split(in, " ")
 
+	conf := config.NewConfig()
+	dbMgr, err := db.NewDatabaseMgrImpl(conf)
+	if err != nil {
+		panic("failed to connect database")
+	}
+
 	switch blocks[0] {
+	// Location list
 	case locationList:
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("List all location from db")
-
+		locs := locations.NewLocationServiceImpl(dbMgr)
+		locsList := locs.GetLocations()
+		for _, location := range locsList {
+			fmt.Printf("ID:%d - Country code: %s\n", location.ID, location.Country)
+		}
+	// New location
 	case locationAdd:
 		if len(blocks) == 1 {
 			fmt.Println("missing location to add")
 		}
 		fmt.Printf("Command: %s \n", blocks[0])
-
+		newLocation := models.Location{
+			Country: blocks[1],
+			Latitude:    "1.2",
+			Longitude: "2.1",
+		}
+		locs := locations.NewLocationServiceImpl(dbMgr)
+		newLocation = locs.AddLocation(newLocation)
+		fmt.Printf("new location, ID:%d - Country code: %s\n", newLocation.ID, newLocation.Country)
+	// Delete location
 	case locationDelete:
 		if len(blocks) == 1 {
 			fmt.Println("missing location to delete")
 		}
 		fmt.Printf("Command: %s \n", blocks[0])
+		location := models.Location{
+			Country: blocks[1],
+		}
+		locs := locations.NewLocationServiceImpl(dbMgr)
+		location = locs.GetLocation(location)
+		if (location == models.Location{}) {
+			fmt.Printf("Unable to find location %s\n", blocks[1])
+		} else {
+			locs.DeleteLocation(location)
+			fmt.Printf("Location %d deleted\n", location.ID)
+		}
+		
 		// probes
 	case probesUpdate:
 		fmt.Printf("Command: %s \n", blocks[0])
