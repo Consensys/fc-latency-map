@@ -106,7 +106,7 @@ func (c *LatencyMapCLI) executor(in string) {
 
 	switch blocks[0] {
 		
-	// Location list
+	// Locations list
 	case locationList:
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("List all location from db")
