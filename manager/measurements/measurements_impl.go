@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/keltia/ripe-atlas"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+
+	"github.com/keltia/ripe-atlas"
 )
 
 type Ripe struct {
@@ -39,6 +40,17 @@ func NewClient(apiKey string, cfgs ...atlas.Config) (*Ripe, error) {
 
 func (r *Ripe) GetMeasurement(id int) (m *atlas.Measurement, err error) {
 	return r.c.GetMeasurement(id)
+}
+
+func (r *Ripe) CreatePingByType(miners []Miner, probeType, value string) (*atlas.MeasurementResp, error) {
+	probes := []atlas.ProbeSet{
+		{
+			Type:      probeType,
+			Value:     value,
+			Requested: viper.GetInt("RIPE_REQUESTED_PROBES"),
+		},
+	}
+	return r.CreatePing(miners, probes)
 }
 
 func (r *Ripe) CreatePing(miners []Miner, probes []atlas.ProbeSet) (*atlas.MeasurementResp, error) {
