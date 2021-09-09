@@ -5,27 +5,20 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"encoding/json"
-	"io/ioutil"
 
 	"github.com/filecoin-project/go-address"
 	jsonrpc "github.com/filecoin-project/go-jsonrpc"
 	"github.com/filecoin-project/go-state-types/abi"
 	lotusapi "github.com/filecoin-project/lotus/api"
+	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/filecoin-project/specs-actors/actors/builtin/market"
 	"github.com/ipfs/go-cid"
-	ma "github.com/multiformats/go-multiaddr"
 )
 
 type VerifiedDeal struct {
 	MessageCid cid.Cid
 	Provider   address.Address
-}
-
-type MinerIp struct {
-	Provider address.Address
-	MinerIPs []string
 }
 
 type FilecoinMgrImpl struct {
@@ -69,6 +62,14 @@ func (fMgr *FilecoinMgrImpl) GetBlockHeight() (abi.ChainEpoch, error) {
 		return 0, err
 	}
 	return tipset.Height(), err
+}
+
+func (fMgr *FilecoinMgrImpl) GetMinerInfo(addr address.Address) (miner.MinerInfo, error) {
+	minerInfo, err := fMgr.api.StateMinerInfo(context.Background(), addr, types.TipSetKey{})
+	if err != nil {
+		return miner.MinerInfo{}, err
+	}
+	return minerInfo, err
 }
 
 func (fMgr *FilecoinMgrImpl) GetVerifiedDeals(height abi.ChainEpoch, offset uint) ([]VerifiedDeal, error) {
@@ -122,53 +123,4 @@ func CheckIsVerifiedDeal(verifiedDeal VerifiedDeal, verifiedDeals []VerifiedDeal
 		}
 	}
 	return false
-}
-
-func (fMgr *FilecoinMgrImpl) GetMinerIPs(verifiedDeals []VerifiedDeal) []MinerIp {
-	var m = []MinerIp{}
-	for _, deal := range verifiedDeals {
-		provider := deal.Provider
-		minerInfo, err := fMgr.api.StateMinerInfo(context.Background(), provider, types.TipSetKey{})
-		if err != nil {
-			continue
-		}
-		fmt.Printf("minerInfo: %+v\n", minerInfo)
-		m = append(m, MinerIp{
-			Provider: deal.Provider,
-			MinerIPs: ipAddress(fMgr.multiAddrs(deal.Provider)),
-		})
-	}
-	return m
-}
-
-func (fMgr *FilecoinMgrImpl) multiAddrs(addresss address.Address) []ma.Multiaddr {
-	var m []ma.Multiaddr
-
-	info, _ := fMgr.api.StateMinerInfo(context.Background(), addresss, types.TipSetKey{})
-
-	for _, v := range info.Multiaddrs {
-		fmt.Printf("info: %+v\n", info)
-		if a, err := ma.NewMultiaddrBytes(v); err == nil {
-			m = append(m, a)
-			fmt.Printf("multiAddr: %+v\n", a)
-		}
-	}
-	return m
-}
-
-func ipAddress(a []ma.Multiaddr) []string {
-	var ips []string
-	for _, v := range a {
-		if ip, err := v.ValueForProtocol(ma.P_IP4); err == nil {
-			ips = append(ips, ip)
-		} else if ip, err := v.ValueForProtocol(ma.P_IP6); err == nil {
-			ips = append(ips, ip)
-		}
-	}
-	return ips
-}
-
-func (fMgr *FilecoinMgrImpl) ExportJSON(data []MinerIp) {
-	file, _ := json.MarshalIndent(data, "", " ")
-	_ = ioutil.WriteFile("miners.json", file, 0644)
 }

@@ -55,5 +55,9 @@ sqlite> select * from miners;
 4. Close database
 
 ```bash
+sqlite> .quit
+```
+or
+```bash
 sqlite> ^C^C^C
 ```
