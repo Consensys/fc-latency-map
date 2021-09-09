@@ -4,13 +4,14 @@ import (
 	"log"
 	"testing"
 
-	atlas "github.com/keltia/ripe-atlas"
 	"github.com/stretchr/testify/assert"
+
+	atlas "github.com/keltia/ripe-atlas"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 )
 
-var mgrConfig = config.Config()
+var mgrConfig = config.NewConfig()
 var apiKey = mgrConfig.GetString("RIPE_API_KEY")
 
 func TestRipe_GetMeasurementResult(t *testing.T) {
@@ -31,7 +32,7 @@ func TestRipe_GetMeasurementResult(t *testing.T) {
 }
 
 func TestRipe_CreatePing(t *testing.T) {
-	// t.Skip(true)
+	t.Skip(true)
 
 	r, err := NewClient(apiKey)
 	assert.Nil(t, err)
@@ -52,6 +53,27 @@ func TestRipe_CreatePing(t *testing.T) {
 	}
 
 	got, err := r.CreatePing(miners, probes)
+	assert.Nil(t, err)
+	assert.NotNil(t, got)
+	assert.NotNil(t, got.Measurements)
+	log.Println(got.Measurements)
+}
+
+func TestRipe_CreatePingWithProbID(t *testing.T) {
+	// t.Skip(true)
+
+	r, err := NewClient(apiKey)
+	assert.Nil(t, err)
+
+	miners := []Miner{
+		{Address: "x1234", Ip: []string{
+			"213.13.146.142",
+			"143.204.98.83",
+		}},
+	}
+
+	got, err := r.CreatePingByType(miners, "probes", "1001065,6252")
+
 	assert.Nil(t, err)
 	assert.NotNil(t, got)
 	assert.NotNil(t, got.Measurements)

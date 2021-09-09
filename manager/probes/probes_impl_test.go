@@ -9,7 +9,7 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 )
 
-var mgrConfig = config.Config()
+var mgrConfig = config.NewConfig()
 var apiKey = mgrConfig.GetString("RIPE_API_KEY")
 
 func Test_GetAllProbes(t *testing.T) {

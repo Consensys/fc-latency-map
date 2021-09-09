@@ -4,22 +4,23 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
 	"github.com/ConsenSys/fc-latency-map/manager/miners"
-	"github.com/spf13/viper"
 )
 
+var mgrConfig = config.NewConfig()
+var offset = mgrConfig.GetUint("FILECOIN_BLOCKS_OFFSET")
+
 func Parse(
-	conf *viper.Viper,
 	fMgr filecoinmgr.FilecoinMgr,
 	mSer miners.MinerService,
 ) error {
-	getMinersIP(conf, fMgr, mSer)
+	getMinersIP(fMgr, mSer)
 	return nil
 }
 
 func getMinersIP(
-	conf *viper.Viper,
 	fMgr filecoinmgr.FilecoinMgr,
 	mSer miners.MinerService,
 ) {
@@ -28,7 +29,6 @@ func getMinersIP(
 		log.Fatalf("get block failed: %s", err)
 	}
 	fmt.Printf("blockHeight: %+v\n", blockHeight)
-	offset := conf.GetUint("FILECOIN_BLOCKS_OFFSET")
 	verifiedDeals, err := fMgr.GetVerifiedDeals(blockHeight, offset)
 	if err != nil {
 		log.Fatalf("get block failed: %s", err)
