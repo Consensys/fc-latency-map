@@ -105,6 +105,7 @@ func (c *LatencyMapCLI) executor(in string) {
 	}
 
 	switch blocks[0] {
+		
 	// Location list
 	case locationList:
 		fmt.Printf("Command: %s \n", blocks[0])
@@ -114,6 +115,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		for _, location := range locsList {
 			fmt.Printf("ID:%d - Country code: %s\n", location.ID, location.Country)
 		}
+
 	// New location
 	case locationAdd:
 		if len(blocks) == 1 {
@@ -128,6 +130,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		locs := locations.NewLocationServiceImpl(dbMgr)
 		newLocation = locs.AddLocation(newLocation)
 		fmt.Printf("new location, ID:%d - Country code: %s\n", newLocation.ID, newLocation.Country)
+
 	// Delete location
 	case locationDelete:
 		if len(blocks) == 1 {
