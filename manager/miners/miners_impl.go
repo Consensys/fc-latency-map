@@ -14,11 +14,11 @@ import (
 
 type MinerServiceImpl struct {
 	Conf  *viper.Viper
-	DbMgr db.DatabaseMgr
-	FMgr  fmgr.FilecoinMgr
+	DbMgr *db.DatabaseMgr
+	FMgr  *fmgr.FilecoinMgr
 }
 
-func NewMinerServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr, fMgr fmgr.FilecoinMgr) MinerService {
+func NewMinerServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr, fMgr *fmgr.FilecoinMgr) MinerService {
 	return &MinerServiceImpl{
 		Conf:  conf,
 		DbMgr: dbMgr,
@@ -27,14 +27,14 @@ func NewMinerServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr, fMgr fmgr.File
 }
 
 func (srv *MinerServiceImpl) ParseMiners() []*models.Miner {
-	blockHeight, err := srv.FMgr.GetBlockHeight()
+	blockHeight, err := (*srv.FMgr).GetBlockHeight()
 	if err != nil {
 		log.Fatalf("get block failed: %s", err)
 		return []*models.Miner{}
 	}
 	log.Printf("blockHeight: %+v\n", blockHeight)
 	offset := srv.Conf.GetUint("FILECOIN_BLOCKS_OFFSET")
-	deals, err := srv.FMgr.GetVerifiedDeals(blockHeight, offset)
+	deals, err := (*srv.FMgr).GetVerifiedDeals(blockHeight, offset)
 	if err != nil {
 		log.Fatalf("get block failed: %s", err)
 		return []*models.Miner{}
@@ -47,7 +47,7 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 	for _, deal := range deals {
 		provider := deal.Provider
 		address := provider.String()
-		minerInfo, err := srv.FMgr.GetMinerInfo(provider)
+		minerInfo, err := (*srv.FMgr).GetMinerInfo(provider)
 		if err != nil {
 			log.Printf("unable to get miner info: %s. skip...", address)
 			continue
@@ -74,7 +74,7 @@ func getMinerIp(minerInfo miner.MinerInfo) string {
 }
 
 func (srv *MinerServiceImpl) upsertMinersInDb(miners []*models.Miner) {
-	srv.DbMgr.GetDb().Clauses(clause.OnConflict{
+	(*srv.DbMgr).GetDb().Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "address"}},
 		DoUpdates: clause.AssignmentColumns([]string{"ip"}),
 	}).Create(&miners)
@@ -82,6 +82,6 @@ func (srv *MinerServiceImpl) upsertMinersInDb(miners []*models.Miner) {
 
 func (srv *MinerServiceImpl) GetMiners() []*models.Miner {
 	var miners []*models.Miner
-	srv.DbMgr.GetDb().Find(&miners)
+	(*srv.DbMgr).GetDb().Find(&miners)
 	return miners
 }

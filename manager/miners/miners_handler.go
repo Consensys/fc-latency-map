@@ -9,10 +9,10 @@ import (
 )
 
 type MinerHandler struct {
-	MSer MinerService
+	MSer *MinerService
 }
 
-func NewMinerHandler() MinerHandler {
+func NewMinerHandler() *MinerHandler {
 	conf := config.NewConfig()
 	dbMgr, err := db.NewDatabaseMgrImpl(conf)
 	if err != nil {
@@ -23,12 +23,12 @@ func NewMinerHandler() MinerHandler {
 	if err != nil {
 		log.Fatalf("connecting with lotus failed: %s", err)
 	}
-	mSer := NewMinerServiceImpl(conf, dbMgr, fMgr)
-	return MinerHandler{
-		MSer: mSer,
+	mSer := NewMinerServiceImpl(conf, &dbMgr, &fMgr)
+	return &MinerHandler{
+		MSer: &mSer,
 	}
 }
 
 func (mHdl *MinerHandler) MinersUpdate() {
-	mHdl.MSer.ParseMiners()
+	(*mHdl.MSer).ParseMiners()
 }

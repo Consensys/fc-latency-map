@@ -40,7 +40,7 @@ func main() {
 	}
 	c := &LatencyMapCLI{
 		probes: *probe,
-		miners: miners.NewMinerHandler(),
+		miners: *miners.NewMinerHandler(),
 	}
 
 	if len(os.Args) == 2 {
