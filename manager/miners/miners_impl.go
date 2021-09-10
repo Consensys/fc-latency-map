@@ -9,6 +9,7 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
 	"github.com/spf13/viper"
+	"gorm.io/gorm/clause"
 )
 
 type MinerServiceImpl struct {
@@ -57,7 +58,7 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 		})
 	}
 	if len(miners) > 0 {
-		srv.DbMgr.GetDb().Create(miners)
+		srv.upsertMinersInDb(miners)
 	} else {
 		log.Printf("no miner parsed from deals")
 	}
@@ -70,6 +71,13 @@ func getMinerIp(minerInfo miner.MinerInfo) string {
 		return ips[0]
 	}
 	return ""
+}
+
+func (srv *MinerServiceImpl) upsertMinersInDb(miners []*models.Miner) {
+	srv.DbMgr.GetDb().Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "address"}},
+		DoUpdates: clause.AssignmentColumns([]string{"ip"}),
+	}).Create(&miners)
 }
 
 func (srv *MinerServiceImpl) GetMiners() []*models.Miner {

@@ -10,6 +10,7 @@ import (
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/ConsenSys/fc-latency-map/manager/miners"
 	"github.com/ConsenSys/fc-latency-map/manager/probes"
 )
 
@@ -26,6 +27,7 @@ const (
 
 type LatencyMapCLI struct {
 	probes probes.Ripe
+	miners miners.MinerHandler
 }
 
 // Start Client CLI
@@ -38,6 +40,7 @@ func main() {
 	}
 	c := &LatencyMapCLI{
 		probes: *probe,
+		miners: miners.NewMinerHandler(),
 	}
 
 	if len(os.Args) == 2 {
@@ -133,11 +136,8 @@ func (c *LatencyMapCLI) executor(in string) {
 		fmt.Println("Get measures from db and export to a file")
 
 	case minersUpdate:
-		if len(blocks) == 1 {
-			fmt.Println("add ")
-		}
 		fmt.Printf("Command: %s \n", blocks[0])
-		fmt.Println("Call FC, get miners with active deals and store in db")
+		c.miners.MinersUpdate()
 
 	case "exit":
 		fmt.Println("Shutdown ...")
