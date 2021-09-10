@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
@@ -23,6 +24,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("connecting with lotus failed: %s", err)
 	}
-	mSer := miners.NewMinerServiceImpl(dbMgr, fMgr)
-	parser.Parse(fMgr, mSer)
+	mSer := miners.NewMinerServiceImpl(conf, dbMgr, fMgr)
+	parser.Parse(mSer)
+
+	var miners = mSer.GetMiners()
+	for _, miner := range miners {
+		fmt.Printf("Miner %+v", miner)
+	}
 }
