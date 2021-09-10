@@ -11,7 +11,7 @@ import (
 func Execute(db *gorm.DB) error {
 	for i, _ := range locations {
 		var location = models.Location{}
-		db.Where(&locations[i]).First(&location, 10)
+		db.Where(&locations[i]).First(&location)
 		if (models.Location{}) != location  {
 			err := db.Debug().Model(&models.Location{}).Create(&locations[i]).Error
 			if err != nil {
