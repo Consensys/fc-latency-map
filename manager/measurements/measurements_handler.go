@@ -47,9 +47,13 @@ func (h *Handler) GetMeasures(s string) {
 }
 
 func (h *Handler) CreateMeasurementType(miners []models.Miner, probeType, value string) {
-	_, _ = (*h.Service).CreatePingByProbeType(miners, probeType, value)
+	_, _ = (*h.Service).CreatePingProbes(miners, probeType, value)
 }
 
 func (h *Handler) ExportData(fn string) {
 	(*h.Service).ExportDbData(fn)
+}
+
+func (h *Handler) CreateMeasurements() {
+	(*h.Service).CreateMeasurements()
 }

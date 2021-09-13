@@ -61,7 +61,7 @@ func TestRipe_CreatePingWithProbID(t *testing.T) {
 		{Address: "xminer20210910", Ip: "213.13.146.142,143.204.98.83"},
 	}
 
-	got, err := (*r.Service).CreatePingByProbeType(miners, "probes", "1001065,6252")
+	got, err := (*r.Service).CreatePingProbes(miners, "probes", "1001065,6252")
 
 	assert.Nil(t, err)
 	assert.NotNil(t, got)

@@ -28,3 +28,6 @@ func NewMeasurementServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr, fMgr *f
 		Ripe:  r,
 	}
 }
+func (m *MeasurementServiceImpl) CreateMeasurements() {
+
+}

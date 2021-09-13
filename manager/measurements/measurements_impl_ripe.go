@@ -16,7 +16,7 @@ func (m *MeasurementServiceImpl) GetRipeMeasurement(id int) (*atlas.Measurement,
 	return m.Ripe.GetMeasurement(id)
 }
 
-func (m *MeasurementServiceImpl) CreatePingByProbeType(miners []models.Miner, t, value string) (*atlas.MeasurementResp, error) {
+func (m *MeasurementServiceImpl) CreatePingProbes(miners []models.Miner, t, value string) (*atlas.MeasurementResp, error) {
 	probes := []atlas.ProbeSet{
 		{
 			Type:      t,

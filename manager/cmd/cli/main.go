@@ -23,6 +23,7 @@ const (
 	locationDelete = "location-delete"
 	probesUpdate   = "probes-update"
 	measuresGet    = "measures-get"
+	measuresCreate = "measures-create"
 	measuresList   = "measures-list"
 	measuresExport = "measures-export"
 	minersUpdate   = "miners-update"
@@ -87,8 +88,10 @@ func completer(d prompt.Document) []prompt.Suggest {
 
 		// probes
 		{Text: probesUpdate, Description: "Update probes list by finding online and active probes"},
+		// -- create
 
 		// measurements
+		{Text: measuresCreate, Description: "create measurements"},
 		{Text: measuresGet, Description: "start getting measurements"},
 		{Text: measuresList, Description: "get last measures"},
 		{Text: measuresExport, Description: "export a json filename. ex: results_2021-09-17-17-17-00.json"},
@@ -142,6 +145,9 @@ func (c *LatencyMapCLI) executor(in string) {
 		c.probes.Update()
 
 		// Measurements
+	case measuresCreate:
+		c.measurements.CreateMeasurements()
+
 	case measuresGet:
 		fmt.Printf("Command: %s \n", blocks[0])
 

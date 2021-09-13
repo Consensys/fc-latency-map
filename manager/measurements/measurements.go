@@ -14,7 +14,7 @@ type MeasurementService interface {
 	CreatePing(miners []models.Miner, probes []atlas.ProbeSet) (*atlas.MeasurementResp, error)
 
 	// CreatePingByType  creates a Ping Measurement for a specific type
-	CreatePingByProbeType(miners []models.Miner, probeType, value string) (*atlas.MeasurementResp, error)
+	CreatePingProbes(miners []models.Miner, probeType, value string) (*atlas.MeasurementResp, error)
 
 	// GetMeasurementResult
 	GetRipeMeasurementResult(id int) ([]atlas.MeasurementResult, error)
@@ -24,4 +24,6 @@ type MeasurementService interface {
 
 	// ExportData from db to json file
 	ExportDbData(fn string)
+
+	CreateMeasurements()
 }
