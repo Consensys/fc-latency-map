@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime/debug"
+	"strconv"
 	"strings"
 
 	"github.com/c-bata/go-prompt"
@@ -24,6 +25,7 @@ const (
 	measuresList   = "measures-list"
 	measuresExport = "measures-export"
 	minersUpdate   = "miners-update"
+	minersParse    = "miners-parse"
 )
 
 type LatencyMapCLI struct {
@@ -86,7 +88,8 @@ func completer(d prompt.Document) []prompt.Suggest {
 		{Text: measuresExport, Description: "export a json filename. ex: results_2021-09-17-17-17-00.json"},
 
 		// miners
-		{Text: minersUpdate, Description: "Update miners list by find active deals in past blocks"},
+		{Text: minersUpdate, Description: "Update miners list by finding active deals in past block heights"},
+		{Text: minersParse, Description: "Update miners list by finding active deals in a given block height. ex: miners-pase <block_height>"},
 		{Text: "exit", Description: "Exit the program"},
 	}
 
@@ -143,6 +146,19 @@ func (c *LatencyMapCLI) executor(in string) {
 	case minersUpdate:
 		fmt.Printf("Command: %s \n", blocks[0])
 		c.miners.MinersUpdate()
+
+	case minersParse:
+		fmt.Printf("Command: %s \n", blocks[0])
+		if len(blocks) == 1 {
+			fmt.Println("Error: missing block height")
+			return
+		}
+		height, err := strconv.ParseInt(blocks[1], 10, 64)
+		if err != nil {
+			fmt.Println("Error: provided block height is not a valid integer")
+			return
+		}
+		c.miners.MinersParse(height)
 
 	case "exit":
 		fmt.Println("Shutdown ...")

@@ -7,6 +7,7 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	fmgr "github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
+	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
 	"github.com/spf13/viper"
 	"gorm.io/gorm/clause"
@@ -78,6 +79,15 @@ func (srv *MinerServiceImpl) upsertMinersInDb(miners []*models.Miner) {
 		Columns:   []clause.Column{{Name: "address"}},
 		DoUpdates: clause.AssignmentColumns([]string{"ip"}),
 	}).Create(&miners)
+}
+
+func (srv *MinerServiceImpl) ParseMinersByBlockHeight(height int64) []*models.Miner {
+	deals, err := (*srv.FMgr).GetVerifiedDealsByBlockHeight(abi.ChainEpoch(height))
+	if err != nil {
+		log.Fatalf("get block failed: %s", err)
+		return []*models.Miner{}
+	}
+	return srv.parseMinersFromDeals(deals)
 }
 
 func (srv *MinerServiceImpl) GetMiners() []*models.Miner {

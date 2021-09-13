@@ -32,3 +32,7 @@ func NewMinerHandler() *MinerHandler {
 func (mHdl *MinerHandler) MinersUpdate() {
 	(*mHdl.MSer).ParseMiners()
 }
+
+func (mHdl *MinerHandler) MinersParse(height int64) {
+	(*mHdl.MSer).ParseMinersByBlock(height)
+}
