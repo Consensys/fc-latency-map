@@ -16,7 +16,7 @@ func (m *MeasurementServiceImpl) GetRipeMeasurement(id int) (*atlas.Measurement,
 	return m.Ripe.GetMeasurement(id)
 }
 
-func (m *MeasurementServiceImpl) CreatePingProbes(miners []models.Miner, t, value string) (*atlas.MeasurementResp, error) {
+func (m *MeasurementServiceImpl) CreatePingProbes(miners []*models.Miner, t, value string) (*atlas.MeasurementResp, error) {
 	probes := []atlas.ProbeSet{
 		{
 			Type:      t,
@@ -27,10 +27,10 @@ func (m *MeasurementServiceImpl) CreatePingProbes(miners []models.Miner, t, valu
 	return m.CreatePing(miners, probes)
 }
 
-func (m *MeasurementServiceImpl) CreatePing(miners []models.Miner, probes []atlas.ProbeSet) (*atlas.MeasurementResp, error) {
+func (m *MeasurementServiceImpl) CreatePing(miners []*models.Miner, probes []atlas.ProbeSet) (*atlas.MeasurementResp, error) {
 	var d []atlas.Definition
 
-	pingInterval := viper.GetInt("RIPE_PING_INTERVAL")
+	pingInterval := m.Conf.GetInt("RIPE_PING_INTERVAL")
 
 	for _, miner := range miners {
 		for _, ip := range strings.Split(miner.Ip, ",") {
@@ -41,13 +41,13 @@ func (m *MeasurementServiceImpl) CreatePing(miners []models.Miner, probes []atla
 				Tags: []string{
 					miner.Address,
 				},
-				Type:     "ping", // 10 minutes
+				Type:     "ping",
 				Interval: pingInterval,
 			})
 		}
 	}
 
-	isOneOff := viper.GetBool("RIPE_ONE_OFF")
+	isOneOff := m.Conf.GetBool("RIPE_ONE_OFF")
 
 	mr := &atlas.MeasurementRequest{
 		Definitions: d,
@@ -60,7 +60,8 @@ func (m *MeasurementServiceImpl) CreatePing(miners []models.Miner, probes []atla
 	p, err := m.Ripe.Ping(mr)
 	if err != nil {
 		log.WithFields(log.Fields{
-			"err": err,
+			"err": err.Error(),
+			"msg": mr,
 		}).Info("Create ping")
 		return nil, err
 	}

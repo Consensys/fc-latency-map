@@ -28,11 +28,11 @@ func TestRipe_GetMeasurementResult(t *testing.T) {
 }
 
 func TestRipe_CreatePing(t *testing.T) {
-	t.Skip(true)
+	// t.Skip(true)
 
 	r := NewHandler()
 
-	miners := []models.Miner{
+	miners := []*models.Miner{
 		{Address: "x1234", Ip: "213.13.146.142,143.204.98.83"},
 	}
 	mgrConfig := config.NewConfig()
@@ -57,8 +57,11 @@ func TestRipe_CreatePingWithProbID(t *testing.T) {
 
 	r := NewHandler()
 
-	miners := []models.Miner{
-		{Address: "xminer20210910", Ip: "213.13.146.142,143.204.98.83"},
+	miners := []*models.Miner{
+		{Address: "f0883203", Ip: "10.6.13.218"},
+		{Address: "f0883203", Ip: "213.13.146.142,143.204.98.83"},
+		// {Address: "xminer20210910", Ip: "213.13.146.142,143.204.98.83"},
+		// {Address: "xminer20210911", Ip: "213.13.146.142,143.204.98.83"},
 	}
 
 	got, err := (*r.Service).CreatePingProbes(miners, "probes", "1001065,6252")
