@@ -6,7 +6,7 @@ import (
 
 type Location struct {
 	gorm.Model
-	Country 	string
+	Country   string
 	Latitude  string
 	Longitude string
 }

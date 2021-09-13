@@ -1,10 +1,11 @@
 package db
 
 import (
-	"github.com/ConsenSys/fc-latency-map/manager/models"
 	"github.com/spf13/viper"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+
+	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
 type DatabaseMgrImpl struct {
@@ -24,8 +25,9 @@ func NewDatabaseMgrImpl(conf *viper.Viper) (DatabaseMgr, error) {
 }
 
 func migrate(db *gorm.DB) {
-	db.AutoMigrate(&models.Miner{})
-	db.AutoMigrate(&models.Location{})
+	_ = db.AutoMigrate(&models.Miner{})
+	_ = db.AutoMigrate(&models.Location{})
+	_ = db.AutoMigrate(&models.Measurement{})
 }
 
 func (dbMgr *DatabaseMgrImpl) GetDb() *gorm.DB {
