@@ -11,7 +11,7 @@ var locations = []models.Location{
 		Longitude: "2.1",
 	},
 	models.Location{
-		Country: "PT",
+		Country: "US",
 		Latitude:    "3.5",
 		Longitude: "6.7",
 	},

@@ -11,6 +11,7 @@ import (
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/ConsenSys/fc-latency-map/manager/locations"
 	"github.com/ConsenSys/fc-latency-map/manager/measurements"
 	"github.com/ConsenSys/fc-latency-map/manager/miners"
 	"github.com/ConsenSys/fc-latency-map/manager/probes"
@@ -30,6 +31,7 @@ const (
 
 type LatencyMapCLI struct {
 	probes probes.Ripe
+	locations locations.LocationHandler
 	miners miners.MinerHandler
 }
 
@@ -43,6 +45,7 @@ func main() {
 	}
 	c := &LatencyMapCLI{
 		probes: *probe,
+		locations: *locations.NewLocationHandler(),
 		miners: *miners.NewMinerHandler(),
 	}
 
@@ -103,22 +106,33 @@ func (c *LatencyMapCLI) executor(in string) {
 	blocks := strings.Split(in, " ")
 
 	switch blocks[0] {
+		
+	// Locations list
 	case locationList:
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("List all location from db")
+		c.locations.GetLocations()
 
+	// New location
 	case locationAdd:
 		if len(blocks) == 1 {
 			fmt.Println("Error: missing location to add")
 			return
 		}
 		fmt.Printf("Command: %s \n", blocks[0])
-
+		fmt.Println("Add a location")
+		c.locations.AddLocation(blocks[1])
+	
+	// Delete location
 	case locationDelete:
 		if len(blocks) == 1 {
 			fmt.Println("missing location to delete")
+			return
 		}
 		fmt.Printf("Command: %s \n", blocks[0])
+		fmt.Println("Delete a location")
+		c.locations.DeleteLocation(blocks[1])
+		
 
 		// probes
 	case probesUpdate:
@@ -166,7 +180,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		os.Exit(0)
 
 	default:
-		fmt.Printf("unbknown command: %s\n", blocks[0])
+		fmt.Printf("unknown command: %s\n", blocks[0])
 
 	}
 }
