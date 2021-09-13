@@ -7,10 +7,11 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/ConsenSys/fc-latency-map/manager/locations"
-	"github.com/ConsenSys/fc-latency-map/manager/probes"
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/ConsenSys/fc-latency-map/manager/locations"
+	"github.com/ConsenSys/fc-latency-map/manager/probes"
 )
 
 const (
@@ -26,7 +27,7 @@ const (
 
 type LatencyMapCLI struct {
 	probes probes.Ripe
-	locations locations.LocationServiceImpl
+	locations locations.LocationHandler
 }
 
 // Start Client CLI
@@ -39,6 +40,7 @@ func main() {
 	}
 	c := &LatencyMapCLI{
 		probes: *probe,
+		locations: *locations.NewLocationHandler(),
 	}
 
 	if len(os.Args) == 2 {
@@ -101,7 +103,7 @@ func (c *LatencyMapCLI) executor(in string) {
 	case locationList:
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("List all location from db")
-		locations.GetLocationsHandler()
+		c.locations.GetLocations()
 
 	// New location
 	case locationAdd:
@@ -111,7 +113,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		}
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("Add a location")
-		locations.AddLocationHandler(blocks[1])
+		c.locations.AddLocation(blocks[1])
 	
 	// Delete location
 	case locationDelete:
@@ -121,7 +123,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		}
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("Delete a location")
-		locations.DeleteLocationHandler(blocks[1])
+		c.locations.DeleteLocation(blocks[1])
 		
 		// probes
 	case probesUpdate:
