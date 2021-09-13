@@ -30,9 +30,10 @@ const (
 )
 
 type LatencyMapCLI struct {
-	probes probes.Ripe
-	locations locations.LocationHandler
-	miners miners.MinerHandler
+	probes       probes.Ripe
+	locations    locations.LocationHandler
+	miners       miners.MinerHandler
+	measurements measurements.Handler
 }
 
 // Start Client CLI
@@ -43,10 +44,12 @@ func main() {
 			"error": err,
 		}).Error("starting probes")
 	}
+
 	c := &LatencyMapCLI{
-		probes: *probe,
-		locations: *locations.NewLocationHandler(),
-		miners: *miners.NewMinerHandler(),
+		probes:       *probe,
+		locations:    *locations.NewLocationHandler(),
+		miners:       *miners.NewMinerHandler(),
+		measurements: *measurements.NewHandler(),
 	}
 
 	if len(os.Args) > 1 {
@@ -106,7 +109,7 @@ func (c *LatencyMapCLI) executor(in string) {
 	blocks := strings.Split(in, " ")
 
 	switch blocks[0] {
-		
+
 	// Locations list
 	case locationList:
 		fmt.Printf("Command: %s \n", blocks[0])
@@ -122,7 +125,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("Add a location")
 		c.locations.AddLocation(blocks[1])
-	
+
 	// Delete location
 	case locationDelete:
 		if len(blocks) == 1 {
@@ -132,7 +135,6 @@ func (c *LatencyMapCLI) executor(in string) {
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("Delete a location")
 		c.locations.DeleteLocation(blocks[1])
-		
 
 		// probes
 	case probesUpdate:
@@ -142,6 +144,8 @@ func (c *LatencyMapCLI) executor(in string) {
 		// Measurements
 	case measuresGet:
 		fmt.Printf("Command: %s \n", blocks[0])
+
+		c.measurements.GetMeasures("xminer20210910")
 
 	case measuresList:
 		if len(blocks) == 1 {
@@ -155,7 +159,7 @@ func (c *LatencyMapCLI) executor(in string) {
 			fmt.Println("Error: missing filename")
 			return
 		}
-		measurements.Export(blocks[1])
+		c.measurements.ExportData(blocks[1])
 
 	case minersUpdate:
 		fmt.Printf("Command: %s \n", blocks[0])
