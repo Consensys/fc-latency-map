@@ -22,6 +22,7 @@ const (
 	locationAdd    = "location-add"
 	locationDelete = "location-delete"
 	probesUpdate   = "probes-update"
+	probesList   	 = "probes-list"
 	measuresGet    = "measures-get"
 	measuresList   = "measures-list"
 	measuresExport = "measures-export"
@@ -30,21 +31,15 @@ const (
 )
 
 type LatencyMapCLI struct {
-	probes probes.Ripe
+	probes probes.ProbeHandler
 	locations locations.LocationHandler
 	miners miners.MinerHandler
 }
 
 // Start Client CLI
 func main() {
-	probe, err := probes.NewClient("")
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error("starting probes")
-	}
 	c := &LatencyMapCLI{
-		probes: *probe,
+		probes: *probes.NewProbeHandler(),
 		locations: *locations.NewLocationHandler(),
 		miners: *miners.NewMinerHandler(),
 	}
@@ -84,11 +79,12 @@ func completer(d prompt.Document) []prompt.Suggest {
 
 		// probes
 		{Text: probesUpdate, Description: "Update probes list by finding online and active probes"},
+		{Text: probesList, Description: "Get probes list"},
 
 		// measurements
-		{Text: measuresGet, Description: "start getting measurements"},
-		{Text: measuresList, Description: "get last measures"},
-		{Text: measuresExport, Description: "export a json filename. ex: results_2021-09-17-17-17-00.json"},
+		{Text: measuresGet, Description: "Start getting measurements"},
+		{Text: measuresList, Description: "Get last measures"},
+		{Text: measuresExport, Description: "Export a json filename. ex: results_2021-09-17-17-17-00.json"},
 
 		// miners
 		{Text: minersUpdate, Description: "Update miners list by finding active deals in past block heights"},
@@ -138,6 +134,10 @@ func (c *LatencyMapCLI) executor(in string) {
 	case probesUpdate:
 		fmt.Printf("Command: %s \n", blocks[0])
 		c.probes.Update()
+
+	case probesList:
+		fmt.Printf("Command: %s \n", blocks[0])
+		c.probes.GetAllProbes()
 
 		// Measurements
 	case measuresGet:
