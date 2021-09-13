@@ -6,6 +6,6 @@ import (
 
 type Miner struct {
 	gorm.Model
-	Address string
-	Ip      string
+	Address string `gorm:"column:address;unique"`
+	Ip      string `gorm:"column:ip"`
 }
