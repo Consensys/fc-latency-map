@@ -28,6 +28,6 @@ func migrate(db *gorm.DB) {
 	db.AutoMigrate(&models.Location{})
 }
 
-func (dbMgr *DatabaseMgrImpl) GetDb() (db *gorm.DB) {
+func (dbMgr *DatabaseMgrImpl) GetDb() *gorm.DB {
 	return dbMgr.Db
 }

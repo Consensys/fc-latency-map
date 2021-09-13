@@ -5,12 +5,15 @@ import (
 	"os"
 	"os/exec"
 	"runtime/debug"
+	"strconv"
 	"strings"
 
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/locations"
+	"github.com/ConsenSys/fc-latency-map/manager/measurements"
+	"github.com/ConsenSys/fc-latency-map/manager/miners"
 	"github.com/ConsenSys/fc-latency-map/manager/probes"
 )
 
@@ -23,11 +26,13 @@ const (
 	measuresList   = "measures-list"
 	measuresExport = "measures-export"
 	minersUpdate   = "miners-update"
+	minersParse    = "miners-parse"
 )
 
 type LatencyMapCLI struct {
 	probes probes.Ripe
 	locations locations.LocationHandler
+	miners miners.MinerHandler
 }
 
 // Start Client CLI
@@ -41,10 +46,11 @@ func main() {
 	c := &LatencyMapCLI{
 		probes: *probe,
 		locations: *locations.NewLocationHandler(),
+		miners: *miners.NewMinerHandler(),
 	}
 
-	if len(os.Args) == 2 {
-		c.executor(os.Args[1])
+	if len(os.Args) > 1 {
+		c.executor(strings.Join(os.Args[1:], " "))
 		os.Exit(0)
 	}
 
@@ -85,7 +91,8 @@ func completer(d prompt.Document) []prompt.Suggest {
 		{Text: measuresExport, Description: "export a json filename. ex: results_2021-09-17-17-17-00.json"},
 
 		// miners
-		{Text: minersUpdate, Description: "Update miners list by find active deals in past blocks"},
+		{Text: minersUpdate, Description: "Update miners list by finding active deals in past block heights"},
+		{Text: minersParse, Description: "Update miners list by finding active deals in a given block height. ex: miners-pase <block_height>"},
 		{Text: "exit", Description: "Exit the program"},
 	}
 
@@ -94,6 +101,7 @@ func completer(d prompt.Document) []prompt.Suggest {
 
 // executor executes the command
 func (c *LatencyMapCLI) executor(in string) {
+	fmt.Println("executor ", in)
 	in = strings.TrimSpace(in)
 	blocks := strings.Split(in, " ")
 
@@ -108,7 +116,7 @@ func (c *LatencyMapCLI) executor(in string) {
 	// New location
 	case locationAdd:
 		if len(blocks) == 1 {
-			fmt.Println("missing location to add")
+			fmt.Println("Error: missing location to add")
 			return
 		}
 		fmt.Printf("Command: %s \n", blocks[0])
@@ -125,6 +133,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		fmt.Println("Delete a location")
 		c.locations.DeleteLocation(blocks[1])
 		
+
 		// probes
 	case probesUpdate:
 		fmt.Printf("Command: %s \n", blocks[0])
@@ -136,23 +145,34 @@ func (c *LatencyMapCLI) executor(in string) {
 
 	case measuresList:
 		if len(blocks) == 1 {
-			fmt.Println("missing limit number")
+			fmt.Println("Error: missing limit number")
+			return
 		}
 		fmt.Printf("Command: %s \n", blocks[0])
 
 	case measuresExport:
 		if len(blocks) == 1 {
-			fmt.Println("missing filename")
+			fmt.Println("Error: missing filename")
+			return
 		}
-		fmt.Printf("Command: %s \n", blocks[0])
-		fmt.Println("Get measures from db and export to a file")
+		measurements.Export(blocks[1])
 
 	case minersUpdate:
-		if len(blocks) == 1 {
-			fmt.Println("add ")
-		}
 		fmt.Printf("Command: %s \n", blocks[0])
-		fmt.Println("Call FC, get miners with active deals and store in db")
+		c.miners.MinersUpdate()
+
+	case minersParse:
+		fmt.Printf("Command: %s \n", blocks[0])
+		if len(blocks) == 1 {
+			fmt.Println("Error: missing block height")
+			return
+		}
+		height, err := strconv.ParseInt(blocks[1], 10, 64)
+		if err != nil {
+			fmt.Println("Error: provided block height is not a valid integer")
+			return
+		}
+		c.miners.MinersParse(height)
 
 	case "exit":
 		fmt.Println("Shutdown ...")

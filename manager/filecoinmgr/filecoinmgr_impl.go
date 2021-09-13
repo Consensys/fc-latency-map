@@ -124,3 +124,45 @@ func CheckIsVerifiedDeal(verifiedDeal VerifiedDeal, verifiedDeals []VerifiedDeal
 	}
 	return false
 }
+
+func (fMgr *FilecoinMgrImpl) GetVerifiedDealsByBlockHeight(height abi.ChainEpoch) ([]VerifiedDeal, error) {
+	verifiedDeals := []VerifiedDeal{}
+	fmt.Printf("Block number: %v\n", height)
+	blockCids, _ := fMgr.api.ChainGetTipSetByHeight(context.Background(), height, types.TipSetKey{})
+
+	for _, cid := range blockCids.Cids() {
+		messages, err := fMgr.api.ChainGetBlockMessages(context.Background(), cid)
+		if err != nil {
+			return []VerifiedDeal{}, err
+		}
+		for _, message := range messages.BlsMessages {
+			// Method 4 is PublishStorageDeals
+			if message.Method == 4 {
+				var params market.PublishStorageDealsParams
+				err = params.UnmarshalCBOR(bytes.NewReader(message.Params))
+				if err != nil {
+					return []VerifiedDeal{}, err
+				}
+
+				for _, deal := range params.Deals {
+					proposal := deal.Proposal
+					if proposal.VerifiedDeal {
+
+						// TODO: Get deal Id
+						verifiedDeal := VerifiedDeal{
+							MessageCid: message.Cid(),
+							Provider:   proposal.Provider,
+						}
+						if !CheckIsVerifiedDeal(verifiedDeal, verifiedDeals) {
+							fmt.Println("Verified deal found")
+							verifiedDeals = append(verifiedDeals, verifiedDeal)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	fmt.Printf("verifiedDeals: %+v\n", verifiedDeals)
+	return verifiedDeals, nil
+}
