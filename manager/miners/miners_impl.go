@@ -27,14 +27,13 @@ func NewMinerServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr, fMgr *fmgr.Fi
 	}
 }
 
-func (srv *MinerServiceImpl) ParseMiners() []*models.Miner {
+func (srv *MinerServiceImpl) ParseMiners(offset uint) []*models.Miner {
 	blockHeight, err := (*srv.FMgr).GetBlockHeight()
 	if err != nil {
 		log.Fatalf("get block failed: %s", err)
 		return []*models.Miner{}
 	}
 	log.Printf("blockHeight: %+v\n", blockHeight)
-	offset := srv.Conf.GetUint("FILECOIN_BLOCKS_OFFSET")
 	deals, err := (*srv.FMgr).GetVerifiedDeals(blockHeight, offset)
 	if err != nil {
 		log.Fatalf("get block failed: %s", err)

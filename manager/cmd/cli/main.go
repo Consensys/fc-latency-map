@@ -30,9 +30,9 @@ const (
 )
 
 type LatencyMapCLI struct {
-	probes probes.Ripe
+	probes    probes.Ripe
 	locations locations.LocationHandler
-	miners miners.MinerHandler
+	miners    miners.MinerHandler
 }
 
 // Start Client CLI
@@ -44,9 +44,9 @@ func main() {
 		}).Error("starting probes")
 	}
 	c := &LatencyMapCLI{
-		probes: *probe,
+		probes:    *probe,
 		locations: *locations.NewLocationHandler(),
-		miners: *miners.NewMinerHandler(),
+		miners:    *miners.NewMinerHandler(),
 	}
 
 	if len(os.Args) > 1 {
@@ -106,7 +106,7 @@ func (c *LatencyMapCLI) executor(in string) {
 	blocks := strings.Split(in, " ")
 
 	switch blocks[0] {
-		
+
 	// Locations list
 	case locationList:
 		fmt.Printf("Command: %s \n", blocks[0])
@@ -122,7 +122,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("Add a location")
 		c.locations.AddLocation(blocks[1])
-	
+
 	// Delete location
 	case locationDelete:
 		if len(blocks) == 1 {
@@ -132,7 +132,6 @@ func (c *LatencyMapCLI) executor(in string) {
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("Delete a location")
 		c.locations.DeleteLocation(blocks[1])
-		
 
 		// probes
 	case probesUpdate:
@@ -159,7 +158,11 @@ func (c *LatencyMapCLI) executor(in string) {
 
 	case minersUpdate:
 		fmt.Printf("Command: %s \n", blocks[0])
-		c.miners.MinersUpdate()
+		blockHeight := ""
+		if len(blocks) > 1 {
+			blockHeight = blocks[1]
+		}
+		c.miners.MinersUpdate(blockHeight)
 
 	case minersParse:
 		fmt.Printf("Command: %s \n", blocks[0])
