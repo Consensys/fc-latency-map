@@ -6,43 +6,36 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"github.com/ConsenSys/fc-latency-map/manager/models"
 	atlas "github.com/keltia/ripe-atlas"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 )
 
-var mgrConfig = config.NewConfig()
-var apiKey = mgrConfig.GetString("RIPE_API_KEY")
-
 func TestRipe_GetMeasurementResult(t *testing.T) {
 	// t.Skip(true)
 
-	r, err := NewClient(apiKey)
-	assert.Nil(t, err)
+	r := NewHandler()
 
 	// creatred online 32148976
 	// created with api - 32221571, 32221572
 	// [32221621 32221622]
-	got, err := r.GetMeasurementResult(32221571)
+	got, err := (*r.Service).GetRipeMeasurementResult(32221571)
 	assert.Nil(t, err)
 	assert.NotNil(t, got)
 	assert.GreaterOrEqual(t, len(got), 5)
-	assert.NotNil(t, got[0].Measurement)
-	assert.NotNil(t, got[0].Probe)
+	assert.NotNil(t, got)
 }
 
 func TestRipe_CreatePing(t *testing.T) {
 	t.Skip(true)
 
-	r, err := NewClient(apiKey)
-	assert.Nil(t, err)
+	r := NewHandler()
 
-	miners := []Miner{
-		{Address: "x1234", Ip: []string{
-			"213.13.146.142",
-			"143.204.98.83",
-		}},
+	miners := []models.Miner{
+		{Address: "x1234", Ip: "213.13.146.142,143.204.98.83"},
 	}
+	mgrConfig := config.NewConfig()
 
 	probes := []atlas.ProbeSet{
 		{
@@ -52,7 +45,7 @@ func TestRipe_CreatePing(t *testing.T) {
 		},
 	}
 
-	got, err := r.CreatePing(miners, probes)
+	got, err := (*r.Service).CreatePing(miners, probes)
 	assert.Nil(t, err)
 	assert.NotNil(t, got)
 	assert.NotNil(t, got.Measurements)
@@ -62,20 +55,22 @@ func TestRipe_CreatePing(t *testing.T) {
 func TestRipe_CreatePingWithProbID(t *testing.T) {
 	// t.Skip(true)
 
-	r, err := NewClient(apiKey)
-	assert.Nil(t, err)
+	r := NewHandler()
 
-	miners := []Miner{
-		{Address: "x1234", Ip: []string{
-			"213.13.146.142",
-			"143.204.98.83",
-		}},
+	miners := []models.Miner{
+		{Address: "xminer20210910", Ip: "213.13.146.142,143.204.98.83"},
 	}
 
-	got, err := r.CreatePingByType(miners, "probes", "1001065,6252")
+	got, err := (*r.Service).CreatePingProbes(miners, "probes", "1001065,6252")
 
 	assert.Nil(t, err)
 	assert.NotNil(t, got)
 	assert.NotNil(t, got.Measurements)
 	log.Println(got.Measurements)
+}
+
+func TestRipe_GetMeasures(t *testing.T) {
+	// t.Skip(true)
+	r := NewHandler()
+	r.GetMeasures("xminer20210910")
 }

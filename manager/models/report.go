@@ -3,6 +3,7 @@ package models
 type Latency struct {
 	Address   string          `json:"address"`
 	Locations []*LocationData `json:"locations,omitempty"`
+	Ip        string          `json:"ip,omitempty"`
 }
 
 type LocationData struct {
