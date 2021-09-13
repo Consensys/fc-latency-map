@@ -10,6 +10,8 @@ Get the project:
 
 ```
 git clone https://github.com/ConsenSys/fc-latency-map.git
+
+git submodule update --recursive
 ```
 
 ## Manager

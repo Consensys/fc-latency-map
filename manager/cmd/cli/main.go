@@ -10,6 +10,7 @@ import (
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/ConsenSys/fc-latency-map/manager/measurements"
 	"github.com/ConsenSys/fc-latency-map/manager/miners"
 	"github.com/ConsenSys/fc-latency-map/manager/probes"
 )
@@ -43,8 +44,8 @@ func main() {
 		miners: *miners.NewMinerHandler(),
 	}
 
-	if len(os.Args) == 2 {
-		c.executor(os.Args[1])
+	if len(os.Args) > 1 {
+		c.executor(strings.Join(os.Args[1:], " "))
 		os.Exit(0)
 	}
 
@@ -94,6 +95,7 @@ func completer(d prompt.Document) []prompt.Suggest {
 
 // executor executes the command
 func (c *LatencyMapCLI) executor(in string) {
+	fmt.Println("executor ", in)
 	in = strings.TrimSpace(in)
 	blocks := strings.Split(in, " ")
 
@@ -104,7 +106,8 @@ func (c *LatencyMapCLI) executor(in string) {
 
 	case locationAdd:
 		if len(blocks) == 1 {
-			fmt.Println("missing location to add")
+			fmt.Println("Error: missing location to add")
+			return
 		}
 		fmt.Printf("Command: %s \n", blocks[0])
 
@@ -113,6 +116,7 @@ func (c *LatencyMapCLI) executor(in string) {
 			fmt.Println("missing location to delete")
 		}
 		fmt.Printf("Command: %s \n", blocks[0])
+
 		// probes
 	case probesUpdate:
 		fmt.Printf("Command: %s \n", blocks[0])
@@ -124,16 +128,17 @@ func (c *LatencyMapCLI) executor(in string) {
 
 	case measuresList:
 		if len(blocks) == 1 {
-			fmt.Println("missing limit number")
+			fmt.Println("Error: missing limit number")
+			return
 		}
 		fmt.Printf("Command: %s \n", blocks[0])
 
 	case measuresExport:
 		if len(blocks) == 1 {
-			fmt.Println("missing filename")
+			fmt.Println("Error: missing filename")
+			return
 		}
-		fmt.Printf("Command: %s \n", blocks[0])
-		fmt.Println("Get measures from db and export to a file")
+		measurements.Export(blocks[1])
 
 	case minersUpdate:
 		fmt.Printf("Command: %s \n", blocks[0])
