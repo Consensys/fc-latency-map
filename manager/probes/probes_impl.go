@@ -87,7 +87,7 @@ func (srv *ProbeServiceImpl) GetAllProbes() []*models.Probe {
 	var probesList = []*models.Probe{}
 	(*srv.DbMgr).GetDb().Find(&probesList)
 	for _, probe := range probesList {
-		log.Printf("Probe ID: %d - Country code: %s\n", probe.ID, probe.CountryCode)
+		log.Printf("Probe ID: %d - Country code: %s\n", probe.ProbeID, probe.CountryCode)
 	}
 	return probesList
 }
@@ -105,7 +105,7 @@ func (srv *ProbeServiceImpl) Update() {
 	// update db probes
 	for _, probe := range probes {
 		newProbe := models.Probe{
-			MinerID: probe.ID,
+			ProbeID: probe.ID,
 			CountryCode: probe.CountryCode,
 		}
 
@@ -116,9 +116,9 @@ func (srv *ProbeServiceImpl) Update() {
 			if err != nil {
 				panic("Unable to create probe")
 			}
-			log.Printf("Add new location, ID: %v", newProbe.MinerID)
+			log.Printf("Add new location, ID: %v", newProbe.ProbeID)
 		} else {
-			log.Printf("Probe already exists, Probe ID: %v", probe.MinerID)
+			log.Printf("Probe already exists, Probe ID: %v", probe.ProbeID)
 		}
 
 		(*srv.DbMgr).GetDb().Create(&newProbe)

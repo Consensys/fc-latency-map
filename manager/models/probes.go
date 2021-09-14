@@ -6,6 +6,6 @@ import (
 
 type Probe struct {
 	gorm.Model
-	MinerID      		int `gorm:"column:miner_id;uniqueIndex"`
+	ProbeID      		int `gorm:"column:probe_id;uniqueIndex"`
 	CountryCode     string `gorm:"column:country_code"`
 }
