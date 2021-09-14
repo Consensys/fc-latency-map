@@ -3,6 +3,7 @@ package measurements
 import (
 	"encoding/json"
 	"math/rand"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 
@@ -41,7 +42,7 @@ func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() []*models.Latenc
 	for _, miner := range miners {
 		latency := &models.Latency{
 			Address: miner.Address,
-			Ip:      miner.Ip,
+			Ip:      strings.Split(miner.Ip, ","),
 		}
 		latencies = append(latencies, latency)
 
