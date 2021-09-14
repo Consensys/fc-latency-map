@@ -6,8 +6,11 @@ import (
 
 type Measurement struct {
 	gorm.Model
-	Miner       string
-	ProbeID     int
-	MeasureDate int
-	TimeAverage float64
+	ProbeID      int
+	MeasureDate  int
+	TimeAverage  float64
+	TimeMax      float64
+	TimeMin      float64
+	MinerAddress string
+	Ip           string
 }

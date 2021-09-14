@@ -88,20 +88,6 @@ func (m *MeasurementServiceImpl) GetRipeMeasurementResult(id int) ([]atlas.Measu
 	return results.Results, err
 }
 
-func (m *MeasurementServiceImpl) GetRipeMeasures(tag string) {
-
-	measurementResults, err := m.getRipeMeasurementResults(tag)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"err": err,
-		}).Info("Load measurement Results from Ripe")
-	}
-
-	m.importMeasurement(measurementResults)
-
-	log.Info("measurements successfully get")
-}
-
 func (m *MeasurementServiceImpl) getRipeMeasurementResults(tag string) ([]MeasurementResult, error) {
 	ops := make(map[string]string)
 	ops["tags"] = tag

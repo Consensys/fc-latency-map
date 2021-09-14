@@ -2,7 +2,8 @@ package measurements
 
 import (
 	"encoding/json"
-	"math/rand"
+	"strings"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -25,6 +26,23 @@ func (m *MeasurementServiceImpl) ExportDbData(fn string) {
 	log.WithFields(log.Fields{
 		"file": fn,
 	}).Info("Export successful")
+}
+
+func (m *MeasurementServiceImpl) getMinersAddress() []string {
+	var miners []*models.Miner
+	err := (*m.DbMgr).GetDb().Find(&miners).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("Find miners")
+		return nil
+	}
+
+	var mAdds = []string{}
+	for _, miner := range miners {
+		mAdds = append(mAdds, miner.Address)
+	}
+	return mAdds
 }
 
 func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() []*models.Latency {
@@ -55,17 +73,30 @@ func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() []*models.Latenc
 				Latitude:  l.Latitude,
 			}
 			latency.Locations = append(latency.Locations, location)
-			for meas := 0; meas < 5; meas++ {
-				measureData := &models.MeasureData{
-					Avg: rand.Float64(),
-					Lts: rand.Int(),
-					Max: rand.Float64(),
-					Min: rand.Float64(),
+
+			var probes []*models.Probe
+			(*m.DbMgr).GetDb().Debug().Find(&probes).Where(&models.Probe{
+				CountryCode: l.Country,
+			})
+			for _, probe := range probes {
+				var meas []*models.Measurement
+				(*m.DbMgr).GetDb().Debug().Find(&meas).Where(&models.Measurement{
+					ProbeID:      probe.ProbeID,
+					MinerAddress: miner.Address,
+				})
+
+				for _, m := range meas {
+					measureData := &models.MeasureData{
+						Ip:   m.Ip,
+						Avg:  m.TimeAverage,
+						Min:  m.TimeMin,
+						Max:  m.TimeMax,
+						Date: time.Unix(int64(m.MeasureDate), 0),
+					}
+					location.Measures = append(location.Measures, measureData)
 				}
-				location.Measures = append(location.Measures, measureData)
 			}
 		}
-
 	}
 
 	return latencies
@@ -77,10 +108,13 @@ func (m *MeasurementServiceImpl) importMeasurement(measurementResults []Measurem
 	for _, item := range measurementResults {
 		for _, result := range item.Results {
 			affected := db.Model(&models.Measurement{}).Create(&models.Measurement{
-				Miner:       item.Measurement.Target,
-				ProbeID:     result.PrbID,
-				MeasureDate: result.Timestamp,
-				TimeAverage: result.Avg,
+				Ip:           item.Measurement.Target,
+				MinerAddress: strings.Join(item.Measurement.Tags, ","),
+				ProbeID:      result.PrbID,
+				MeasureDate:  result.Timestamp,
+				TimeAverage:  result.Avg,
+				TimeMax:      result.Max,
+				TimeMin:      result.Min,
 			}).RowsAffected
 
 			log.WithFields(log.Fields{

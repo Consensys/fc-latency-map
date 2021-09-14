@@ -20,7 +20,7 @@ type MeasurementService interface {
 	GetRipeMeasurementResult(id int) ([]atlas.MeasurementResult, error)
 
 	// GetMeasures load RIPE Measurement
-	GetRipeMeasures(tag string)
+	GetRipeMeasures()
 
 	// ExportData from db to json file
 	ExportDbData(fn string)

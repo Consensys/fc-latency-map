@@ -60,3 +60,21 @@ func (m *MeasurementServiceImpl) CreateMeasurements() {
 	join := strings.Join(probesIDs, ",")
 	_, _ = m.CreatePingProbes(miners, "probes", join)
 }
+
+func (m *MeasurementServiceImpl) GetRipeMeasures() {
+
+	for _, a := range m.getMinersAddress() {
+
+		measurementResults, err := m.getRipeMeasurementResults(a)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"err": err,
+			}).Info("Load measurement Results from Ripe")
+		}
+
+		m.importMeasurement(measurementResults)
+
+		log.Info("measurements successfully get")
+	}
+
+}

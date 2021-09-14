@@ -149,7 +149,7 @@ func (c *LatencyMapCLI) executor(in string) {
 	case measuresGet:
 		fmt.Printf("Command: %s \n", blocks[0])
 
-		c.measurements.GetMeasures("xminer20210910")
+		c.measurements.GetMeasures()
 
 	case measuresList:
 		if len(blocks) == 1 {
