@@ -61,3 +61,24 @@ or
 ```bash
 sqlite> ^C^C^C
 ```
+
+## Command-line Interface
+1. Run CLI
+```bash
+go run cmd/cli/main.go
+```
+
+2. Update miners list
+without offset
+```bash
+>>> miners-update
+```
+or with an offset of 10 (latest block heights)
+```bash
+>>> miners-update 10
+```
+
+3. Parse miners from a given block height
+```bash
+>>> miners-parse 1107781
+```

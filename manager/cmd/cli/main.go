@@ -187,7 +187,11 @@ func (c *LatencyMapCLI) executor(in string) {
 
 	case minersUpdate:
 		fmt.Printf("Command: %s \n", blocks[0])
-		c.miners.MinersUpdate()
+		blockHeight := ""
+		if len(blocks) > 1 {
+			blockHeight = blocks[1]
+		}
+		c.miners.MinersUpdate(blockHeight)
 
 	case minersParse:
 		fmt.Printf("Command: %s \n", blocks[0])

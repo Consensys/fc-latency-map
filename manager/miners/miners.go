@@ -7,7 +7,7 @@ import (
 type MinerService interface {
 
 	// ParseMiners parse miners from Filecoin
-	ParseMiners() []*models.Miner
+	ParseMiners(offset uint) []*models.Miner
 
 	// ParseMinersByBlockHeight parse miners from Filecoin for a specific block height
 	ParseMinersByBlockHeight(height int64) []*models.Miner
