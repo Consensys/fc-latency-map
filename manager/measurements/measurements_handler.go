@@ -32,7 +32,7 @@ func NewHandler() *Handler {
 	}
 	ripe, err := atlas.NewClient(cfg)
 	if err != nil {
-		log.Fatalf("connecting with lotus failed: %s", err)
+		log.Fatalf("connecting with ripe failed: %s", err)
 	}
 
 	mSer := NewMeasurementServiceImpl(conf, &dbMgr, &fMgr, ripe)
@@ -46,7 +46,7 @@ func (h *Handler) GetMeasures(s string) {
 	(*h.Service).GetRipeMeasures(s)
 }
 
-func (h *Handler) CreateMeasurementType(miners []models.Miner, probeType, value string) {
+func (h *Handler) CreateMeasurementType(miners []*models.Miner, probeType, value string) {
 	_, _ = (*h.Service).CreatePingProbes(miners, probeType, value)
 }
 

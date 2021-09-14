@@ -11,10 +11,10 @@ type MeasurementService interface {
 	GetRipeMeasurement(id int) (*atlas.Measurement, error)
 
 	// CreatePing creates a Ping Measurement
-	CreatePing(miners []models.Miner, probes []atlas.ProbeSet) (*atlas.MeasurementResp, error)
+	CreatePing(miners []*models.Miner, probes []atlas.ProbeSet) (*atlas.MeasurementResp, error)
 
 	// CreatePingByType  creates a Ping Measurement for a specific type
-	CreatePingProbes(miners []models.Miner, probeType, value string) (*atlas.MeasurementResp, error)
+	CreatePingProbes(miners []*models.Miner, probeType, value string) (*atlas.MeasurementResp, error)
 
 	// GetMeasurementResult
 	GetRipeMeasurementResult(id int) ([]atlas.MeasurementResult, error)
