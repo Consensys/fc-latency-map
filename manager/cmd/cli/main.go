@@ -160,10 +160,9 @@ func (c *LatencyMapCLI) executor(in string) {
 		fmt.Printf("Command: %s \n", blocks[0])
 
 	case measuresExport:
-		fn := blocks[1]
+		var fn string
 		if len(blocks) == 1 {
-			fmt.Println("Error: missing filename")
-			fn = fmt.Sprintf("data_%s.json", time.Now())
+			fn = fmt.Sprintf("data_%v.json", time.Now().Unix())
 		}
 		c.measurements.ExportData(fn)
 
