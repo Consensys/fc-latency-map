@@ -24,6 +24,7 @@ const (
 	probesUpdate   = "probes-update"
 	probesList   	 = "probes-list"
 	measuresGet    = "measures-get"
+	measuresCreate = "measures-create"
 	measuresList   = "measures-list"
 	measuresExport = "measures-export"
 	minersUpdate   = "miners-update"
@@ -31,17 +32,39 @@ const (
 )
 
 type LatencyMapCLI struct {
+<<<<<<< HEAD
 	probes probes.ProbeHandler
 	locations locations.LocationHandler
 	miners miners.MinerHandler
+=======
+	probes       probes.Ripe
+	locations    locations.LocationHandler
+	miners       miners.MinerHandler
+	measurements measurements.Handler
+>>>>>>> main
 }
 
 // Start Client CLI
 func main() {
+<<<<<<< HEAD
 	c := &LatencyMapCLI{
 		probes: *probes.NewProbeHandler(),
 		locations: *locations.NewLocationHandler(),
 		miners: *miners.NewMinerHandler(),
+=======
+	probe, err := probes.NewClient("")
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("starting probes")
+	}
+
+	c := &LatencyMapCLI{
+		probes:       *probe,
+		locations:    *locations.NewLocationHandler(),
+		miners:       *miners.NewMinerHandler(),
+		measurements: *measurements.NewHandler(),
+>>>>>>> main
 	}
 
 	if len(os.Args) > 1 {
@@ -73,19 +96,20 @@ func main() {
 func completer(d prompt.Document) []prompt.Suggest {
 	s := []prompt.Suggest{
 		// location
-		{Text: locationList, Description: "list all locations"},
-		{Text: locationAdd, Description: "add location by country code. ex: location-add <country_code>"},
-		{Text: locationDelete, Description: "delete location by country code. ex: location-delete <country_code>"},
+		{Text: locationList, Description: "List all locations"},
+		{Text: locationAdd, Description: "Add location by country code. ex: location-add <country_code>"},
+		{Text: locationDelete, Description: "Delete location by country code. ex: location-delete <country_code>"},
 
 		// probes
 		{Text: probesUpdate, Description: "Update probes list by finding online and active probes"},
 		{Text: probesList, Description: "Get probes list"},
 
 		// measurements
-		{Text: measuresGet, Description: "Start getting measurements"},
 		{Text: measuresList, Description: "Get last measures"},
+		{Text: measuresCreate, Description: "Create measurements"},
+		{Text: measuresGet, Description: "Start getting measurements"},
 		{Text: measuresExport, Description: "Export a json filename. ex: results_2021-09-17-17-17-00.json"},
-
+		
 		// miners
 		{Text: minersUpdate, Description: "Update miners list by finding active deals in past block heights"},
 		{Text: minersParse, Description: "Update miners list by finding active deals in a given block height. ex: miners-pase <block_height>"},
@@ -102,7 +126,7 @@ func (c *LatencyMapCLI) executor(in string) {
 	blocks := strings.Split(in, " ")
 
 	switch blocks[0] {
-		
+
 	// Locations list
 	case locationList:
 		fmt.Printf("Command: %s \n", blocks[0])
@@ -118,7 +142,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("Add a location")
 		c.locations.AddLocation(blocks[1])
-	
+
 	// Delete location
 	case locationDelete:
 		if len(blocks) == 1 {
@@ -128,7 +152,6 @@ func (c *LatencyMapCLI) executor(in string) {
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("Delete a location")
 		c.locations.DeleteLocation(blocks[1])
-		
 
 		// probes
 	case probesUpdate:
@@ -140,8 +163,13 @@ func (c *LatencyMapCLI) executor(in string) {
 		c.probes.GetAllProbes()
 
 		// Measurements
+	case measuresCreate:
+		c.measurements.CreateMeasurements()
+
 	case measuresGet:
 		fmt.Printf("Command: %s \n", blocks[0])
+
+		c.measurements.GetMeasures("xminer20210910")
 
 	case measuresList:
 		if len(blocks) == 1 {
@@ -155,7 +183,7 @@ func (c *LatencyMapCLI) executor(in string) {
 			fmt.Println("Error: missing filename")
 			return
 		}
-		measurements.Export(blocks[1])
+		c.measurements.ExportData(blocks[1])
 
 	case minersUpdate:
 		fmt.Printf("Command: %s \n", blocks[0])

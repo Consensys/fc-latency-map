@@ -1,71 +1,59 @@
 package measurements
 
 import (
-	"encoding/json"
-	"math/rand"
-
 	log "github.com/sirupsen/logrus"
 
-	"github.com/ConsenSys/fc-latency-map/manager/file"
+	"github.com/ConsenSys/fc-latency-map/manager/config"
+	"github.com/ConsenSys/fc-latency-map/manager/db"
+	fmgr "github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
+	atlas "github.com/keltia/ripe-atlas"
 )
 
-func Export(fn string) {
-	measurements := GetLatencyMeasurements()
+type Handler struct {
+	Service *MeasurementService
+}
 
-	fullJson, err := json.MarshalIndent(measurements, "", "  ")
+func NewHandler() *Handler {
+	conf := config.NewConfig()
+	dbMgr, err := db.NewDatabaseMgrImpl(conf)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error("Create json data")
-		return
+		panic("failed to connect database")
+	}
+	nodeUrl := conf.GetString("FILECOIN_NODE_URL")
+	fMgr, err := fmgr.NewFilecoinImpl(nodeUrl)
+	if err != nil {
+		log.Fatalf("connecting with lotus failed: %s", err)
 	}
 
-	file.Create(fn, fullJson)
-	log.WithFields(log.Fields{
-		"file": fn,
-	}).Info("Export successful")
+	var apiKey = conf.GetString("RIPE_API_KEY")
+	cfg := atlas.Config{
+		APIKey: apiKey,
+	}
+	ripe, err := atlas.NewClient(cfg)
+	if err != nil {
+		log.Fatalf("connecting with lotus failed: %s", err)
+	}
+
+	mSer := NewMeasurementServiceImpl(conf, &dbMgr, &fMgr, ripe)
+
+	return &Handler{
+		Service: &mSer,
+	}
 }
 
-func GetLatencyMeasurements() []*models.Latency {
-	var latencies = []*models.Latency{}
-	for m := 0; m < 10; m++ {
-
-		latency := &models.Latency{
-			Address: randomString(10),
-		}
-		latencies = append(latencies, latency)
-
-		for l := 0; l < 3; l++ {
-
-			location := &models.LocationData{
-				Country:   randomString(10),
-				Latitude:  randomString(10),
-				Longitude: randomString(10),
-			}
-			latency.Locations = append(latency.Locations, location)
-			for meas := 0; meas < 5; meas++ {
-				measureData := &models.MeasureData{
-					Avg: rand.Float64(),
-					Lts: rand.Int(),
-					Max: rand.Float64(),
-					Min: rand.Float64(),
-				}
-				location.Measures = append(location.Measures, measureData)
-			}
-		}
-
-	}
-	return latencies
+func (h *Handler) GetMeasures(s string) {
+	(*h.Service).GetRipeMeasures(s)
 }
 
-// ///////////////////////////////////////////////////
-func randomString(n int) string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+func (h *Handler) CreateMeasurementType(miners []models.Miner, probeType, value string) {
+	_, _ = (*h.Service).CreatePingProbes(miners, probeType, value)
+}
 
-	s := make([]rune, n)
-	for i := range s {
-		s[i] = letters[rand.Intn(len(letters))]
-	}
-	return string(s)
+func (h *Handler) ExportData(fn string) {
+	(*h.Service).ExportDbData(fn)
+}
+
+func (h *Handler) CreateMeasurements() {
+	(*h.Service).CreateMeasurements()
 }
