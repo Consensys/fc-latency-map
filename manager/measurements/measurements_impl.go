@@ -40,7 +40,7 @@ type Probes struct {
 
 func (m *MeasurementServiceImpl) CreateMeasurements() {
 	var miners []*models.Miner
-	err := (*m.DbMgr).GetDb().Debug().Find(&miners).Error
+	err := (*m.DbMgr).GetDb().Find(&miners).Error
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
@@ -49,8 +49,7 @@ func (m *MeasurementServiceImpl) CreateMeasurements() {
 	}
 
 	var probesIDs []string
-	// FIXME replace model and probeID column
-	err = (*m.DbMgr).GetDb().Debug().Model(models.Miner{}).Select("id").Find(&probesIDs).Error
+	err = (*m.DbMgr).GetDb().Model(models.Probe{}).Select("probe_id").Find(&probesIDs).Error
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,

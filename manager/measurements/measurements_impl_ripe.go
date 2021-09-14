@@ -52,7 +52,7 @@ func (m *MeasurementServiceImpl) CreatePing(miners []*models.Miner, probes []atl
 	mr := &atlas.MeasurementRequest{
 		Definitions: d,
 		StartTime:   int(time.Now().Unix()),
-		StopTime:    int(time.Now().Unix() + 3600), // 1 hour
+		StopTime:    int(time.Now().Unix() + 300), // 1 hour FIXME
 		IsOneoff:    isOneOff,
 		Probes:      probes,
 	}
