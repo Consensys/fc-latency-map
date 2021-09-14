@@ -1,0 +1,10 @@
+sequenceDiagram
+    
+    Manager->>+Database: Get probes
+    Database-->>-Manager: Returns probes list
+
+    Manager->>+Ripe Atlas: Create measurement
+    Ripe Atlas-->>-Manager: Returns measurement ID
+
+    Manager->>+Database: Store measurements
+

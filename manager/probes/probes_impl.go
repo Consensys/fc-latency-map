@@ -3,44 +3,45 @@ package probes
 import (
 	atlas "github.com/keltia/ripe-atlas"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+
+	"github.com/ConsenSys/fc-latency-map/manager/db"
+	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
-type Ripe struct {
+type ProbeServiceImpl struct {
 	c         *atlas.Client
-	StartTime int
-	StopTime  int
-	IsOneOff  bool
+	DbMgr 		*db.DatabaseMgr
 }
 
-func NewClient(t string, cfgs ...atlas.Config) (*Ripe, error) {
-	r := &Ripe{}
-	if cfgs == nil {
-		cfgs = append(cfgs, atlas.Config{
-			APIKey: t,
-		})
-	}
-
+func NewProbeServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr) (ProbeService, error) {
+	cfgs := []atlas.Config{}
+	cfgs = append(cfgs, atlas.Config{
+		APIKey: conf.GetString("RIPE_API_KEY"),
+	})
 	c, err := atlas.NewClient(cfgs...)
 	if err != nil {
 		log.Println("Connecting to Ripe Atlas API", err)
 		return nil, err
 	}
-	r.c = c
 	ver := atlas.GetVersion()
 	log.Println("api version ", ver)
 
-	return r, nil
+	return &ProbeServiceImpl{
+		c:  c,
+		DbMgr: dbMgr,
+	}, nil
 }
 
-func (r *Ripe) GetProbe(id int) (m *atlas.Probe, err error) {
-	return r.c.GetProbe(id)
+func (srv *ProbeServiceImpl) GetProbe(id int) (m *atlas.Probe, err error) {
+	return srv.c.GetProbe(id)
 }
 
-func (r *Ripe) GetProbes(countryCode string) ([]atlas.Probe, error) {
+func (srv *ProbeServiceImpl) GetProbes(countryCode string) ([]atlas.Probe, error) {
 	opts := make(map[string]string)
 	opts["country_code"] = countryCode
 
-	probes, err := r.c.GetProbes(opts)
+	probes, err := srv.c.GetProbes(opts)
 	if err != nil {
 		return nil, err
 	}
@@ -48,32 +49,32 @@ func (r *Ripe) GetProbes(countryCode string) ([]atlas.Probe, error) {
 	return probes, nil
 }
 
-func (r *Ripe) GetBestProbes(countryProbes []atlas.Probe) (atlas.Probe, error) {
+func (srv *ProbeServiceImpl) GetBestProbes(countryProbes []atlas.Probe) (atlas.Probe, error) {
 	for _, probe := range countryProbes {
 		if probe.Status.Name == "Connected" {
+			log.WithFields(log.Fields{
+				"ID": probe.ID,
+			}).Info("Best probe found")
 			return probe, nil
 		}
 	}
 	return atlas.Probe{}, nil
 }
 
-func (r *Ripe) GetAllProbes() ([]atlas.Probe, error) {
-
-	var countries [2]string
-	countries[0] = "FR"
-	countries[1] = "PT"
-
+func (srv *ProbeServiceImpl) RequestAllProbes() ([]atlas.Probe, error) {
+	var locsList = []*models.Location{}
+	(*srv.DbMgr).GetDb().Find(&locsList)
 	var bestProbes []atlas.Probe
 
-	for _, country := range countries {
+	for _, location := range locsList {
 		log.WithFields(log.Fields{
-			"country": country,
+			"country": location.Country,
 		}).Info("Get probes for country")
-		countryProbes, err := r.GetProbes(country)
+		countryProbes, err := srv.GetProbes(location.Country)
 		if err != nil {
 			return nil, err
 		}
-		bestProbe, err := r.GetBestProbes(countryProbes)
+		bestProbe, err := srv.GetBestProbes(countryProbes)
 		if err != nil {
 			return nil, err
 		}
@@ -82,11 +83,18 @@ func (r *Ripe) GetAllProbes() ([]atlas.Probe, error) {
 	return bestProbes, nil
 }
 
-func (r *Ripe) Update() {
-	// get countries from db
-	// countries := []string{"FR", "PT"}
+func (srv *ProbeServiceImpl) GetAllProbes() []*models.Probe {
+	var probesList = []*models.Probe{}
+	(*srv.DbMgr).GetDb().Find(&probesList)
+	for _, probe := range probesList {
+		log.Printf("Probe ID: %d - Country code: %s\n", probe.ProbeID, probe.CountryCode)
+	}
+	return probesList
+}
 
-	probes, err := r.GetAllProbes() // by countries
+func (srv *ProbeServiceImpl) Update() {
+	// get countries from db
+	probes, err := srv.RequestAllProbes() // by countries
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -95,8 +103,26 @@ func (r *Ripe) Update() {
 	}
 
 	// update db probes
+	for _, probe := range probes {
+		newProbe := models.Probe{
+			ProbeID: probe.ID,
+			CountryCode: probe.CountryCode,
+		}
 
-	for i, probe := range probes {
-		log.Debug(i, probe)
+		var probe = models.Probe{}
+		(*srv.DbMgr).GetDb().Where(&newProbe).First(&probe)
+		if (models.Probe{}) == probe {
+			err := (*srv.DbMgr).GetDb().Debug().Model(&models.Probe{}).Create(&newProbe).Error
+			if err != nil {
+				panic("Unable to create probe")
+			}
+			log.Printf("Add new location, ID: %v", newProbe.ProbeID)
+		} else {
+			log.Printf("Probe already exists, Probe ID: %v", probe.ProbeID)
+		}
+
+		(*srv.DbMgr).GetDb().Create(&newProbe)
 	}
+	log.Println("Probes successfully updated")
+	
 }

@@ -2,6 +2,8 @@ package probes
 
 import (
 	atlas "github.com/keltia/ripe-atlas"
+
+	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
 type Miner struct {
@@ -9,7 +11,7 @@ type Miner struct {
 	Ip      []string
 }
 
-type API interface {
+type ProbeService interface {
 
 	// GetProbe returns Probe from ID
 	GetProbe(id int) (m *atlas.Probe, err error)
@@ -20,6 +22,12 @@ type API interface {
 	// GetBestProbes returns best Probes from Probes list
 	GetBestProbes(countryProbes []atlas.Probe) (atlas.Probe, error)
 
+	// RequestAllProbes returns all Probes from Ripe
+	RequestAllProbes() ([]atlas.Probe, error)
+	
 	// GetAllProbes returns all Probes
-	GetAllProbes() ([]atlas.Probe, error)
+	GetAllProbes() []*models.Probe
+	
+	// Update handle refresh probes list
+	Update()
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type LocationHandler struct {
-	MSer *LocationService
+	LSer *LocationService
 }
 
 func NewLocationHandler() *LocationHandler {
@@ -16,15 +16,15 @@ func NewLocationHandler() *LocationHandler {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	mSer := NewLocationServiceImpl(conf, &dbMgr)
+	lSer := NewLocationServiceImpl(conf, &dbMgr)
 	return &LocationHandler{
-		MSer: &mSer,
+		LSer: &lSer,
 	}
 }
 
 // GetLocationsHandler handle locations get cli command
 func (mHdl *LocationHandler) GetLocations() {
-	(*mHdl.MSer).GetLocations()
+	(*mHdl.LSer).GetLocations()
 }
 
 // AddLocationHandler handle location add cli command
@@ -34,7 +34,7 @@ func (mHdl *LocationHandler) AddLocation(countryCode string) {
 		Latitude:    "0",
 		Longitude: "0",
 	}
-	(*mHdl.MSer).AddLocation(location)
+	(*mHdl.LSer).AddLocation(location)
 }
 
 // DeleteLocation handle location delete cli command
@@ -42,5 +42,5 @@ func (mHdl *LocationHandler) DeleteLocation(countryCode string) {
 	location := models.Location{
 		Country: countryCode,
 	}
-	(*mHdl.MSer).DeleteLocation(location)
+	(*mHdl.LSer).DeleteLocation(location)
 }
