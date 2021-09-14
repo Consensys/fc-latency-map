@@ -22,7 +22,7 @@ const (
 	locationAdd    = "location-add"
 	locationDelete = "location-delete"
 	probesUpdate   = "probes-update"
-	probesList   	 = "probes-list"
+	probesList     = "probes-list"
 	measuresGet    = "measures-get"
 	measuresCreate = "measures-create"
 	measuresList   = "measures-list"
@@ -32,39 +32,19 @@ const (
 )
 
 type LatencyMapCLI struct {
-<<<<<<< HEAD
-	probes probes.ProbeHandler
-	locations locations.LocationHandler
-	miners miners.MinerHandler
-=======
-	probes       probes.Ripe
+	probes       probes.ProbeHandler
 	locations    locations.LocationHandler
 	miners       miners.MinerHandler
 	measurements measurements.Handler
->>>>>>> main
 }
 
 // Start Client CLI
 func main() {
-<<<<<<< HEAD
 	c := &LatencyMapCLI{
-		probes: *probes.NewProbeHandler(),
-		locations: *locations.NewLocationHandler(),
-		miners: *miners.NewMinerHandler(),
-=======
-	probe, err := probes.NewClient("")
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error("starting probes")
-	}
-
-	c := &LatencyMapCLI{
-		probes:       *probe,
+		probes:       *probes.NewProbeHandler(),
 		locations:    *locations.NewLocationHandler(),
 		miners:       *miners.NewMinerHandler(),
 		measurements: *measurements.NewHandler(),
->>>>>>> main
 	}
 
 	if len(os.Args) > 1 {
@@ -109,7 +89,7 @@ func completer(d prompt.Document) []prompt.Suggest {
 		{Text: measuresCreate, Description: "Create measurements"},
 		{Text: measuresGet, Description: "Start getting measurements"},
 		{Text: measuresExport, Description: "Export a json filename. ex: results_2021-09-17-17-17-00.json"},
-		
+
 		// miners
 		{Text: minersUpdate, Description: "Update miners list by finding active deals in past block heights. Offset is optional. ex: miners-update <offset>"},
 		{Text: minersParse, Description: "Update miners list by finding active deals in a given block height. ex: miners-parse <block_height>"},
