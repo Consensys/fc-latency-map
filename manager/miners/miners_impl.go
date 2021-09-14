@@ -68,8 +68,11 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 	}
 	if len(miners) > 0 {
 		srv.upsertMinersInDb(miners)
+		for _, miner := range miners {
+			log.Printf("Miner address: %s - ip: %s\n", miner.Address, miner.Ip)
+		}
 	} else {
-		log.Printf("no miner parsed from deals")
+		log.Printf("No miner parsed")
 	}
 	return miners
 }
