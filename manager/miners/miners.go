@@ -6,12 +6,12 @@ import (
 
 type MinerService interface {
 
+	// GetMiners retrieve miners from Db
+	GetAllMiners() []*models.Miner
+
 	// ParseMiners parse miners from Filecoin
 	ParseMiners(offset uint) []*models.Miner
 
 	// ParseMinersByBlockHeight parse miners from Filecoin for a specific block height
 	ParseMinersByBlockHeight(height int64) []*models.Miner
-
-	// GetMiners retrieve miners from Db
-	GetMiners() []*models.Miner
 }

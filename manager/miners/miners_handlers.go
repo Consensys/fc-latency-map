@@ -9,6 +9,7 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	fmgr "github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
+	"github.com/ConsenSys/fc-latency-map/manager/models"
 	"github.com/spf13/viper"
 )
 
@@ -33,6 +34,10 @@ func NewMinerHandler() *MinerHandler {
 		Conf: conf,
 		MSer: &mSer,
 	}
+}
+
+func (mHdl *MinerHandler) GetAllMiners() []*models.Miner {
+	return (*mHdl.MSer).GetAllMiners()
 }
 
 func (mHdl *MinerHandler) MinersUpdate(offset string) {
