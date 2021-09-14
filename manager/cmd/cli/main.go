@@ -97,8 +97,8 @@ func completer(d prompt.Document) []prompt.Suggest {
 		{Text: measuresExport, Description: "export a json filename. ex: results_2021-09-17-17-17-00.json"},
 
 		// miners
-		{Text: minersUpdate, Description: "Update miners list by finding active deals in past block heights"},
-		{Text: minersParse, Description: "Update miners list by finding active deals in a given block height. ex: miners-pase <block_height>"},
+		{Text: minersUpdate, Description: "Update miners list by finding active deals in past block heights. Offset is optional. ex: miners-update <offset>"},
+		{Text: minersParse, Description: "Update miners list by finding active deals in a given block height. ex: miners-parse <block_height>"},
 		{Text: "exit", Description: "Exit the program"},
 	}
 

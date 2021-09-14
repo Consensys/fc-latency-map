@@ -69,7 +69,7 @@ go run cmd/cli/main.go
 ```
 
 2. Update miners list
-without offset
+without offset (it will apply by default the offset from the .env file)
 ```bash
 >>> miners-update
 ```
