@@ -82,3 +82,8 @@ or with an offset of 10 (latest block heights)
 ```bash
 >>> miners-parse 1107781
 ```
+
+4. List miners
+```bash
+>>> miners-list
+```
