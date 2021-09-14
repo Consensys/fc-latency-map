@@ -31,6 +31,24 @@ Edit .env to add a valid Ripe Atlas API Key, then execute:
 go run cmd/cli/cli.go
 ```
 
+### Diagrams
+
+Get miners
+
+![get-miners](/docs/diagrams/get-miners.png)
+
+Get probes
+
+![get-probes](/docs/diagrams/get-probes.png)
+
+Create measurements
+
+![get-measurements](/docs/diagrams/get-measurements.png)
+
+Export reasults
+
+![export-measurements](/docs/diagrams/export-measurements.png)
+
 ### Documentation
 
 [./manager/README.md](./manager/README.md)
