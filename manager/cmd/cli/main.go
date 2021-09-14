@@ -7,6 +7,7 @@ import (
 	"runtime/debug"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
@@ -159,11 +160,12 @@ func (c *LatencyMapCLI) executor(in string) {
 		fmt.Printf("Command: %s \n", blocks[0])
 
 	case measuresExport:
+		fn := blocks[1]
 		if len(blocks) == 1 {
 			fmt.Println("Error: missing filename")
-			return
+			fn = fmt.Sprintf("data_%s.json", time.Now())
 		}
-		c.measurements.ExportData(blocks[1])
+		c.measurements.ExportData(fn)
 
 	case minersUpdate:
 		fmt.Printf("Command: %s \n", blocks[0])
