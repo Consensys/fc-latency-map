@@ -62,17 +62,15 @@ func (srv *ProbeServiceImpl) GetBestProbes(countryProbes []atlas.Probe) (atlas.P
 }
 
 func (srv *ProbeServiceImpl) RequestAllProbes() ([]atlas.Probe, error) {
-	var countries [2]string
-	countries[0] = "FR"
-	countries[1] = "PT"
-
+	var locsList = []*models.Location{}
+	(*srv.DbMgr).GetDb().Find(&locsList)
 	var bestProbes []atlas.Probe
 
-	for _, country := range countries {
+	for _, location := range locsList {
 		log.WithFields(log.Fields{
-			"country": country,
+			"country": location.Country,
 		}).Info("Get probes for country")
-		countryProbes, err := srv.GetProbes(country)
+		countryProbes, err := srv.GetProbes(location.Country)
 		if err != nil {
 			return nil, err
 		}
@@ -89,7 +87,7 @@ func (srv *ProbeServiceImpl) GetAllProbes() []*models.Probe {
 	var probesList = []*models.Probe{}
 	(*srv.DbMgr).GetDb().Find(&probesList)
 	for _, probe := range probesList {
-		log.Printf("Probe ID:%d - Country code: %s\n", probe.ID, probe.CountryCode)
+		log.Printf("Probe ID: %d - Country code: %s\n", probe.ID, probe.CountryCode)
 	}
 	return probesList
 }
@@ -110,6 +108,19 @@ func (srv *ProbeServiceImpl) Update() {
 			MinerID: probe.ID,
 			CountryCode: probe.CountryCode,
 		}
+
+		var probe = models.Probe{}
+		(*srv.DbMgr).GetDb().Where(&newProbe).First(&probe)
+		if (models.Probe{}) == probe {
+			err := (*srv.DbMgr).GetDb().Debug().Model(&models.Probe{}).Create(&newProbe).Error
+			if err != nil {
+				panic("Unable to create probe")
+			}
+			log.Printf("Add new location, ID: %v", newProbe.MinerID)
+		} else {
+			log.Printf("Probe already exists, Probe ID: %v", probe.MinerID)
+		}
+
 		(*srv.DbMgr).GetDb().Create(&newProbe)
 	}
 	log.Println("Probes successfully updated")
