@@ -11,6 +11,7 @@ Get the project:
 ```
 git clone https://github.com/ConsenSys/fc-latency-map.git
 
+git rm --cached extern/ripe-atlas
 git submodule update --recursive
 ```
 
