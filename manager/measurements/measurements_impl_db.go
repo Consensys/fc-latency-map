@@ -6,7 +6,6 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-
 	"gorm.io/gorm/clause"
 
 	"github.com/ConsenSys/fc-latency-map/manager/file"
@@ -58,27 +57,14 @@ func (m *MeasurementServiceImpl) getMinersAddress() []string {
 }
 
 func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() *models.ResultsData {
-
 	results := &models.ResultsData{
 		MinersLatency: map[string][]*models.MinersLatency{},
 	}
-	var loc []*models.Location
 
-	(*m.DbMgr).GetDb().Debug().
-		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: false}).
-		Find(&loc)
+	loc := m.getLocations()
 
 	for _, l := range loc {
-
-		var miners []*models.Miner
-		err := (*m.DbMgr).GetDb().Find(&miners).Error
-
-		if err != nil {
-			log.WithFields(log.Fields{
-				"error": err,
-			}).Error("Find miners")
-			return nil
-		}
+		miners := m.getMiners()
 
 		for _, miner := range miners {
 			latency := &models.MinersLatency{
@@ -89,24 +75,15 @@ func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() *models.ResultsD
 				latency.IP = strings.Split(miner.Ip, ",")
 			}
 			results.MinersLatency[l.Country] = append(results.MinersLatency[l.Country], latency)
-			var probes []*models.Probe
-			(*m.DbMgr).GetDb().Debug().Where(&models.Probe{
-				CountryCode: l.Country,
-			}).Find(&probes)
+			probes := m.getProbes(l)
 
 			for _, probe := range probes {
 				var meas []*models.MeasurementResult
 				for _, ip := range strings.Split(miner.Ip, ",") {
 
-					measure := &models.MeasuresIP{
-						IP: ip,
-					}
+					measure := &models.MeasuresIP{IP: ip}
 
-					(*m.DbMgr).GetDb().Debug().Where(&models.MeasurementResult{
-						ProbeID:      probe.ProbeID,
-						MinerAddress: miner.Address,
-						Ip:           ip,
-					}).Find(&meas)
+					meas = m.getMeasureResults(probe, miner, ip)
 					if len(meas) > 0 {
 						latency.Measures = append(latency.Measures, measure)
 					}
@@ -125,6 +102,66 @@ func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() *models.ResultsD
 	}
 
 	return results
+}
+
+func (m *MeasurementServiceImpl) getMeasureResults(probe *models.Probe, miner *models.Miner, ip string) []*models.MeasurementResult {
+	var meas []*models.MeasurementResult
+	err := (*m.DbMgr).GetDb().Debug().Where(&models.MeasurementResult{
+		ProbeID:      probe.ProbeID,
+		MinerAddress: miner.Address,
+		Ip:           ip,
+	}).Find(&meas).Error
+
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("GetMeasureResults")
+		return nil
+	}
+
+	return meas
+}
+
+func (m *MeasurementServiceImpl) getProbes(l *models.Location) []*models.Probe {
+	var probes []*models.Probe
+	err := (*m.DbMgr).GetDb().Debug().Where(&models.Probe{
+		CountryCode: l.Country,
+	}).Find(&probes).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("GetProbes")
+
+		return nil
+	}
+	return probes
+}
+
+func (m *MeasurementServiceImpl) getMiners() []*models.Miner {
+	var miners []*models.Miner
+
+	err := (*m.DbMgr).GetDb().Find(&miners).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("GetMiners")
+		return nil
+	}
+	return miners
+}
+
+func (m *MeasurementServiceImpl) getLocations() []*models.Location {
+	var loc []*models.Location
+	err := (*m.DbMgr).GetDb().Debug().
+		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: false}).
+		Find(&loc).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("GetLocations")
+		return nil
+	}
+	return loc
 }
 
 func (m *MeasurementServiceImpl) importMeasurement(measurementResults []MeasurementResult) {
