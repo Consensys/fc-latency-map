@@ -42,8 +42,8 @@ func NewHandler() *Handler {
 	}
 }
 
-func (h *Handler) GetMeasures(s string) {
-	(*h.Service).GetRipeMeasures(s)
+func (h *Handler) GetMeasures() {
+	(*h.Service).GetRipeMeasures()
 }
 
 func (h *Handler) CreateMeasurementType(miners []*models.Miner, probeType, value string) {

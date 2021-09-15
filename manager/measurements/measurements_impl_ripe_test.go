@@ -75,5 +75,5 @@ func TestRipe_CreatePingWithProbID(t *testing.T) {
 func TestRipe_GetMeasures(t *testing.T) {
 	// t.Skip(true)
 	r := NewHandler()
-	r.GetMeasures("xminer20210910")
+	r.GetMeasures()
 }
