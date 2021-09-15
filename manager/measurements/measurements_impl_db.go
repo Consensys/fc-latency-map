@@ -6,13 +6,24 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+
 	"gorm.io/gorm/clause"
 
 	"github.com/ConsenSys/fc-latency-map/manager/file"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
-func (m *MeasurementServiceImpl) ExportDbData(fn string) {
+func (m *MeasurementServiceImpl) dbCreate(measurements []*models.Measurement) {
+	err := (*m.DbMgr).GetDb().Create(&measurements).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("Create Measurement in db")
+		return
+	}
+}
+
+func (m *MeasurementServiceImpl) dbExportData(fn string) {
 	measurements := m.GetLatencyMeasurementsStored()
 
 	fullJson, err := json.MarshalIndent(measurements.MinersLatency, "", "  ")
@@ -82,20 +93,21 @@ func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() *models.ResultsD
 			}).Find(&probes)
 
 			for _, probe := range probes {
-				var meas []*models.Measurement
+				var meas []*models.MeasurementResults
 				for _, ip := range strings.Split(miner.Ip, ",") {
 
 					measure := &models.MeasuresIp{
 						Ip: ip,
 					}
-					latency.Measures = append(latency.Measures, measure)
 
-					(*m.DbMgr).GetDb().Debug().Find(&meas).Where(&models.Measurement{
+					(*m.DbMgr).GetDb().Debug().Where(&models.MeasurementResults{
 						ProbeID:      probe.ProbeID,
 						MinerAddress: miner.Address,
 						Ip:           ip,
-					})
-
+					}).Find(&meas)
+					if len(meas) > 0 {
+						latency.Measures = append(latency.Measures, measure)
+					}
 					for _, m := range meas {
 						measureData := &models.MeasuresData{
 							Avg:  m.TimeAverage,
@@ -117,25 +129,45 @@ func (m *MeasurementServiceImpl) importMeasurement(measurementResults []Measurem
 	db := (*m.DbMgr).GetDb().Debug()
 	for _, item := range measurementResults {
 		for _, result := range item.Results {
-			affected := db.Model(&models.Measurement{}).Create(&models.Measurement{
-				Ip:           item.Measurement.Target,
-				MinerAddress: strings.Join(item.Measurement.Tags, ","),
-				ProbeID:      result.PrbID,
-				MeasureDate:  result.Timestamp,
-				TimeAverage:  result.Avg,
-				TimeMax:      result.Max,
-				TimeMin:      result.Min,
+			affected := db.Model(&models.MeasurementResults{}).Create(&models.MeasurementResults{
+				Ip:            item.Measurement.Target,
+				MeasurementID: item.Measurement.ID,
+				MinerAddress:  strings.Join(item.Measurement.Tags, ","),
+				ProbeID:       result.PrbID,
+				MeasureDate:   result.Timestamp,
+				TimeAverage:   result.Avg,
+				TimeMax:       result.Max,
+				TimeMin:       result.Min,
 			}).RowsAffected
 
 			log.WithFields(log.Fields{
 				"affected": affected,
-			}).Info("Create measurement Results")
+			}).Info("Create measurement MeasurementResults")
 
 			if db.Error != nil {
 				log.WithFields(log.Fields{
 					"err": db.Error,
-				}).Error("Create measurement Results")
+				}).Error("Create measurement MeasurementResults")
 			}
 		}
 	}
+}
+
+func (m *MeasurementServiceImpl) getRipeMeasurementsId() []int {
+	db := (*m.DbMgr).GetDb().Debug()
+	var ripeIDs []int
+	db.Model(&models.Measurement{}).Pluck("measurement_id", &ripeIDs)
+	return ripeIDs
+}
+
+func (m *MeasurementServiceImpl) getLastMeasurementResultTime(measurementID int) int {
+	db := (*m.DbMgr).GetDb().Debug()
+
+	measurementResults := &models.MeasurementResults{}
+	db.Model(&models.MeasurementResults{}).
+		Select("max(measure_date) measure_date").
+		Where("measurement_id = ?", measurementID).
+		First(&measurementResults)
+
+	return measurementResults.MeasureDate
 }

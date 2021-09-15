@@ -38,7 +38,7 @@ type Probes struct {
 	gorm.Model
 }
 
-func (m *MeasurementServiceImpl) CreateMeasurements() {
+func (m *MeasurementServiceImpl) RipeCreateMeasurements() {
 	var miners []*models.Miner
 	err := (*m.DbMgr).GetDb().Find(&miners).Error
 	if err != nil {
@@ -58,18 +58,40 @@ func (m *MeasurementServiceImpl) CreateMeasurements() {
 	}
 
 	join := strings.Join(probesIDs, ",")
-	_, _ = m.CreatePingProbes(miners, "probes", join)
+	mr, p, err := m.RipeCreatePingWithProbes(miners, join)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Info("Create Ping")
+		return
+	}
+
+	measurements := []*models.Measurement{}
+	for i := range mr.Definitions {
+		measurements = append(measurements,
+			&models.Measurement{
+				MeasurementID: p.Measurements[i],
+				IsOneoff:      mr.IsOneoff,
+				Times:         mr.Times,
+				StartTime:     mr.StartTime,
+				StopTime:      mr.StopTime,
+			})
+	}
+
+	m.dbCreate(measurements)
 }
 
-func (m *MeasurementServiceImpl) GetRipeMeasures() {
+func (m *MeasurementServiceImpl) RipeGetMeasures() {
 
-	for _, a := range m.getMinersAddress() {
+	for _, id := range m.getRipeMeasurementsId() {
 
-		measurementResults, err := m.getRipeMeasurementResults(a)
+		start := m.getLastMeasurementResultTime(id)
+
+		measurementResults, err := m.getRipeMeasurementResultsById(id, start)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"err": err,
-			}).Info("Load measurement Results from Ripe")
+			}).Info("Load measurement MeasurementResults from Ripe")
 		}
 
 		m.importMeasurement(measurementResults)

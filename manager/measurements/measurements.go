@@ -6,24 +6,24 @@ import (
 )
 
 type MeasurementService interface {
+	RipeCreateMeasurements()
 
-	// GetMeasurement returns Measurement from ID
-	GetRipeMeasurement(id int) (*atlas.Measurement, error)
+	// CreatePingByType  creates a Ping MeasurementResults for a specific type
+	RipeCreatePingWithProbes(miners []*models.Miner, probeIDs string) (*atlas.MeasurementRequest, *atlas.MeasurementResp, error)
 
-	// CreatePing creates a Ping Measurement
-	CreatePing(miners []*models.Miner, probes []atlas.ProbeSet) (*atlas.MeasurementResp, error)
+	RipeCreatePing(miners []*models.Miner, probes []atlas.ProbeSet) (*atlas.MeasurementRequest, *atlas.MeasurementResp, error)
 
-	// CreatePingByType  creates a Ping Measurement for a specific type
-	CreatePingProbes(miners []*models.Miner, probeType, value string) (*atlas.MeasurementResp, error)
+	// GetMeasurement returns MeasurementResults from ID
+	RipeGetMeasurement(id int) (*atlas.Measurement, error)
 
 	// GetMeasurementResult
-	GetRipeMeasurementResult(id int) ([]atlas.MeasurementResult, error)
+	RipeGetMeasurementResult(id int, start int) ([]atlas.MeasurementResult, error)
 
-	// GetMeasures load RIPE Measurement
-	GetRipeMeasures()
+	// GetMeasures load RIPE MeasurementResults
+	RipeGetMeasures()
 
 	// ExportData from db to json file
-	ExportDbData(fn string)
+	dbExportData(fn string)
 
-	CreateMeasurements()
+	dbCreate(measurements []*models.Measurement)
 }

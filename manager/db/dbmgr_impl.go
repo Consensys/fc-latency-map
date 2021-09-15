@@ -28,6 +28,7 @@ func migrate(db *gorm.DB) {
 	_ = db.AutoMigrate(&models.Miner{})
 	_ = db.AutoMigrate(&models.Location{})
 	_ = db.AutoMigrate(&models.Measurement{})
+	_ = db.AutoMigrate(&models.MeasurementResults{})
 	_ = db.AutoMigrate(&models.Probe{})
 }
 

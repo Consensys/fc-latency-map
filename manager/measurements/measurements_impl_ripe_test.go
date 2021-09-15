@@ -1,6 +1,7 @@
 package measurements
 
 import (
+	"fmt"
 	"log"
 	"testing"
 
@@ -12,6 +13,23 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 )
 
+func TestName(t *testing.T) {
+	t.Skip(true)
+	cfg := atlas.Config{
+		APIKey: "",
+	}
+	client, err := atlas.NewClient(cfg)
+	if err != nil {
+		return
+
+	}
+	err = client.DeleteMeasurement(32148976)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+}
+
 func TestRipe_GetMeasurementResult(t *testing.T) {
 	// t.Skip(true)
 
@@ -20,7 +38,7 @@ func TestRipe_GetMeasurementResult(t *testing.T) {
 	// creatred online 32148976
 	// created with api - 32221571, 32221572
 	// [32221621 32221622]
-	got, err := (*r.Service).GetRipeMeasurementResult(32221571)
+	got, err := (*r.Service).RipeGetMeasurementResult(32221571, 0)
 	assert.Nil(t, err)
 	assert.NotNil(t, got)
 	assert.GreaterOrEqual(t, len(got), 5)
@@ -45,7 +63,7 @@ func TestRipe_CreatePing(t *testing.T) {
 		},
 	}
 
-	got, err := (*r.Service).CreatePing(miners, probes)
+	_, got, err := (*r.Service).RipeCreatePing(miners, probes)
 	assert.Nil(t, err)
 	assert.NotNil(t, got)
 	assert.NotNil(t, got.Measurements)
@@ -64,7 +82,7 @@ func TestRipe_CreatePingWithProbID(t *testing.T) {
 		// {Address: "xminer20210911", Ip: "213.13.146.142,143.204.98.83"},
 	}
 
-	got, err := (*r.Service).CreatePingProbes(miners, "probes", "1001065,6252")
+	_, got, err := (*r.Service).RipeCreatePingWithProbes(miners, "1001065,6252")
 
 	assert.Nil(t, err)
 	assert.NotNil(t, got)
