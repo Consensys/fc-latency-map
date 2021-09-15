@@ -15,7 +15,7 @@ import (
 func (m *MeasurementServiceImpl) ExportDbData(fn string) {
 	measurements := m.GetLatencyMeasurementsStored()
 
-	fullJson, err := json.MarshalIndent(measurements, "", "  ")
+	fullJson, err := json.MarshalIndent(measurements.MinersLatency, "", "  ")
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -46,22 +46,19 @@ func (m *MeasurementServiceImpl) getMinersAddress() []string {
 	return mAdds
 }
 
-func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() []*models.LocationsData {
+func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() *models.ResultsData {
 
-	var locationData []*models.LocationsData
+	results := &models.ResultsData{
+		MinersLatency: map[string][]*models.MinersLatency{},
+	}
 	var loc []*models.Location
 
 	(*m.DbMgr).GetDb().Debug().
-		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: true}).
+		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: false}).
 		Find(&loc)
 
 	for _, l := range loc {
-		loc := &models.LocationsData{
-			Country:   l.Country,
-			Longitude: l.Longitude,
-			Latitude:  l.Latitude,
-		}
-		locationData = append(locationData, loc)
+
 		var miners []*models.Miner
 		err := (*m.DbMgr).GetDb().Find(&miners).Error
 
@@ -78,7 +75,7 @@ func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() []*models.Locati
 				Ip:       miner.Ip,
 				Measures: []*models.MeasuresIp{},
 			}
-			loc.MinersLatency = append(loc.MinersLatency, latency)
+			results.MinersLatency[l.Country] = append(results.MinersLatency[l.Country], latency)
 			var probes []*models.Probe
 			(*m.DbMgr).GetDb().Debug().Where(&models.Probe{
 				CountryCode: l.Country,
@@ -113,7 +110,7 @@ func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() []*models.Locati
 		}
 	}
 
-	return locationData
+	return results
 }
 
 func (m *MeasurementServiceImpl) importMeasurement(measurementResults []MeasurementResult) {

@@ -4,17 +4,14 @@ import (
 	"time"
 )
 
+type ResultsData struct {
+	MinersLatency map[string][]*MinersLatency `json:"miners_latency,omitempty"`
+}
+
 type MinersLatency struct {
 	Address  string        `json:"address"`
 	Ip       string        `json:"ip,omitempty"`
 	Measures []*MeasuresIp `json:"measures,omitempty"`
-}
-
-type LocationsData struct {
-	Country       string           `json:"country,omitempty"`
-	Latitude      string           `json:"latitude,omitempty"`
-	Longitude     string           `json:"longitude,omitempty"`
-	MinersLatency []*MinersLatency `json:"miners_latency,omitempty"`
 }
 
 type MeasuresIp struct {
