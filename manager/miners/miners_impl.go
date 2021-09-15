@@ -27,6 +27,15 @@ func NewMinerServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr, fMgr *fmgr.Fi
 	}
 }
 
+func (srv *MinerServiceImpl) GetAllMiners() []*models.Miner {
+	var miners []*models.Miner
+	(*srv.DbMgr).GetDb().Find(&miners)
+	for _, miner := range miners {
+		log.Printf("Miner address: %s - ip: %s\n", miner.Address, miner.Ip)
+	}
+	return miners
+}
+
 func (srv *MinerServiceImpl) ParseMiners(offset uint) []*models.Miner {
 	blockHeight, err := (*srv.FMgr).GetBlockHeight()
 	if err != nil {
@@ -59,8 +68,11 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 	}
 	if len(miners) > 0 {
 		srv.upsertMinersInDb(miners)
+		for _, miner := range miners {
+			log.Printf("Miner address: %s - ip: %s\n", miner.Address, miner.Ip)
+		}
 	} else {
-		log.Printf("no miner parsed from deals")
+		log.Printf("No miner parsed")
 	}
 	return miners
 }
@@ -87,10 +99,4 @@ func (srv *MinerServiceImpl) ParseMinersByBlockHeight(height int64) []*models.Mi
 		return []*models.Miner{}
 	}
 	return srv.parseMinersFromDeals(deals)
-}
-
-func (srv *MinerServiceImpl) GetMiners() []*models.Miner {
-	var miners []*models.Miner
-	(*srv.DbMgr).GetDb().Find(&miners)
-	return miners
 }

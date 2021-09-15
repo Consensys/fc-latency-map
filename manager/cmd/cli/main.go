@@ -28,6 +28,7 @@ const (
 	measuresCreate = "measures-create"
 	measuresList   = "measures-list"
 	measuresExport = "measures-export"
+	minersList     = "miners-list"
 	minersUpdate   = "miners-update"
 	minersParse    = "miners-parse"
 )
@@ -92,8 +93,11 @@ func completer(d prompt.Document) []prompt.Suggest {
 		{Text: measuresExport, Description: "Export a json filename. ex: results_2021-09-17-17-17-00.json"},
 
 		// miners
+		{Text: minersList, Description: "List all miners"},
 		{Text: minersUpdate, Description: "Update miners list by finding active deals in past block heights. Offset is optional. ex: miners-update <offset>"},
 		{Text: minersParse, Description: "Update miners list by finding active deals in a given block height. ex: miners-parse <block_height>"},
+
+		// exit
 		{Text: "exit", Description: "Exit the program"},
 	}
 
@@ -165,6 +169,10 @@ func (c *LatencyMapCLI) executor(in string) {
 			fn = fmt.Sprintf("data_%v.json", time.Now().Unix())
 		}
 		c.measurements.ExportData(fn)
+
+	case minersList:
+		fmt.Printf("Command: %s \n", blocks[0])
+		c.miners.GetAllMiners()
 
 	case minersUpdate:
 		fmt.Printf("Command: %s \n", blocks[0])
