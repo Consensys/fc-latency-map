@@ -54,11 +54,12 @@ func (m *MeasurementServiceImpl) RipeCreatePing(miners []*models.Miner, probes [
 	}
 
 	isOneOff := m.Conf.GetBool("RIPE_ONE_OFF")
+	runningTime := m.Conf.GetInt("RIPE_PING_RUNNING_TIME")
 
 	mr := &atlas.MeasurementRequest{
 		Definitions: d,
 		StartTime:   int(time.Now().Unix()),
-		StopTime:    int(time.Now().Unix() + 600), // FIXME
+		StopTime:    int(time.Now().Unix()) + runningTime,
 		IsOneoff:    isOneOff,
 		Probes:      probes,
 	}
@@ -69,8 +70,10 @@ func (m *MeasurementServiceImpl) RipeCreatePing(miners []*models.Miner, probes [
 			"err": err.Error(),
 			"msg": mr,
 		}).Info("Create ping")
+
 		return nil, nil, err
 	}
+
 	log.WithFields(log.Fields{
 		"id":           p,
 		"isOneOff":     isOneOff,

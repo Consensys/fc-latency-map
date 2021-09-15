@@ -83,8 +83,10 @@ func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() *models.ResultsD
 		for _, miner := range miners {
 			latency := &models.MinersLatency{
 				Address:  miner.Address,
-				Ip:       strings.Split(miner.Ip, ","),
-				Measures: []*models.MeasuresIp{},
+				Measures: []*models.MeasuresIP{},
+			}
+			if miner.Ip != "" {
+				latency.IP = strings.Split(miner.Ip, ",")
 			}
 			results.MinersLatency[l.Country] = append(results.MinersLatency[l.Country], latency)
 			var probes []*models.Probe
@@ -93,14 +95,14 @@ func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() *models.ResultsD
 			}).Find(&probes)
 
 			for _, probe := range probes {
-				var meas []*models.MeasurementResults
+				var meas []*models.MeasurementResult
 				for _, ip := range strings.Split(miner.Ip, ",") {
 
-					measure := &models.MeasuresIp{
-						Ip: ip,
+					measure := &models.MeasuresIP{
+						IP: ip,
 					}
 
-					(*m.DbMgr).GetDb().Debug().Where(&models.MeasurementResults{
+					(*m.DbMgr).GetDb().Debug().Where(&models.MeasurementResult{
 						ProbeID:      probe.ProbeID,
 						MinerAddress: miner.Address,
 						Ip:           ip,
@@ -129,7 +131,7 @@ func (m *MeasurementServiceImpl) importMeasurement(measurementResults []Measurem
 	db := (*m.DbMgr).GetDb().Debug()
 	for _, item := range measurementResults {
 		for _, result := range item.Results {
-			affected := db.Model(&models.MeasurementResults{}).Create(&models.MeasurementResults{
+			affected := db.Model(&models.MeasurementResult{}).Create(&models.MeasurementResult{
 				Ip:            item.Measurement.Target,
 				MeasurementID: item.Measurement.ID,
 				MinerAddress:  strings.Join(item.Measurement.Tags, ","),
@@ -163,8 +165,8 @@ func (m *MeasurementServiceImpl) getRipeMeasurementsId() []int {
 func (m *MeasurementServiceImpl) getLastMeasurementResultTime(measurementID int) int {
 	db := (*m.DbMgr).GetDb().Debug()
 
-	measurementResults := &models.MeasurementResults{}
-	db.Model(&models.MeasurementResults{}).
+	measurementResults := &models.MeasurementResult{}
+	db.Model(&models.MeasurementResult{}).
 		Select("max(measure_date) measure_date").
 		Where("measurement_id = ?", measurementID).
 		First(&measurementResults)

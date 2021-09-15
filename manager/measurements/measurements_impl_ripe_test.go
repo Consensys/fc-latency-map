@@ -78,8 +78,8 @@ func TestRipe_CreatePingWithProbID(t *testing.T) {
 	miners := []*models.Miner{
 		{Address: "f0883203", Ip: "10.6.13.218"},
 		{Address: "f0883203", Ip: "213.13.146.142,143.204.98.83"},
-		// {Address: "xminer20210910", Ip: "213.13.146.142,143.204.98.83"},
-		// {Address: "xminer20210911", Ip: "213.13.146.142,143.204.98.83"},
+		// {Address: "xminer20210910", IP: "213.13.146.142,143.204.98.83"},
+		// {Address: "xminer20210911", IP: "213.13.146.142,143.204.98.83"},
 	}
 
 	_, got, err := (*r.Service).RipeCreatePingWithProbes(miners, "1001065,6252")

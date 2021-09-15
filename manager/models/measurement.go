@@ -13,7 +13,7 @@ type Measurement struct {
 	StopTime      int
 }
 
-type MeasurementResults struct {
+type MeasurementResult struct {
 	gorm.Model
 	ProbeID       int
 	MeasurementID int
