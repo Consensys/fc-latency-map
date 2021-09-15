@@ -2,6 +2,7 @@ package measurements
 
 import (
 	"fmt"
+	"net"
 	"strings"
 	"time"
 
@@ -34,6 +35,9 @@ func (m *MeasurementServiceImpl) CreatePing(miners []*models.Miner, probes []atl
 
 	for _, miner := range miners {
 		for _, ip := range strings.Split(miner.Ip, ",") {
+			if net.ParseIP(ip).IsPrivate() {
+				continue
+			}
 			d = append(d, atlas.Definition{
 				Description: fmt.Sprintf("%s ping to %s", miner.Address, ip),
 				AF:          4,
