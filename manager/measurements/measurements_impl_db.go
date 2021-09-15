@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"strings"
 	"time"
-	"strings"
 
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm/clause"
@@ -73,7 +72,7 @@ func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() *models.ResultsD
 		for _, miner := range miners {
 			latency := &models.MinersLatency{
 				Address:  miner.Address,
-				Ip:       miner.Ip,
+				Ip:       strings.Split(miner.Ip, ","),
 				Measures: []*models.MeasuresIp{},
 			}
 			results.MinersLatency[l.Country] = append(results.MinersLatency[l.Country], latency)

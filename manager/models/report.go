@@ -10,7 +10,7 @@ type ResultsData struct {
 
 type MinersLatency struct {
 	Address  string        `json:"address"`
-	Ip       string        `json:"ip,omitempty"`
+	Ip       []string      `json:"ip,omitempty"`
 	Measures []*MeasuresIp `json:"measures,omitempty"`
 }
 
