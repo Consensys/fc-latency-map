@@ -16,6 +16,7 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/measurements"
 	"github.com/ConsenSys/fc-latency-map/manager/miners"
 	"github.com/ConsenSys/fc-latency-map/manager/probes"
+	"github.com/ConsenSys/fc-latency-map/manager/seeds"
 )
 
 const (
@@ -31,6 +32,7 @@ const (
 	minersList     = "miners-list"
 	minersUpdate   = "miners-update"
 	minersParse    = "miners-parse"
+	seedData       = "seed-data"
 )
 
 type LatencyMapCLI struct {
@@ -78,9 +80,10 @@ func main() {
 func completer(d prompt.Document) []prompt.Suggest {
 	s := []prompt.Suggest{
 		// location
-		{Text: locationsList, Description: "List all locations"},
-		{Text: locationsAdd, Description: "Add location by country code. ex: location-add <country_code>"},
-		{Text: locationsDelete, Description: "Delete location by country code. ex: location-delete <country_code>"},
+		{Text: seedData, Description: "Seed data(location, probes, miners, measures)"},
+		{Text: locationList, Description: "List all locations"},
+		{Text: locationAdd, Description: "Add location by country code. ex: location-add <country_code>"},
+		{Text: locationDelete, Description: "Delete location by country code. ex: location-delete <country_code>"},
 
 		// probes
 		{Text: probesUpdate, Description: "Update probes list by finding online and active probes"},
@@ -194,6 +197,10 @@ func (c *LatencyMapCLI) executor(in string) {
 			return
 		}
 		c.miners.MinersParse(height)
+
+	case seedData:
+		fmt.Println("Seed data ...")
+		seeds.Seed()
 
 	case "exit":
 		fmt.Println("Shutdown ...")
