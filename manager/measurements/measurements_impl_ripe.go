@@ -36,13 +36,18 @@ func (m *MeasurementServiceImpl) RipeCreatePing(miners []*models.Miner, probes [
 	pingInterval := m.Conf.GetInt("RIPE_PING_INTERVAL")
 
 	for _, miner := range miners {
+		if miner.Ip == "" {
+			continue
+		}
 		for _, ip := range strings.Split(miner.Ip, ",") {
-			if net.ParseIP(ip).IsPrivate() {
+			ipAdd := net.ParseIP(ip)
+			if ipAdd.IsPrivate() {
 				continue
 			}
+
 			d = append(d, atlas.Definition{
 				Description: fmt.Sprintf("%s ping to %s", miner.Address, ip),
-				AF:          4,
+				AF:          m.getIpVersion(ipAdd),
 				Target:      ip,
 				Tags: []string{
 					miner.Address,
@@ -82,6 +87,14 @@ func (m *MeasurementServiceImpl) RipeCreatePing(miners []*models.Miner, probes [
 	}).Info("creat newMeasurement")
 
 	return mr, p, err
+}
+
+func (m *MeasurementServiceImpl) getIpVersion(ipAdd net.IP) int {
+	af := 4
+	if ipAdd.To4() == nil {
+		af = 6
+	}
+	return af
 }
 
 func (m *MeasurementServiceImpl) RipeGetMeasurementResult(id int, start int) ([]atlas.MeasurementResult, error) {
