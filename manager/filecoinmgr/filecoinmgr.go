@@ -15,10 +15,10 @@ type FilecoinMgr interface {
 	// GetChainHead return chainhead block height
 	GetBlockHeight() (abi.ChainEpoch, error)
 
-	// GetVerifiedDeals return verified deals for a range of block
-	GetVerifiedDeals(height abi.ChainEpoch, offset uint) ([]VerifiedDeal, error)
+	// GetVerifiedDealsByBlockRange return verified deals for a range of block
+	GetVerifiedDealsByBlockRange(height abi.ChainEpoch, offset uint) ([]VerifiedDeal, error)
 
-	// GetVerifiedDeals return verified deals for a block height
+	// GetVerifiedDealsByBlockHeight return verified deals for a block height
 	GetVerifiedDealsByBlockHeight(height abi.ChainEpoch) ([]VerifiedDeal, error)
 
 	// GetMinerInfo
