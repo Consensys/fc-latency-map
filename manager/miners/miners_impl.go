@@ -2,15 +2,17 @@ package miners
 
 import (
 	"log"
+	"strings"
+
+	"github.com/filecoin-project/go-state-types/abi"
+	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
+	"github.com/spf13/viper"
+	"gorm.io/gorm/clause"
 
 	"github.com/ConsenSys/fc-latency-map/manager/addresses"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	fmgr "github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
-	"github.com/filecoin-project/go-state-types/abi"
-	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
-	"github.com/spf13/viper"
-	"gorm.io/gorm/clause"
 )
 
 type MinerServiceImpl struct {
@@ -79,10 +81,7 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 
 func getMinerIp(minerInfo miner.MinerInfo) string {
 	ips := addresses.IpAddress(addresses.MultiAddrs(minerInfo.Multiaddrs))
-	if len(ips) > 0 {
-		return ips[0]
-	}
-	return ""
+	return strings.Join(ips, ",")
 }
 
 func (srv *MinerServiceImpl) upsertMinersInDb(miners []*models.Miner) {

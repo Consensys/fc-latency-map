@@ -10,12 +10,12 @@ type ResultsData struct {
 
 type MinersLatency struct {
 	Address  string        `json:"address"`
-	Ip       []string      `json:"ip,omitempty"`
-	Measures []*MeasuresIp `json:"measures,omitempty"`
+	IP       []string      `json:"ip,omitempty"`
+	Measures []*MeasuresIP `json:"measures,omitempty"`
 }
 
-type MeasuresIp struct {
-	Ip           string          `json:"ip"`
+type MeasuresIP struct {
+	IP           string          `json:"ip"`
 	MeasuresData []*MeasuresData `json:"measures_data,omitempty"`
 }
 type MeasuresData struct {
@@ -24,5 +24,5 @@ type MeasuresData struct {
 	Max  float64   `json:"max,omitempty"`
 	Min  float64   `json:"min,omitempty"`
 	Date time.Time `json:"date,omitempty"`
-	Ip   string    `json:"ip,omitempty"`
+	IP   string    `json:"ip,omitempty"`
 }

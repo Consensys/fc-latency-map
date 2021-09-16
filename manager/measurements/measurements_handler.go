@@ -43,17 +43,17 @@ func NewHandler() *Handler {
 }
 
 func (h *Handler) GetMeasures() {
-	(*h.Service).GetRipeMeasures()
+	(*h.Service).RipeGetMeasures()
 }
 
-func (h *Handler) CreateMeasurementType(miners []*models.Miner, probeType, value string) {
-	_, _ = (*h.Service).CreatePingProbes(miners, probeType, value)
+func (h *Handler) CreateMeasurementType(miners []*models.Miner, value string) {
+	_, _, _ = (*h.Service).RipeCreatePingWithProbes(miners, value)
 }
 
 func (h *Handler) ExportData(fn string) {
-	(*h.Service).ExportDbData(fn)
+	(*h.Service).dbExportData(fn)
 }
 
 func (h *Handler) CreateMeasurements() {
-	(*h.Service).CreateMeasurements()
+	(*h.Service).RipeCreateMeasurements()
 }
