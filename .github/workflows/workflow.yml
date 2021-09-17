@@ -5,7 +5,7 @@ on: push
 #     branches: [main]
 jobs:
   lint:
-    name: Run linter
+    name: Run lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

@@ -39,23 +39,6 @@ func (m *MeasurementServiceImpl) dbExportData(fn string) {
 	}).Info("Export successful")
 }
 
-func (m *MeasurementServiceImpl) getMinersAddress() []string {
-	var miners []*models.Miner
-	err := (*m.DbMgr).GetDb().Find(&miners).Error
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error("Find miners")
-		return nil
-	}
-
-	var mAdds = []string{}
-	for _, miner := range miners {
-		mAdds = append(mAdds, miner.Address)
-	}
-	return mAdds
-}
-
 func (m *MeasurementServiceImpl) GetLatencyMeasurementsStored() *models.ResultsData {
 	results := &models.ResultsData{
 		MinersLatency: map[string][]*models.MinersLatency{},
