@@ -45,7 +45,7 @@ func (srv *MinerServiceImpl) ParseMiners(offset uint) []*models.Miner {
 		return []*models.Miner{}
 	}
 	log.Printf("blockHeight: %+v\n", blockHeight)
-	deals, err := (*srv.FMgr).GetVerifiedDeals(blockHeight, offset)
+	deals, err := (*srv.FMgr).GetVerifiedDealsByBlockRange(blockHeight, offset)
 	if err != nil {
 		log.Fatalf("get block failed: %s", err)
 		return []*models.Miner{}
