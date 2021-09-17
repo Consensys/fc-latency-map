@@ -16,7 +16,7 @@ jobs:
           working-directory: manager
           skip-pkg-cache: true
           skip-build-cache: true
-          args: --timeout=90s
+          args: --timeout=2m
   build:
     name: Run build
     runs-on: ubuntu-latest
