@@ -1,24 +1,24 @@
-package models
+package export
 
 import (
 	"time"
 )
 
-type ResultsData struct {
-	MinersLatency map[string][]*MinersLatency `json:"miners_latency,omitempty"`
+type Results struct {
+	MinersLatency map[string][]*Miners `json:"miners_latency,omitempty"`
 }
 
-type MinersLatency struct {
+type Miners struct {
 	Address  string        `json:"address"`
 	IP       []string      `json:"ip,omitempty"`
 	Measures []*MeasuresIP `json:"measures,omitempty"`
 }
 
 type MeasuresIP struct {
-	IP           string          `json:"ip"`
-	MeasuresData []*MeasuresData `json:"measures_data,omitempty"`
+	IP      string     `json:"ip"`
+	Latency []*Latency `json:"latency,omitempty"`
 }
-type MeasuresData struct {
+type Latency struct {
 	Avg  float64   `json:"avg,omitempty"`
 	Lts  int       `json:"lts,omitempty"`
 	Max  float64   `json:"max,omitempty"`

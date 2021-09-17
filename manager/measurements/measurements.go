@@ -2,28 +2,18 @@ package measurements
 
 import (
 	"github.com/ConsenSys/fc-latency-map/manager/models"
-	atlas "github.com/keltia/ripe-atlas"
+	"github.com/keltia/ripe-atlas"
 )
 
 type MeasurementService interface {
-	RipeCreateMeasurements()
+	importMeasurement(measures []atlas.MeasurementResult)
 
-	// RipeCreatePingWithProbes  creates a Ping MeasurementResults for a specific type
-	RipeCreatePingWithProbes(miners []*models.Miner, probeIDs string) (*atlas.MeasurementRequest, *atlas.MeasurementResp, error)
-	// RipeCreatePing
-	RipeCreatePing(miners []*models.Miner, probes []atlas.ProbeSet) (*atlas.MeasurementRequest, *atlas.MeasurementResp, error)
+	getMiners() []*models.Miner
 
-	// RipeGetMeasurement returns MeasurementResults from ID
-	RipeGetMeasurement(id int) (*atlas.Measurement, error)
+	getProbIDs() []string
 
-	// GetMeasurementResult
-	RipeGetMeasurementResult(id int, start int) ([]atlas.MeasurementResult, error)
+	createMeasurements([]*atlas.Measurement)
 
-	// RipeGetMeasures load RIPE MeasurementResults
-	RipeGetMeasures()
-
-	// dbExportData from db to json file
-	dbExportData(fn string)
-
-	dbCreate(measurements []*models.Measurement)
+	// getMeasuresLastResultTime load RIPE MeasurementResults
+	getMeasuresLastResultTime() map[int]int
 }
