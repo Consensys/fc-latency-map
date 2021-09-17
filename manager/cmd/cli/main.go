@@ -23,16 +23,16 @@ const (
 	locationsList   = "locations-list"
 	locationsAdd    = "locations-add"
 	locationsDelete = "locations-delete"
-	probesUpdate   = "probes-update"
-	probesList     = "probes-list"
-	measuresGet    = "measures-get"
-	measuresCreate = "measures-create"
-	measuresList   = "measures-list"
-	measuresExport = "measures-export"
-	minersList     = "miners-list"
-	minersUpdate   = "miners-update"
-	minersParse    = "miners-parse"
-	seedData       = "seed-data"
+	probesUpdate    = "probes-update"
+	probesList      = "probes-list"
+	measuresGet     = "measures-get"
+	measuresCreate  = "measures-create"
+	measuresList    = "measures-list"
+	measuresExport  = "measures-export"
+	minersList      = "miners-list"
+	minersUpdate    = "miners-update"
+	minersParse     = "miners-parse"
+	seedData        = "seed-data"
 )
 
 type LatencyMapCLI struct {
@@ -81,9 +81,9 @@ func completer(d prompt.Document) []prompt.Suggest {
 	s := []prompt.Suggest{
 		// location
 		{Text: seedData, Description: "Seed data(location, probes, miners, measures)"},
-		{Text: locationList, Description: "List all locations"},
-		{Text: locationAdd, Description: "Add location by country code. ex: location-add <country_code>"},
-		{Text: locationDelete, Description: "Delete location by country code. ex: location-delete <country_code>"},
+		{Text: locationsList, Description: "List all locations"},
+		{Text: locationsAdd, Description: "Add location by country code. ex: location-add <country_code>"},
+		{Text: locationsDelete, Description: "Delete location by country code. ex: location-delete <country_code>"},
 
 		// probes
 		{Text: probesUpdate, Description: "Update probes list by finding online and active probes"},
