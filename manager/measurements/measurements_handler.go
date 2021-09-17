@@ -51,8 +51,8 @@ func (h *Handler) GetMeasures() {
 
 func (h *Handler) CreateMeasurements() {
 
-	ips := strings.Join((*h.Service).getProbIDs(), ",")
-	measures, err := (*h.ripe).CreateMeasurement((*h.Service).getMiners(), ips)
+	pIDs := strings.Join((*h.Service).getProbIDs(), ",")
+	measures, err := (*h.ripe).CreateMeasurement((*h.Service).getMiners(), pIDs)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
