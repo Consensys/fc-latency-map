@@ -4,16 +4,16 @@ on: push
 #   pull_request:
 #     branches: [main]
 jobs:
-  # lint:
-  #   name: Run linter
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: golangci-lint
-  #       uses: golangci/golangci-lint-action@v2
-  #       with:
-  #         version: latest
-  #         working-directory: manager
+  lint:
+    name: Run linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: latest
+          working-directory: manager
   build:
     name: Run build
     runs-on: ubuntu-latest
