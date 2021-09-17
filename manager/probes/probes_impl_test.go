@@ -1,26 +1,14 @@
 package probes
 
-import (
-	"fmt"
-	"testing"
+// func Test_GetAllProbes(t *testing.T) {
+// 	// t.Skip(true)
 
-	"github.com/stretchr/testify/assert"
+// 	r, err := NewClient(apiKey)
+// 	assert.Nil(t, err)
 
-	"github.com/ConsenSys/fc-latency-map/manager/config"
-)
+// 	probes, err := r.GetAllProbes()
+// 	assert.Nil(t, err)
 
-var mgrConfig = config.NewConfig()
-var apiKey = mgrConfig.GetString("RIPE_API_KEY")
-
-func Test_GetAllProbes(t *testing.T) {
-	// t.Skip(true)
-
-	r, err := NewClient(apiKey)
-	assert.Nil(t, err)
-
-	probes, err := r.GetAllProbes()
-	assert.Nil(t, err)
-
-	fmt.Printf("Get %v probes", len(probes))
-	assert.GreaterOrEqual(t, len(probes), 1)
-}
+// 	fmt.Printf("Get %v probes", len(probes))
+// 	assert.GreaterOrEqual(t, len(probes), 1)
+// }

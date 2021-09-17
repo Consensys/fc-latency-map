@@ -1,97 +1,84 @@
 package measurements
 
-import (
-	"fmt"
-	"log"
-	"testing"
+// func TestName(t *testing.T) {
+// 	// t.Skip(true)
+// 	cfg := atlas.Config{
+// 		APIKey: "",
+// 	}
+// 	client, err := atlas.NewClient(cfg)
+// 	if err != nil {
+// 		return
 
-	"github.com/stretchr/testify/assert"
+// 	}
+// 	err = client.DeleteMeasurement(32148976)
+// 	if err != nil {
+// 		fmt.Print(err)
+// 		return
+// 	}
+// }
 
-	"github.com/ConsenSys/fc-latency-map/manager/models"
-	atlas "github.com/keltia/ripe-atlas"
+// func TestRipe_GetMeasurementResult(t *testing.T) {
+// 	// t.Skip(true)
 
-	"github.com/ConsenSys/fc-latency-map/manager/config"
-)
+// 	r := NewHandler()
 
-func TestName(t *testing.T) {
-	t.Skip(true)
-	cfg := atlas.Config{
-		APIKey: "",
-	}
-	client, err := atlas.NewClient(cfg)
-	if err != nil {
-		return
+// 	// creatred online 32148976
+// 	// created with api - 32221571, 32221572
+// 	// [32221621 32221622]
+// 	got, err := (*r.Service).RipeGetMeasurementResult(32221571, 0)
+// 	assert.Nil(t, err)
+// 	assert.NotNil(t, got)
+// 	assert.GreaterOrEqual(t, len(got), 5)
+// 	assert.NotNil(t, got)
+// }
 
-	}
-	err = client.DeleteMeasurement(32148976)
-	if err != nil {
-		fmt.Print(err)
-		return
-	}
-}
+// func TestRipe_CreatePing(t *testing.T) {
+// 	// t.Skip(true)
 
-func TestRipe_GetMeasurementResult(t *testing.T) {
-	// t.Skip(true)
+// 	r := NewHandler()
 
-	r := NewHandler()
+// 	miners := []*models.Miner{
+// 		{Address: "x1234", Ip: "213.13.146.142,143.204.98.83"},
+// 	}
+// 	mgrConfig := config.NewConfig()
 
-	// creatred online 32148976
-	// created with api - 32221571, 32221572
-	// [32221621 32221622]
-	got, err := (*r.Service).RipeGetMeasurementResult(32221571, 0)
-	assert.Nil(t, err)
-	assert.NotNil(t, got)
-	assert.GreaterOrEqual(t, len(got), 5)
-	assert.NotNil(t, got)
-}
+// 	probes := []atlas.ProbeSet{
+// 		{
+// 			Type:      "area",
+// 			Value:     "WW",
+// 			Requested: mgrConfig.GetInt("RIPE_REQUESTED_PROBES"),
+// 		},
+// 	}
 
-func TestRipe_CreatePing(t *testing.T) {
-	// t.Skip(true)
+// 	_, got, err := (*r.Service).RipeCreatePing(miners, probes)
+// 	assert.Nil(t, err)
+// 	assert.NotNil(t, got)
+// 	assert.NotNil(t, got.Measurements)
+// 	log.Println(got.Measurements)
+// }
 
-	r := NewHandler()
+// func TestRipe_CreatePingWithProbID(t *testing.T) {
+// 	// t.Skip(true)
 
-	miners := []*models.Miner{
-		{Address: "x1234", Ip: "213.13.146.142,143.204.98.83"},
-	}
-	mgrConfig := config.NewConfig()
+// 	r := NewHandler()
 
-	probes := []atlas.ProbeSet{
-		{
-			Type:      "area",
-			Value:     "WW",
-			Requested: mgrConfig.GetInt("RIPE_REQUESTED_PROBES"),
-		},
-	}
+// 	miners := []*models.Miner{
+// 		{Address: "f0883203", Ip: "10.6.13.218"},
+// 		{Address: "f0883203", Ip: "213.13.146.142,143.204.98.83"},
+// 		// {Address: "xminer20210910", IP: "213.13.146.142,143.204.98.83"},
+// 		// {Address: "xminer20210911", IP: "213.13.146.142,143.204.98.83"},
+// 	}
 
-	_, got, err := (*r.Service).RipeCreatePing(miners, probes)
-	assert.Nil(t, err)
-	assert.NotNil(t, got)
-	assert.NotNil(t, got.Measurements)
-	log.Println(got.Measurements)
-}
+// 	_, got, err := (*r.Service).RipeCreatePingWithProbes(miners, "1001065,6252")
 
-func TestRipe_CreatePingWithProbID(t *testing.T) {
-	// t.Skip(true)
+// 	assert.Nil(t, err)
+// 	assert.NotNil(t, got)
+// 	assert.NotNil(t, got.Measurements)
+// 	log.Println(got.Measurements)
+// }
 
-	r := NewHandler()
-
-	miners := []*models.Miner{
-		{Address: "f0883203", Ip: "10.6.13.218"},
-		{Address: "f0883203", Ip: "213.13.146.142,143.204.98.83"},
-		// {Address: "xminer20210910", IP: "213.13.146.142,143.204.98.83"},
-		// {Address: "xminer20210911", IP: "213.13.146.142,143.204.98.83"},
-	}
-
-	_, got, err := (*r.Service).RipeCreatePingWithProbes(miners, "1001065,6252")
-
-	assert.Nil(t, err)
-	assert.NotNil(t, got)
-	assert.NotNil(t, got.Measurements)
-	log.Println(got.Measurements)
-}
-
-func TestRipe_GetMeasures(t *testing.T) {
-	// t.Skip(true)
-	r := NewHandler()
-	r.GetMeasures()
-}
+// func TestRipe_GetMeasures(t *testing.T) {
+// 	// t.Skip(true)
+// 	r := NewHandler()
+// 	r.GetMeasures()
+// }
