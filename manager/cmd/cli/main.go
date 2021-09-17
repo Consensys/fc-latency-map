@@ -129,7 +129,12 @@ func (c *LatencyMapCLI) executor(in string) {
 		}
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("Add a location")
-		c.locations.AddLocation(blocks[1])
+		location, err := c.locations.AddLocation(blocks[1])
+		if err != nil {
+			log.Error(err)
+		} else {
+			fmt.Printf("ID: %d", location.ID)
+		}
 
 	// Delete location
 	case locationDelete:
