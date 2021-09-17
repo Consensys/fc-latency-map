@@ -14,10 +14,10 @@ type Miner struct {
 type ProbeService interface {
 
 	// GetProbe returns Probe from ID
-	GetProbe(id int) (m *atlas.Probe, err error)
+	// GetProbe(id int) (m *atlas.Probe, err error)
 
 	// GetProbes returns Probes by country code
-	GetProbes(countryCode string) ([]atlas.Probe, error)
+	// GetProbes(countryCode string) ([]atlas.Probe, error)
 
 	// GetBestProbes returns best Probes from Probes list
 	GetBestProbes(countryProbes []atlas.Probe) (atlas.Probe, error)

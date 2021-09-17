@@ -1,9 +1,12 @@
 package probes
 
 import (
+	"log"
+
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
+	"github.com/ConsenSys/fc-latency-map/manager/ripemgr"
 )
 
 type ProbeHandler struct {
@@ -16,7 +19,11 @@ func NewProbeHandler() *ProbeHandler {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	pSer, err := NewProbeServiceImpl(conf, &dbMgr)
+	ripeMgr, err := ripemgr.NewRipeImpl(conf.GetString("RIPE_API_KEY"))
+	if err != nil {
+		log.Fatalf("connecting with lotus failed: %s", err)
+	}
+	pSer, err := NewProbeServiceImpl(conf, &dbMgr, &ripeMgr)
 	if err != nil {
 		panic("failed to start probe service")
 	}

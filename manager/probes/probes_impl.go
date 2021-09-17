@@ -7,46 +7,19 @@ import (
 
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
+	"github.com/ConsenSys/fc-latency-map/manager/ripemgr"
 )
 
 type ProbeServiceImpl struct {
-	c         *atlas.Client
-	DbMgr 		*db.DatabaseMgr
+	DbMgr 			*db.DatabaseMgr
+	RipeMgr 		*ripemgr.RipeMgr
 }
 
-func NewProbeServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr) (ProbeService, error) {
-	cfgs := []atlas.Config{}
-	cfgs = append(cfgs, atlas.Config{
-		APIKey: conf.GetString("RIPE_API_KEY"),
-	})
-	c, err := atlas.NewClient(cfgs...)
-	if err != nil {
-		log.Println("Connecting to Ripe Atlas API", err)
-		return nil, err
-	}
-	ver := atlas.GetVersion()
-	log.Println("api version ", ver)
-
+func NewProbeServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr, ripeMgr *ripemgr.RipeMgr) (ProbeService, error) {
 	return &ProbeServiceImpl{
-		c:  c,
 		DbMgr: dbMgr,
+		RipeMgr:  ripeMgr,
 	}, nil
-}
-
-func (srv *ProbeServiceImpl) GetProbe(id int) (m *atlas.Probe, err error) {
-	return srv.c.GetProbe(id)
-}
-
-func (srv *ProbeServiceImpl) GetProbes(countryCode string) ([]atlas.Probe, error) {
-	opts := make(map[string]string)
-	opts["country_code"] = countryCode
-
-	probes, err := srv.c.GetProbes(opts)
-	if err != nil {
-		return nil, err
-	}
-
-	return probes, nil
 }
 
 func (srv *ProbeServiceImpl) GetBestProbes(countryProbes []atlas.Probe) (atlas.Probe, error) {
@@ -70,7 +43,9 @@ func (srv *ProbeServiceImpl) RequestAllProbes() ([]atlas.Probe, error) {
 		log.WithFields(log.Fields{
 			"country": location.Country,
 		}).Info("Get probes for country")
-		countryProbes, err := srv.GetProbes(location.Country)
+		opts := make(map[string]string)
+		opts["country_code"] = location.Country
+		countryProbes, err := srv.RipeMgr.GetProbes(opts)
 		if err != nil {
 			return nil, err
 		}
