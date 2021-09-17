@@ -45,7 +45,7 @@ func (srv *ProbeServiceImpl) RequestAllProbes() ([]atlas.Probe, error) {
 		}).Info("Get probes for country")
 		opts := make(map[string]string)
 		opts["country_code"] = location.Country
-		countryProbes, err := srv.RipeMgr.GetProbes(opts)
+		countryProbes, err := (*srv.RipeMgr).GetProbes(opts)
 		if err != nil {
 			return nil, err
 		}
@@ -95,8 +95,6 @@ func (srv *ProbeServiceImpl) Update() {
 		} else {
 			log.Printf("Probe already exists, Probe ID: %v", probe.ProbeID)
 		}
-
-		(*srv.DbMgr).GetDb().Create(&newProbe)
 	}
 	log.Println("Probes successfully updated")
 	
