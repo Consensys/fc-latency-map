@@ -1,10 +1,11 @@
 package measurements
 
 import (
+	"time"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	fmgr "github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
@@ -47,7 +48,7 @@ func (m *MeasurementServiceImpl) createMeasurements(mrs []*atlas.Measurement) {
 
 func (m *MeasurementServiceImpl) getMeasuresLastResultTime() map[int]int {
 	measurements := make(map[int]int)
-	for _, id := range m.getRipeMeasurementsId() {
+	for _, id := range m.getRipeMeasurementsID() {
 		measurements[id] = m.getLastMeasurementResultTime(id)
 	}
 	return measurements
@@ -77,24 +78,8 @@ func (m *MeasurementServiceImpl) getMinersAddress() []string {
 	for _, miner := range miners {
 		mAdds = append(mAdds, miner.Address)
 	}
+
 	return mAdds
-}
-
-func (m *MeasurementServiceImpl) getMeasureResults(probe *models.Probe, ip string) []*models.MeasurementResult {
-	var meas []*models.MeasurementResult
-	err := (*m.DbMgr).GetDb().Debug().Where(&models.MeasurementResult{
-		ProbeID: probe.ProbeID,
-		Ip:      ip,
-	}).Find(&meas).Error
-
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error("GetMeasureResults")
-		return nil
-	}
-
-	return meas
 }
 
 func (m *MeasurementServiceImpl) getProbes(l *models.Location) []*models.Probe {
@@ -129,14 +114,16 @@ func (m *MeasurementServiceImpl) importMeasurement(mr []atlas.MeasurementResult)
 	dbc := (*m.DbMgr).GetDb().Debug()
 
 	for _, result := range mr {
+		t := time.Unix(int64(result.Timestamp), 0)
 		affected := dbc.Model(&models.MeasurementResult{}).Create(&models.MeasurementResult{
-			Ip:            result.DstAddr,
-			MeasurementID: result.MsmID,
-			ProbeID:       result.PrbID,
-			MeasureDate:   result.Timestamp,
-			TimeAverage:   result.Avg,
-			TimeMax:       result.Max,
-			TimeMin:       result.Min,
+			IP:                   result.DstAddr,
+			MeasurementID:        result.MsmID,
+			ProbeID:              result.PrbID,
+			MeasurementTimestamp: result.Timestamp,
+			MeasurementDate:      t.Format("2006-01-02"),
+			TimeAverage:          result.Avg,
+			TimeMax:              result.Max,
+			TimeMin:              result.Min,
 		}).RowsAffected
 
 		log.WithFields(log.Fields{
@@ -151,23 +138,7 @@ func (m *MeasurementServiceImpl) importMeasurement(mr []atlas.MeasurementResult)
 	}
 }
 
-func (m *MeasurementServiceImpl) getLocations() []*models.Location {
-	var loc []*models.Location
-	err := (*m.DbMgr).GetDb().Debug().
-		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: false}).
-		Find(&loc).Error
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error("GetLocations")
-
-		return nil
-	}
-
-	return loc
-}
-
-func (m *MeasurementServiceImpl) getRipeMeasurementsId() []int {
+func (m *MeasurementServiceImpl) getRipeMeasurementsID() []int {
 	var ripeIDs []int
 	dbc := (*m.DbMgr).GetDb().Debug()
 	dbc.Model(&models.Measurement{}).Pluck("measurement_id", &ripeIDs)
@@ -181,11 +152,11 @@ func (m *MeasurementServiceImpl) getLastMeasurementResultTime(measurementID int)
 	measurementResults := &models.MeasurementResult{}
 
 	dbc.Model(&models.MeasurementResult{}).
-		Select("max(measure_date) measure_date").
+		Select("max(measurement_timestamp) measurement_timestamp").
 		Where("measurement_id = ?", measurementID).
 		First(&measurementResults)
 
-	return measurementResults.MeasureDate
+	return measurementResults.MeasurementTimestamp
 }
 
 func (m *MeasurementServiceImpl) getProbIDs() []string {

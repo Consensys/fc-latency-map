@@ -5,24 +5,24 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 )
 
-type Handler struct {
-	Service *Service
+type ExportHandler struct {
+	Service *ExportService
 }
 
-func NewHandler() *Handler {
+func NewExportHandler() *ExportHandler {
 	conf := config.NewConfig()
 	dbMgr, err := db.NewDatabaseMgrImpl(conf)
 	if err != nil {
 		panic("failed to connect database")
 	}
 
-	mSer := NewServiceImpl(conf, &dbMgr)
+	mSer := NewExportServiceImpl(conf, &dbMgr)
 
-	return &Handler{
+	return &ExportHandler{
 		Service: &mSer,
 	}
 }
 
-func (h *Handler) ExportData(fn string) {
+func (h *ExportHandler) Export(fn string) {
 	(*h.Service).export(fn)
 }

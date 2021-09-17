@@ -33,7 +33,7 @@ func (srv *MinerServiceImpl) GetAllMiners() []*models.Miner {
 	var miners []*models.Miner
 	(*srv.DbMgr).GetDb().Find(&miners)
 	for _, miner := range miners {
-		log.Printf("Miner address: %s - ip: %s\n", miner.Address, miner.Ip)
+		log.Printf("Miner address: %s - ip: %s\n", miner.Address, miner.IP)
 	}
 	return miners
 }
@@ -65,13 +65,13 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 		}
 		miners = append(miners, &models.Miner{
 			Address: address,
-			Ip:      getMinerIp(minerInfo),
+			IP:      getMinerIp(minerInfo),
 		})
 	}
 	if len(miners) > 0 {
 		srv.upsertMinersInDb(miners)
 		for _, miner := range miners {
-			log.Printf("Miner address: %s - ip: %s\n", miner.Address, miner.Ip)
+			log.Printf("Miner address: %s - ip: %s\n", miner.Address, miner.IP)
 		}
 	} else {
 		log.Printf("No miner parsed")
@@ -80,7 +80,7 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 }
 
 func getMinerIp(minerInfo miner.MinerInfo) string {
-	ips := addresses.IpAddress(addresses.MultiAddrs(minerInfo.Multiaddrs))
+	ips := addresses.IPAddress(addresses.MultiAddrs(minerInfo.Multiaddrs))
 	return strings.Join(ips, ",")
 }
 

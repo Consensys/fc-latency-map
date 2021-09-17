@@ -13,7 +13,7 @@ import (
 
 type Handler struct {
 	Service *MeasurementService
-	ripe    *ripemgr.Handler
+	ripe    *ripemgr.RipeHandler
 }
 
 func NewHandler() *Handler {

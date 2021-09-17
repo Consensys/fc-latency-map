@@ -9,11 +9,11 @@ import (
 	atlas "github.com/keltia/ripe-atlas"
 )
 
-type Handler struct {
-	Service *Service
+type RipeHandler struct {
+	Service *RipeService
 }
 
-func NewHandler() *Handler {
+func NewHandler() *RipeHandler {
 	conf := config.NewConfig()
 
 	var apiKey = conf.GetString("RIPE_API_KEY")
@@ -27,16 +27,16 @@ func NewHandler() *Handler {
 
 	mSer := NewServiceImpl(conf, ripe)
 
-	return &Handler{
+	return &RipeHandler{
 		Service: &mSer,
 	}
 }
 
-func (h *Handler) CreateMeasurement(miners []*models.Miner, value string) ([]*atlas.Measurement, error) {
+func (h *RipeHandler) CreateMeasurement(miners []*models.Miner, value string) ([]*atlas.Measurement, error) {
 	return (*h.Service).createMeasurements(miners, value)
 
 }
 
-func (h *Handler) GetMeasurementResults(measures map[int]int) ([]atlas.MeasurementResult, error) {
+func (h *RipeHandler) GetMeasurementResults(measures map[int]int) ([]atlas.MeasurementResult, error) {
 	return (*h.Service).getMeasurementResults(measures)
 }

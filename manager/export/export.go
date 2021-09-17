@@ -1,6 +1,6 @@
 package export
 
-type Service interface {
+type ExportService interface {
 
 	// dbExportData from db to json file
 	export(fn string)

@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
+	"github.com/ConsenSys/fc-latency-map/manager/addresses"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 	atlas "github.com/keltia/ripe-atlas"
 )
@@ -19,7 +20,7 @@ type ServiceImpl struct {
 	ripe *atlas.Client
 }
 
-func NewServiceImpl(conf *viper.Viper, ripe *atlas.Client) Service {
+func NewServiceImpl(conf *viper.Viper, ripe *atlas.Client) RipeService {
 	return &ServiceImpl{
 		conf: conf,
 		ripe: ripe,
@@ -32,7 +33,6 @@ func (m *ServiceImpl) getMeasurementResults(ms map[int]int) ([]atlas.Measurement
 		m.ripe.SetOption("start", strconv.Itoa(v))
 		measurementResult, err := m.ripe.GetResults(k)
 		if err != nil {
-
 			return nil, err
 		}
 
@@ -60,13 +60,15 @@ func (m *ServiceImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet
 	pingInterval := m.conf.GetInt("RIPE_PING_INTERVAL")
 
 	for _, miner := range miners {
-		for _, ip := range strings.Split(miner.Ip, ",") {
-			if net.ParseIP(ip).IsPrivate() {
+		for _, ip := range strings.Split(miner.IP, ",") {
+			ipAdd := net.ParseIP(ip)
+			if ipAdd.IsPrivate() {
 				continue
 			}
+
 			d = append(d, atlas.Definition{
 				Description: fmt.Sprintf("%s ping to %s", miner.Address, ip),
-				AF:          4,
+				AF:          addresses.GetIPVersion(ipAdd),
 				Target:      ip,
 				Tags: []string{
 					miner.Address,
