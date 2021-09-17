@@ -61,13 +61,14 @@ func Execute(db *gorm.DB) error {
 			ID: "2021091518",
 			Migrate: func(tx *gorm.DB) error {
 				locs := []models.Measurement{
-					{
-						IsOneoff:      false,
-						MeasurementID: 32290390,
-						Times:         0,
-						StartTime:     1631725577,
-						StopTime:      1631725877,
-					},
+					{MeasurementID: 32290390, StartTime: 1631725577, StopTime: 1631725877},
+					{MeasurementID: 32294500, StartTime: 1631785212, StopTime: 1631785512},
+					{MeasurementID: 32294501, StartTime: 1631785212, StopTime: 1631785512},
+					{MeasurementID: 32294502, StartTime: 1631785212, StopTime: 1631785512},
+					{MeasurementID: 32294503, StartTime: 1631785212, StopTime: 1631785512},
+					{MeasurementID: 32294504, StartTime: 1631785212, StopTime: 1631785512},
+					{MeasurementID: 32294505, StartTime: 1631785212, StopTime: 1631785512},
+					{MeasurementID: 32294506, StartTime: 1631785212, StopTime: 1631785512},
 				}
 				return tx.Create(locs).Error
 			},
