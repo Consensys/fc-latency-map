@@ -20,9 +20,9 @@ import (
 )
 
 const (
-	locationList   = "location-list"
-	locationAdd    = "location-add"
-	locationDelete = "location-delete"
+	locationsList   = "locations-list"
+	locationsAdd    = "locations-add"
+	locationsDelete = "locations-delete"
 	probesUpdate   = "probes-update"
 	probesList     = "probes-list"
 	measuresGet    = "measures-get"
@@ -116,13 +116,13 @@ func (c *LatencyMapCLI) executor(in string) {
 	switch blocks[0] {
 
 	// Locations list
-	case locationList:
+	case locationsList:
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("List all location from db")
 		c.locations.GetLocations()
 
 	// New location
-	case locationAdd:
+	case locationsAdd:
 		if len(blocks) == 1 {
 			fmt.Println("Error: missing location to add")
 			return
@@ -137,7 +137,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		}
 
 	// Delete location
-	case locationDelete:
+	case locationsDelete:
 		if len(blocks) == 1 {
 			fmt.Println("missing location to delete")
 			return

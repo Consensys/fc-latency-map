@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
@@ -14,7 +15,9 @@ type DatabaseMgrImpl struct {
 
 func NewDatabaseMgrImpl(conf *viper.Viper) (DatabaseMgr, error) {
 	dbName := conf.GetString("DB_CONNECTION")
-	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		panic("failed to connect database")
 	}

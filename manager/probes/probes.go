@@ -22,8 +22,8 @@ type ProbeService interface {
 	// GetBestProbes returns best Probes from Probes list
 	GetBestProbes(countryProbes []atlas.Probe) (atlas.Probe, error)
 
-	// RequestAllProbes returns all Probes from Ripe
-	RequestAllProbes() ([]atlas.Probe, error)
+	// RequestProbes returns Probes from Ripe
+	RequestProbes() ([]atlas.Probe, error)
 	
 	// GetAllProbes returns all Probes
 	GetAllProbes() []*models.Probe
