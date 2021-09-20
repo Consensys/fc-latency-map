@@ -15,23 +15,48 @@ import (
 	atlas "github.com/keltia/ripe-atlas"
 )
 
-type ServiceImpl struct {
+type RipeMgrImpl struct {
 	conf *viper.Viper
-	ripe *atlas.Client
+	c    *atlas.Client
 }
 
-func NewServiceImpl(conf *viper.Viper, ripe *atlas.Client) RipeService {
-	return &ServiceImpl{
-		conf: conf,
-		ripe: ripe,
+func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
+	cfgs := []atlas.Config{}
+	cfgs = append(cfgs, atlas.Config{
+		APIKey: conf.GetString("RIPE_API_KEY"),
+	})
+	c, err := atlas.NewClient(cfgs...)
+	if err != nil {
+		log.Println("Connecting to Ripe Atlas API", err)
+		return nil, err
 	}
+	ver := atlas.GetVersion()
+	log.Println("api version ", ver)
+
+	return &RipeMgrImpl{
+		c: c,
+	}, nil
 }
 
-func (m *ServiceImpl) getMeasurementResults(ms map[int]int) ([]atlas.MeasurementResult, error) {
+func (fMgr *RipeMgrImpl) GetProbe(id int) (*atlas.Probe, error) {
+	return fMgr.c.GetProbe(id)
+}
+
+func (fMgr *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error) {
+	probes, err := fMgr.c.GetProbes(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return probes, nil
+
+}
+
+func (m *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.MeasurementResult, error) {
 	var results []atlas.MeasurementResult
 	for k, v := range ms {
-		m.ripe.SetOption("start", strconv.Itoa(v))
-		measurementResult, err := m.ripe.GetResults(k)
+		m.c.SetOption("start", strconv.Itoa(v))
+		measurementResult, err := m.c.GetResults(k)
 		if err != nil {
 			return nil, err
 		}
@@ -42,7 +67,7 @@ func (m *ServiceImpl) getMeasurementResults(ms map[int]int) ([]atlas.Measurement
 	return results, nil
 }
 
-func (m *ServiceImpl) createMeasurements(miners []*models.Miner, probeIDs string) ([]*atlas.Measurement, error) {
+func (m *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs string) ([]*atlas.Measurement, error) {
 	probes := []atlas.ProbeSet{
 		{
 			Type:      "probes",
@@ -54,7 +79,7 @@ func (m *ServiceImpl) createMeasurements(miners []*models.Miner, probeIDs string
 	return m.createPing(miners, probes)
 }
 
-func (m *ServiceImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet) ([]*atlas.Measurement, error) {
+func (m *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet) ([]*atlas.Measurement, error) {
 	var d []atlas.Definition
 
 	pingInterval := m.conf.GetInt("RIPE_PING_INTERVAL")
@@ -93,7 +118,7 @@ func (m *ServiceImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet
 		Probes:      probes,
 	}
 
-	p, err := m.ripe.Ping(mr)
+	p, err := m.c.Ping(mr)
 
 	if err != nil {
 		log.WithFields(log.Fields{
