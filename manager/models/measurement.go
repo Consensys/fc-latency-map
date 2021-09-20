@@ -6,21 +6,20 @@ import (
 
 type Measurement struct {
 	gorm.Model
-	IsOneoff      bool
+	IsOneOff      bool
 	MeasurementID int
-	Times         int
 	StartTime     int
 	StopTime      int
 }
 
 type MeasurementResult struct {
 	gorm.Model
-	ProbeID       int
-	MeasurementID int
-	MeasureDate   int
-	TimeAverage   float64
-	TimeMax       float64
-	TimeMin       float64
-	MinerAddress  string
-	Ip            string
+	ProbeID              int
+	MeasurementID        int
+	MeasurementTimestamp int
+	MeasurementDate      string
+	TimeAverage          float64
+	TimeMax              float64
+	TimeMin              float64
+	IP                   string
 }

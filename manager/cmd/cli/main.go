@@ -12,6 +12,7 @@ import (
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/ConsenSys/fc-latency-map/manager/export"
 	"github.com/ConsenSys/fc-latency-map/manager/locations"
 	"github.com/ConsenSys/fc-latency-map/manager/measurements"
 	"github.com/ConsenSys/fc-latency-map/manager/miners"
@@ -40,6 +41,7 @@ type LatencyMapCLI struct {
 	locations    locations.LocationHandler
 	miners       miners.MinerHandler
 	measurements measurements.Handler
+	export       export.ExportHandler
 }
 
 // Start Client CLI
@@ -49,6 +51,7 @@ func main() {
 		locations:    *locations.NewLocationHandler(),
 		miners:       *miners.NewMinerHandler(),
 		measurements: *measurements.NewHandler(),
+		export:       *export.NewExportHandler(),
 	}
 
 	if len(os.Args) > 1 {
@@ -176,7 +179,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		if len(blocks) == 1 {
 			fn = fmt.Sprintf("data_%v.json", time.Now().Unix())
 		}
-		c.measurements.ExportData(fn)
+		c.export.Export(fn)
 
 	case minersList:
 		fmt.Printf("Command: %s \n", blocks[0])
@@ -214,7 +217,6 @@ func (c *LatencyMapCLI) executor(in string) {
 
 	default:
 		fmt.Printf("unknown command: %s\n", blocks[0])
-
 	}
 }
 

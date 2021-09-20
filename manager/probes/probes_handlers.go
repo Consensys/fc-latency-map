@@ -19,7 +19,7 @@ func NewProbeHandler() *ProbeHandler {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	ripeMgr, err := ripemgr.NewRipeImpl(conf.GetString("RIPE_API_KEY"))
+	ripeMgr, err := ripemgr.NewRipeImpl(conf)
 	if err != nil {
 		log.Fatalf("connecting with lotus failed: %s", err)
 	}

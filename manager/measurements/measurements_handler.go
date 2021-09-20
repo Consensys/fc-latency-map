@@ -1,17 +1,19 @@
 package measurements
 
 import (
+	"strings"
+
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	fmgr "github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
-	"github.com/ConsenSys/fc-latency-map/manager/models"
-	atlas "github.com/keltia/ripe-atlas"
+	"github.com/ConsenSys/fc-latency-map/manager/ripemgr"
 )
 
 type Handler struct {
 	Service *MeasurementService
+	ripeMgr *ripemgr.RipeMgr
 }
 
 func NewHandler() *Handler {
@@ -26,34 +28,42 @@ func NewHandler() *Handler {
 		log.Fatalf("connecting with lotus failed: %s", err)
 	}
 
-	var apiKey = conf.GetString("RIPE_API_KEY")
-	cfg := atlas.Config{
-		APIKey: apiKey,
-	}
-	ripe, err := atlas.NewClient(cfg)
+	ripeMgr, err := ripemgr.NewRipeImpl(conf)
 	if err != nil {
-		log.Fatalf("connecting with ripe failed: %s", err)
+		log.Fatalf("connecting with lotus failed: %s", err)
 	}
 
-	mSer := NewMeasurementServiceImpl(conf, &dbMgr, &fMgr, ripe)
+	mSer := NewMeasurementServiceImpl(conf, &dbMgr, &fMgr)
 
 	return &Handler{
 		Service: &mSer,
+		ripeMgr: &ripeMgr,
 	}
 }
 
 func (h *Handler) GetMeasures() {
-	(*h.Service).RipeGetMeasures()
-}
+	measures := (*h.Service).getMeasuresLastResultTime()
+	results, err := (*h.ripeMgr).GetMeasurementResults(measures)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Info("GetMeasurementResults")
+		return
+	}
 
-func (h *Handler) CreateMeasurementType(miners []*models.Miner, value string) {
-	_, _, _ = (*h.Service).RipeCreatePingWithProbes(miners, value)
-}
-
-func (h *Handler) ExportData(fn string) {
-	(*h.Service).dbExportData(fn)
+	(*h.Service).importMeasurement(results)
 }
 
 func (h *Handler) CreateMeasurements() {
-	(*h.Service).RipeCreateMeasurements()
+
+	pIDs := strings.Join((*h.Service).getProbIDs(), ",")
+	measures, err := (*h.ripeMgr).CreateMeasurements((*h.Service).getMiners(), pIDs)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Info("Create Ping")
+		return
+	}
+
+	(*h.Service).createMeasurements(measures)
 }

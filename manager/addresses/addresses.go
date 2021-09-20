@@ -1,6 +1,8 @@
 package addresses
 
 import (
+	"net"
+
 	"github.com/filecoin-project/go-state-types/abi"
 	ma "github.com/multiformats/go-multiaddr"
 )
@@ -15,7 +17,7 @@ func MultiAddrs(addr []abi.Multiaddrs) []ma.Multiaddr {
 	return m
 }
 
-func IpAddress(a []ma.Multiaddr) []string {
+func IPAddress(a []ma.Multiaddr) []string {
 	var ips []string
 	for _, v := range a {
 		if ip, err := v.ValueForProtocol(ma.P_IP4); err == nil {
@@ -25,4 +27,13 @@ func IpAddress(a []ma.Multiaddr) []string {
 		}
 	}
 	return ips
+}
+
+func GetIPVersion(ipAdd net.IP) int {
+	af := 4
+	if ipAdd.To4() == nil {
+		af = 6
+	}
+
+	return af
 }

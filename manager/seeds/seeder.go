@@ -27,9 +27,9 @@ func Seed() {
 }
 
 // Execute runs the data seed process
-func Execute(db *gorm.DB) error {
+func Execute(dbc *gorm.DB) error {
 
-	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
+	m := gormigrate.New(dbc, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		{
 			ID: "2021091516",
 			Migrate: func(tx *gorm.DB) error {
@@ -45,14 +45,14 @@ func Execute(db *gorm.DB) error {
 			ID: "2021091517",
 			Migrate: func(tx *gorm.DB) error {
 				miners := []models.Miner{
-					{Address: "f023467", Ip: "151.252.13.181"},
-					{Address: "f0694396", Ip: "185.37.217.6,2a04:7340:0:1002::16"},
-					{Address: "f022163", Ip: "217.71.253.18,62.171.109.134"},
-					{Address: "f01231", Ip: "47.252.15.25,172.17.32.101"},
-					{Address: "f01272", Ip: "172.16.117.9"},
-					{Address: "f01044351", Ip: "221.144.2.39"},
-					{Address: "f0106949", Ip: "192.168.0.200"},
-					{Address: "f0149768", Ip: ""},
+					{Address: "f023467", IP: "151.252.13.181"},
+					{Address: "f0694396", IP: "185.37.217.6,2a04:7340:0:1002::16"},
+					{Address: "f022163", IP: "217.71.253.18,62.171.109.134"},
+					{Address: "f01231", IP: "47.252.15.25,172.17.32.101"},
+					{Address: "f01272", IP: "172.16.117.9"},
+					{Address: "f01044351", IP: "221.144.2.39"},
+					{Address: "f0106949", IP: "192.168.0.200"},
+					{Address: "f0149768", IP: ""},
 				}
 				return tx.Create(miners).Error
 			},
@@ -69,6 +69,13 @@ func Execute(db *gorm.DB) error {
 					{MeasurementID: 32294504, StartTime: 1631785212, StopTime: 1631785512},
 					{MeasurementID: 32294505, StartTime: 1631785212, StopTime: 1631785512},
 					{MeasurementID: 32294506, StartTime: 1631785212, StopTime: 1631785512},
+					{MeasurementID: 32295718, StartTime: 1631799926, StopTime: 1632404726},
+					{MeasurementID: 32295719, StartTime: 1631799926, StopTime: 1632404726},
+					{MeasurementID: 32295720, StartTime: 1631799926, StopTime: 1632404726},
+					{MeasurementID: 32295721, StartTime: 1631799926, StopTime: 1632404726},
+					{MeasurementID: 32295722, StartTime: 1631799926, StopTime: 1632404726},
+					{MeasurementID: 32295723, StartTime: 1631799926, StopTime: 1632404726},
+					{MeasurementID: 32295724, StartTime: 1631799926, StopTime: 1632404726},
 				}
 				return tx.Create(locs).Error
 			},

@@ -1,7 +1,7 @@
 package measurements
 
 import (
-	"strings"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -13,24 +13,17 @@ import (
 	"github.com/keltia/ripe-atlas"
 )
 
-type MeasurementResult struct {
-	Measurement atlas.Measurement
-	Results     []atlas.MeasurementResult
-}
-
 type MeasurementServiceImpl struct {
 	Conf  *viper.Viper
 	DbMgr *db.DatabaseMgr
 	FMgr  *fmgr.FilecoinMgr
-	Ripe  *atlas.Client
 }
 
-func NewMeasurementServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr, fMgr *fmgr.FilecoinMgr, r *atlas.Client) MeasurementService {
+func NewMeasurementServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr, fMgr *fmgr.FilecoinMgr) MeasurementService {
 	return &MeasurementServiceImpl{
 		Conf:  conf,
 		DbMgr: dbMgr,
 		FMgr:  fMgr,
-		Ripe:  r,
 	}
 }
 
@@ -38,41 +31,13 @@ type Probes struct {
 	gorm.Model
 }
 
-func (m *MeasurementServiceImpl) RipeCreateMeasurements() {
-	var miners []*models.Miner
-	err := (*m.DbMgr).GetDb().Find(&miners).Error
-	if err != nil {
-		log.WithFields(log.Fields{
-			"err": err,
-		}).Info("Find db miners")
-		return
-	}
-
-	var probesIDs []string
-	err = (*m.DbMgr).GetDb().Model(models.Probe{}).Select("probe_id").Find(&probesIDs).Error
-	if err != nil {
-		log.WithFields(log.Fields{
-			"err": err,
-		}).Info("Find db miners")
-		return
-	}
-
-	join := strings.Join(probesIDs, ",")
-	mr, p, err := m.RipeCreatePingWithProbes(miners, join)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"err": err,
-		}).Info("Create Ping")
-		return
-	}
-
+func (m *MeasurementServiceImpl) createMeasurements(mrs []*atlas.Measurement) {
 	measurements := []*models.Measurement{}
-	for i := range mr.Definitions {
+	for _, mr := range mrs {
 		measurements = append(measurements,
 			&models.Measurement{
-				MeasurementID: p.Measurements[i],
-				IsOneoff:      mr.IsOneoff,
-				Times:         mr.Times,
+				MeasurementID: mr.ID,
+				IsOneOff:      mr.IsOneoff,
 				StartTime:     mr.StartTime,
 				StopTime:      mr.StopTime,
 			})
@@ -81,22 +46,98 @@ func (m *MeasurementServiceImpl) RipeCreateMeasurements() {
 	m.dbCreate(measurements)
 }
 
-func (m *MeasurementServiceImpl) RipeGetMeasures() {
+func (m *MeasurementServiceImpl) getMeasuresLastResultTime() map[int]int {
+	measurements := make(map[int]int)
+	for _, id := range m.getRipeMeasurementsID() {
+		measurements[id] = m.getLastMeasurementResultTime(id)
+	}
+	return measurements
+}
 
-	for _, id := range m.getRipeMeasurementsId() {
+func (m *MeasurementServiceImpl) dbCreate(measurements []*models.Measurement) {
+	err := (*m.DbMgr).GetDb().Create(&measurements).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("Create Measurement in db")
+		return
+	}
+}
 
-		start := m.getLastMeasurementResultTime(id)
+func (m *MeasurementServiceImpl) getMiners() []*models.Miner {
+	var miners []*models.Miner
 
-		measurementResults, err := m.getRipeMeasurementResultsById(id, start)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"err": err,
-			}).Info("Load measurement MeasurementResults from Ripe")
-		}
+	err := (*m.DbMgr).GetDb().Find(&miners).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("GetMiners")
+		return nil
+	}
+	return miners
+}
 
-		m.importMeasurement(measurementResults)
+func (m *MeasurementServiceImpl) importMeasurement(mr []atlas.MeasurementResult) {
+	dbc := (*m.DbMgr).GetDb().Debug()
+	var insert []*models.MeasurementResult
+	for _, result := range mr {
+		t := time.Unix(int64(result.Timestamp), 0)
+		insert = append(insert, &models.MeasurementResult{
+			IP:                   result.DstAddr,
+			MeasurementID:        result.MsmID,
+			ProbeID:              result.PrbID,
+			MeasurementTimestamp: result.Timestamp,
+			MeasurementDate:      t.Format("2006-01-02"),
+			TimeAverage:          result.Avg,
+			TimeMax:              result.Max,
+			TimeMin:              result.Min,
+		})
+	}
+	affected := dbc.Model(&models.MeasurementResult{}).Create(
+		insert).RowsAffected
+	log.WithFields(log.Fields{
+		"insert rows": affected,
+	}).Info("Create measurement MeasurementResults")
 
-		log.Info("measurements successfully get")
+	if dbc.Error != nil {
+		log.WithFields(log.Fields{
+			"err": dbc.Error,
+		}).Error("Create measurement MeasurementResults")
+	}
+}
+
+func (m *MeasurementServiceImpl) getRipeMeasurementsID() []int {
+	var ripeIDs []int
+	dbc := (*m.DbMgr).GetDb().Debug()
+	dbc.Model(&models.Measurement{}).Pluck("measurement_id", &ripeIDs)
+
+	return ripeIDs
+}
+
+func (m *MeasurementServiceImpl) getLastMeasurementResultTime(measurementID int) int {
+	dbc := (*m.DbMgr).GetDb().Debug()
+
+	measurementResults := &models.MeasurementResult{}
+
+	dbc.Model(&models.MeasurementResult{}).
+		Select("max(measurement_timestamp) measurement_timestamp").
+		Where("measurement_id = ?", measurementID).
+		First(&measurementResults)
+
+	return measurementResults.MeasurementTimestamp
+}
+
+func (m *MeasurementServiceImpl) getProbIDs() []string {
+	var probesIDs []string
+
+	err := (*m.DbMgr).GetDb().Model(models.Probe{}).Select("probe_id").Find(&probesIDs).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Info("Find db miners")
+
+		return nil
 	}
 
+	return probesIDs
 }
