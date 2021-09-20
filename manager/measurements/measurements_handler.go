@@ -13,7 +13,7 @@ import (
 
 type Handler struct {
 	Service *MeasurementService
-	ripe    *ripemgr.RipeHandler
+	ripeMgr *ripemgr.RipeMgr
 }
 
 func NewHandler() *Handler {
@@ -28,17 +28,22 @@ func NewHandler() *Handler {
 		log.Fatalf("connecting with lotus failed: %s", err)
 	}
 
+	ripeMgr, err := ripemgr.NewRipeImpl(conf)
+	if err != nil {
+		log.Fatalf("connecting with lotus failed: %s", err)
+	}
+
 	mSer := NewMeasurementServiceImpl(conf, &dbMgr, &fMgr)
 
 	return &Handler{
 		Service: &mSer,
-		ripe:    ripemgr.NewHandler(),
+		ripeMgr: &ripeMgr,
 	}
 }
 
 func (h *Handler) GetMeasures() {
 	measures := (*h.Service).getMeasuresLastResultTime()
-	results, err := (*h.ripe).GetMeasurementResults(measures)
+	results, err := (*h.ripeMgr).GetMeasurementResults(measures)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
@@ -52,7 +57,7 @@ func (h *Handler) GetMeasures() {
 func (h *Handler) CreateMeasurements() {
 
 	pIDs := strings.Join((*h.Service).getProbIDs(), ",")
-	measures, err := (*h.ripe).CreateMeasurement((*h.Service).getMiners(), pIDs)
+	measures, err := (*h.ripeMgr).CreateMeasurements((*h.Service).getMiners(), pIDs)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,

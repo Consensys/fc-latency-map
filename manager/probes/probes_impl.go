@@ -1,9 +1,10 @@
 package probes
 
 import (
-	atlas "github.com/keltia/ripe-atlas"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+
+	atlas "github.com/keltia/ripe-atlas"
 
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
@@ -11,14 +12,14 @@ import (
 )
 
 type ProbeServiceImpl struct {
-	DbMgr 			*db.DatabaseMgr
-	RipeMgr 		*ripemgr.RipeMgr
+	DbMgr   *db.DatabaseMgr
+	RipeMgr *ripemgr.RipeMgr
 }
 
 func NewProbeServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr, ripeMgr *ripemgr.RipeMgr) (ProbeService, error) {
 	return &ProbeServiceImpl{
-		DbMgr: dbMgr,
-		RipeMgr:  ripeMgr,
+		DbMgr:   dbMgr,
+		RipeMgr: ripeMgr,
 	}, nil
 }
 
@@ -79,7 +80,7 @@ func (srv *ProbeServiceImpl) Update() {
 	// update with new probes
 	for _, probe := range probes {
 		newProbe := models.Probe{
-			ProbeID: probe.ID,
+			ProbeID:     probe.ID,
 			CountryCode: probe.CountryCode,
 		}
 
@@ -110,9 +111,9 @@ func (srv *ProbeServiceImpl) Update() {
 			log.WithFields(log.Fields{
 				"ID": probe.ID,
 			}).Info("Probe deleted")
-			
+
 		}
 	}
 
-	log.Println("Probes successfully updated")	
+	log.Println("Probes successfully updated")
 }
