@@ -129,32 +129,3 @@ func (m *MeasurementServiceImpl) getRipeMeasurementResultsById(id int, start int
 
 	return measurementResults, err
 }
-
-func (m *MeasurementServiceImpl) getRipeMeasurementResultsByTag(tag string) ([]MeasurementResult, error) {
-	ops := make(map[string]string)
-	ops["tags"] = tag
-
-	measurements, err := m.Ripe.GetMeasurements(ops)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"err": err,
-		}).Info("RipeGetMeasurementResult")
-		return nil, err
-	}
-	var measurementResults []MeasurementResult
-	for _, measurement := range measurements {
-		results, err := m.RipeGetMeasurementResult(measurement.ID, 0)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"id":  measurement.ID,
-				"err": err,
-			}).Info("RipeGetMeasurementResult")
-			continue
-		}
-		measurementResults = append(measurementResults, MeasurementResult{
-			Measurement: measurement,
-			Results:     results,
-		})
-	}
-	return measurementResults, err
-}
