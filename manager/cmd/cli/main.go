@@ -23,16 +23,16 @@ const (
 	locationsList   = "locations-list"
 	locationsAdd    = "locations-add"
 	locationsDelete = "locations-delete"
-	probesUpdate   	= "probes-update"
-	probesList     	= "probes-list"
-	measuresGet    	= "measures-get"
-	measuresCreate 	= "measures-create"
-	measuresList   	= "measures-list"
-	measuresExport 	= "measures-export"
-	minersList     	= "miners-list"
-	minersUpdate   	= "miners-update"
-	minersParse    	= "miners-parse"
-	seedData       	= "seed-data"
+	probesUpdate   = "probes-update"
+	probesList     = "probes-list"
+	measuresGet    = "measures-get"
+	measuresCreate = "measures-create"
+	measuresList   = "measures-list"
+	measuresExport = "measures-export"
+	minersList     = "miners-list"
+	minersUpdate   = "miners-update"
+	minersParse    = "miners-parse"
+	seedData       = "seed-data"
 )
 
 type LatencyMapCLI struct {
@@ -129,7 +129,12 @@ func (c *LatencyMapCLI) executor(in string) {
 		}
 		fmt.Printf("Command: %s \n", blocks[0])
 		fmt.Println("Add a location")
-		c.locations.AddLocation(blocks[1])
+		location, err := c.locations.AddLocation(blocks[1])
+		if err != nil {
+			log.Error(err)
+		} else {
+			fmt.Printf("ID: %d", location.ID)
+		}
 
 	// Delete location
 	case locationsDelete:

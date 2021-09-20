@@ -34,7 +34,7 @@ func (srv *ProbeServiceImpl) GetBestProbes(countryProbes []atlas.Probe) (atlas.P
 	return atlas.Probe{}, nil
 }
 
-func (srv *ProbeServiceImpl) RequestAllProbes() ([]atlas.Probe, error) {
+func (srv *ProbeServiceImpl) RequestProbes() ([]atlas.Probe, error) {
 	var locsList = []*models.Location{}
 	(*srv.DbMgr).GetDb().Find(&locsList)
 	var bestProbes []atlas.Probe
@@ -68,8 +68,7 @@ func (srv *ProbeServiceImpl) GetAllProbes() []*models.Probe {
 }
 
 func (srv *ProbeServiceImpl) Update() {
-	// get countries from db
-	probes, err := srv.RequestAllProbes() // by countries
+	probes, err := srv.RequestProbes()
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -77,7 +76,7 @@ func (srv *ProbeServiceImpl) Update() {
 		return
 	}
 
-	// update db probes
+	// update with new probes
 	for _, probe := range probes {
 		newProbe := models.Probe{
 			ProbeID: probe.ID,
@@ -85,7 +84,7 @@ func (srv *ProbeServiceImpl) Update() {
 		}
 
 		var probe = models.Probe{}
-		(*srv.DbMgr).GetDb().Where(&newProbe).First(&probe)
+		(*srv.DbMgr).GetDb().Where("country_code = ?", probe.CountryCode).First(&probe)
 		if (models.Probe{}) == probe {
 			err := (*srv.DbMgr).GetDb().Debug().Model(&models.Probe{}).Create(&newProbe).Error
 			if err != nil {
@@ -96,6 +95,24 @@ func (srv *ProbeServiceImpl) Update() {
 			log.Printf("Probe already exists, Probe ID: %v", probe.ProbeID)
 		}
 	}
-	log.Println("Probes successfully updated")
-	
+
+	// update by removing probes not in location list
+	var probesList = []*models.Probe{}
+	(*srv.DbMgr).GetDb().Find(&probesList)
+	for _, probe := range probesList {
+		var location = models.Location{
+			Country: probe.CountryCode,
+		}
+		var locationExists = models.Location{}
+		(*srv.DbMgr).GetDb().Where(&location).First(&locationExists)
+		if locationExists == (models.Location{}) {
+			(*srv.DbMgr).GetDb().Delete(&models.Probe{}, probe.ID)
+			log.WithFields(log.Fields{
+				"ID": probe.ID,
+			}).Info("Probe deleted")
+			
+		}
+	}
+
+	log.Println("Probes successfully updated")	
 }
