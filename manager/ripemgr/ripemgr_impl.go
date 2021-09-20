@@ -60,6 +60,9 @@ func (m *ServiceImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet
 	pingInterval := m.conf.GetInt("RIPE_PING_INTERVAL")
 
 	for _, miner := range miners {
+		if miner.IP == "" {
+			continue
+		}
 		for _, ip := range strings.Split(miner.IP, ",") {
 			ipAdd := net.ParseIP(ip)
 			if ipAdd.IsPrivate() {
@@ -108,7 +111,7 @@ func (m *ServiceImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet
 		"measurement":  fmt.Sprintf("%#v\n", d),
 	}).Info("creat newMeasurement")
 
-	measurement := []*atlas.Measurement{}
+	var measurement []*atlas.Measurement
 	for _, v := range p.Measurements {
 		measurement = append(measurement, &atlas.Measurement{
 			ID:        v,

@@ -1,19 +1,20 @@
 package export
 
-type Results struct {
-	MinersLatency map[string][]*Miners `json:"miners_latency,omitempty"`
+type Result struct {
+	MinersLatency map[string][]*Miner `json:"miners_latency,omitempty"`
 }
 
-type Miners struct {
-	Address  string        `json:"address"`
-	IP       []string      `json:"ip,omitempty"`
-	Measures []*MeasuresIP `json:"measures,omitempty"`
+type Miner struct {
+	Address  string       `json:"address"`
+	IP       []string     `json:"ip,omitempty"`
+	Measures []*MeasureIP `json:"measures,omitempty"`
 }
 
-type MeasuresIP struct {
+type MeasureIP struct {
 	IP      string     `json:"ip"`
 	Latency []*Latency `json:"latency,omitempty"`
 }
+
 type Latency struct {
 	Avg  float64 `json:"avg,omitempty"`
 	Lts  int     `json:"lts,omitempty"`
@@ -21,4 +22,8 @@ type Latency struct {
 	Min  float64 `json:"min,omitempty"`
 	Date string  `json:"date,omitempty"`
 	IP   string  `json:"ip,omitempty"`
+}
+
+func (Latency) TableName() string {
+	return "measurement_results"
 }

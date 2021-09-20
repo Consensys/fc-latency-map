@@ -42,9 +42,9 @@ func (m *ExportServiceImpl) export(fn string) {
 	}).Info("Export successful")
 }
 
-func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Results {
-	results := &Results{
-		MinersLatency: map[string][]*Miners{},
+func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
+	results := &Result{
+		MinersLatency: map[string][]*Miner{},
 	}
 
 	loc := m.getLocations()
@@ -53,9 +53,9 @@ func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Results {
 		miners := m.getMiners()
 
 		for _, miner := range miners {
-			latency := &Miners{
+			latency := &Miner{
 				Address:  miner.Address,
-				Measures: []*MeasuresIP{},
+				Measures: []*MeasureIP{},
 			}
 			if miner.IP == "" {
 				continue
@@ -67,7 +67,7 @@ func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Results {
 			for _, probe := range probes {
 
 				for _, ip := range latency.IP {
-					measure := &MeasuresIP{IP: ip}
+					measure := &MeasureIP{IP: ip}
 
 					meas := m.getMeasureResults(probe, ip)
 					if len(meas) > 0 {
@@ -94,7 +94,7 @@ func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []
 	var meas []*models.MeasurementResult
 	err := (*m.DbMgr).GetDb().Debug().Select(
 		"ip," +
-			"measurement_date," +
+			"date(measurement_timestamp, 'unixepoch') measurement_date," +
 			"avg(time_average) time_average," +
 			"avg(time_max) time_max," +
 			"avg(time_min) time_min").

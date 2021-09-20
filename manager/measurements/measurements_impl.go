@@ -112,10 +112,10 @@ func (m *MeasurementServiceImpl) getMiners() []*models.Miner {
 
 func (m *MeasurementServiceImpl) importMeasurement(mr []atlas.MeasurementResult) {
 	dbc := (*m.DbMgr).GetDb().Debug()
-
+	var insert []*models.MeasurementResult
 	for _, result := range mr {
 		t := time.Unix(int64(result.Timestamp), 0)
-		affected := dbc.Model(&models.MeasurementResult{}).Create(&models.MeasurementResult{
+		insert = append(insert, &models.MeasurementResult{
 			IP:                   result.DstAddr,
 			MeasurementID:        result.MsmID,
 			ProbeID:              result.PrbID,
@@ -124,17 +124,18 @@ func (m *MeasurementServiceImpl) importMeasurement(mr []atlas.MeasurementResult)
 			TimeAverage:          result.Avg,
 			TimeMax:              result.Max,
 			TimeMin:              result.Min,
-		}).RowsAffected
+		})
+	}
+	affected := dbc.Model(&models.MeasurementResult{}).Create(
+		insert).RowsAffected
+	log.WithFields(log.Fields{
+		"insert rows": affected,
+	}).Info("Create measurement MeasurementResults")
 
+	if dbc.Error != nil {
 		log.WithFields(log.Fields{
-			"affected": affected,
-		}).Info("Create measurement MeasurementResults")
-
-		if dbc.Error != nil {
-			log.WithFields(log.Fields{
-				"err": dbc.Error,
-			}).Error("Create measurement MeasurementResults")
-		}
+			"err": dbc.Error,
+		}).Error("Create measurement MeasurementResults")
 	}
 }
 
