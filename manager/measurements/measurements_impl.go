@@ -64,39 +64,6 @@ func (m *MeasurementServiceImpl) dbCreate(measurements []*models.Measurement) {
 	}
 }
 
-func (m *MeasurementServiceImpl) getMinersAddress() []string {
-	var miners []*models.Miner
-	err := (*m.DbMgr).GetDb().Find(&miners).Error
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error("Find miners")
-		return nil
-	}
-
-	var mAdds = []string{}
-	for _, miner := range miners {
-		mAdds = append(mAdds, miner.Address)
-	}
-
-	return mAdds
-}
-
-func (m *MeasurementServiceImpl) getProbes(l *models.Location) []*models.Probe {
-	var probes []*models.Probe
-	err := (*m.DbMgr).GetDb().Debug().Where(&models.Probe{
-		CountryCode: l.Country,
-	}).Find(&probes).Error
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error("GetProbes")
-
-		return nil
-	}
-	return probes
-}
-
 func (m *MeasurementServiceImpl) getMiners() []*models.Miner {
 	var miners []*models.Miner
 
