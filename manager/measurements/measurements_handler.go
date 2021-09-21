@@ -61,7 +61,7 @@ func (h *Handler) CreateMeasurements() {
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
-		}).Info("Create Ping")
+		}).Error("Create Ping")
 		return
 	}
 

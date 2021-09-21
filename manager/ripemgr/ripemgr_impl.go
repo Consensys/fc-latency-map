@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
@@ -69,6 +70,9 @@ func (rMgr *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.Measurem
 }
 
 func (rMgr *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs string) ([]*atlas.Measurement, error) {
+	if len(miners) == 0 {
+		return nil, errors.New("miners are missing")
+	}
 	probes := []atlas.ProbeSet{
 		{
 			Type:      "probes",
