@@ -104,7 +104,6 @@ func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []
 			// MinerAddress: miner.Address,
 			IP: ip,
 		}).
-		Where("measurement_date <  date()").
 		Find(&meas).Error
 
 	if err != nil {
