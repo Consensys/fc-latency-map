@@ -83,6 +83,8 @@ func (rMgr *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs str
 func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet) ([]*atlas.Measurement, error) {
 	var d []atlas.Definition
 
+	isOneOff := rMgr.conf.GetBool("RIPE_ONE_OFF")
+
 	pingInterval := rMgr.conf.GetInt("RIPE_PING_INTERVAL")
 
 	for _, miner := range miners {
@@ -95,28 +97,33 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 				continue
 			}
 
-			d = append(d, atlas.Definition{
+			definition := atlas.Definition{
 				Description: fmt.Sprintf("%s ping to %s", miner.Address, ip),
 				AF:          addresses.GetIPVersion(ipAdd),
 				Target:      ip,
 				Tags: []string{
 					miner.Address,
 				},
-				Type:     "ping",
-				Interval: pingInterval,
-			})
+				Type: "ping",
+			}
+			if !isOneOff {
+				definition.Interval = pingInterval
+			}
+			d = append(d, definition)
 		}
 	}
 
-	isOneOff := rMgr.conf.GetBool("RIPE_ONE_OFF")
 	runningTime := rMgr.conf.GetInt("RIPE_PING_RUNNING_TIME")
 
 	mr := &atlas.MeasurementRequest{
 		Definitions: d,
 		StartTime:   int(time.Now().Unix()),
-		StopTime:    int(time.Now().Unix()) + runningTime,
 		IsOneoff:    isOneOff,
 		Probes:      probes,
+	}
+
+	if !isOneOff {
+		mr.StopTime = int(time.Now().Unix()) + runningTime
 	}
 
 	p, err := rMgr.c.Ping(mr)
