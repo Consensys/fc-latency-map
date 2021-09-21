@@ -34,9 +34,9 @@ func Execute(dbc *gorm.DB) error {
 			ID: "2021091516",
 			Migrate: func(tx *gorm.DB) error {
 				locs := []models.Location{
-					{Country: "FR"},
-					{Country: "NL"},
-					{Country: "PT"},
+					{Country: "FR", Latitude: "48.99", Longitude: "2.45"},
+					{Country: "NL", Latitude: "52.37", Longitude: "4.89"},
+					{Country: "PT", Latitude: "39.39", Longitude: "-8.22"},
 				}
 				return tx.Create(locs).Error
 			},
