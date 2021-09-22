@@ -57,65 +57,51 @@ linters-settings:
     go: "1.17"
     checks: ["all"]
   stylecheck:
-    # Select the Go version to target. The default is '1.13'.
-    go: "1.15"
-    # https://staticcheck.io/docs/options#checks
-    checks: [ "all", "-ST1000", "-ST1003", "-ST1016", "-ST1020", "-ST1021", "-ST1022" ]
-    # https://staticcheck.io/docs/options#dot_import_whitelist
-    dot-import-whitelist:
-      - fmt
-    # https://staticcheck.io/docs/options#initialisms
-    initialisms: [ "ACL", "API", "ASCII", "CPU", "CSS", "DNS", "EOF", "GUID", "HTML", "HTTP", "HTTPS", "ID", "IP", "JSON", "QPS", "RAM", "RPC", "SLA", "SMTP", "SQL", "SSH", "TCP", "TLS", "TTL", "UDP", "UI", "GID", "UID", "UUID", "URI", "URL", "UTF8", "VM", "XML", "XMPP", "XSRF", "XSS" ]
-    # https://staticcheck.io/docs/options#http_status_code_whitelist
-    http-status-code-whitelist: [ "200", "400", "404", "500" ]
+    go: "1.17"
+    checks: [ "all" ]
   revive:
     ignore-generated-header: true
     severity: warning
     rules:
+      - name: bare-return
+      - name: blank-imports
+      - name: bool-literal-in-expr
+      - name: confusing-results
+      - name: constant-logical-expr
+      - name: context-as-argument
+      - name: context-keys-type
+      - name: dot-imports
+      - name: duplicated-imports
+      - name: early-return
       - name: empty-block
       - name: empty-lines
       - name: error-naming
       - name: error-return
       - name: error-strings
       - name: errorf
-      - name: unexported-return
-      - name: var-declaration
-      - name: time-naming
-      - name: useless-break
-      - name: var-naming
-      - name: indent-error-flow
-      - name: bool-literal-in-expr
-      - name: bare-return
-      - name: blank-imports
-      - name: unnecessary-stmt
-      - name: confusing-results
-      - name: context-as-argument
-      - name: context-keys-type
-      - name: dot-imports
-      - name: early-return
-      - name: duplicated-imports
-      - name: constant-logical-expr
-      - name: if-return
-      - name: increment-decrement
-      - name: import-shadowing
-      - name: identical-branches
-      - name: indent-error-flow
       - name: get-return
-      - name: unused-parameter
-      - name: unreachable-code
-      - name: unconditional-recursion
-      - name: var-declaration
-      - name: var-naming
-      - name: unexported-return
-      - name: unexported-naming
-      - name: time-naming
-      - name: superfluous-else
-      - name: struct-tag
+      - name: identical-branches
+      - name: if-return
+      - name: import-shadowing
+      - name: increment-decrement
+      - name: indent-error-flow
+      - name: modifies-parameter
+      - name: modifies-value-receiver
+      - name: nested-structs
       - name: string-format
       - name: string-of-int
-      - name: nested-structs
-      - name: modifies-value-receiver
-      - name: modifies-parameter
+      - name: struct-tag
+      - name: superfluous-else
+      - name: time-naming
+      - name: unconditional-recursion
+      - name: unexported-naming
+      - name: unexported-return
+      - name: unnecessary-stmt
+      - name: unreachable-code
+      - name: unused-parameter
+      - name: useless-break
+      - name: var-declaration
+      - name: var-naming
       - name: function-result-limit
         arguments: 3
       - name: argument-limit
@@ -135,49 +121,54 @@ linters-settings:
 linters:
   disable-all: true
   enable:
+    - asciicheck
     - bodyclose
     - deadcode
     - depguard
     - dogsled
     - dupl
     - errcheck
-    - exportloopref
     - exhaustive
+    - exportloopref
     - funlen
     - gochecknoinits
+    - gocognit
     - goconst
     - gocritic
+    - gocyclo
+    - godox
     - gofmt
     - goimports
     - goprintffuncname
     - gosec
     - gosimple
     - govet
+    - importas
     - ineffassign
     - lll
     - misspell
     - nakedret
+    - nestif
     - noctx
     - nolintlint
+    - revive
     - rowserrcheck
+    - sqlclosecheck
     - staticcheck
     - structcheck
     - stylecheck
+    - tagliatelle
     - typecheck
+    - unconvert
     - unconvert
     - unparam
     - unused
     - varcheck
+    - wastedassign
     - whitespace
-    - nestif
-    - godox
-    - gocognit
-    - gocyclo
-    - asciicheck
-    - importas
-    - revive
 
   # don't enable:
+  # - wrapcheck
   # - prealloc
   # - revive # see https://github.com/mgechev/revive#available-rules for details.
   # - wsl
