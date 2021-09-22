@@ -3,7 +3,6 @@ package probes
 import (
 	atlas "github.com/keltia/ripe-atlas"
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
@@ -15,23 +14,11 @@ type ProbeServiceImpl struct {
 	RipeMgr *ripemgr.RipeMgr
 }
 
-func NewProbeServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr, ripeMgr *ripemgr.RipeMgr) (ProbeService, error) {
+func NewProbeServiceImpl(dbMgr *db.DatabaseMgr, ripeMgr *ripemgr.RipeMgr) (ProbeService, error) {
 	return &ProbeServiceImpl{
 		DbMgr:   dbMgr,
 		RipeMgr: ripeMgr,
 	}, nil
-}
-
-func (srv *ProbeServiceImpl) GetBestProbes(countryProbes []atlas.Probe) (atlas.Probe, error) {
-	for _, probe := range countryProbes {
-		if probe.Status.Name == "Connected" {
-			log.WithFields(log.Fields{
-				"ID": probe.ID,
-			}).Info("Best probe found")
-			return probe, nil
-		}
-	}
-	return atlas.Probe{}, nil
 }
 
 func (srv *ProbeServiceImpl) RequestProbes() ([]atlas.Probe, error) {
@@ -43,18 +30,15 @@ func (srv *ProbeServiceImpl) RequestProbes() ([]atlas.Probe, error) {
 		log.WithFields(log.Fields{
 			"country": location.Country,
 		}).Info("Get probes for country")
-		opts := make(map[string]string)
-		opts["country_code"] = location.Country
-		countryProbes, err := (*srv.RipeMgr).GetProbes(opts)
+
+		nearestProbe, err := (*srv.RipeMgr).GetNearestProbe(location.Latitude, location.Longitude)
 		if err != nil {
 			return nil, err
 		}
-		bestProbe, err := srv.GetBestProbes(countryProbes)
-		if err != nil {
-			return nil, err
-		}
-		bestProbes = append(bestProbes, bestProbe)
+
+		bestProbes = append(bestProbes, *nearestProbe)
 	}
+
 	return bestProbes, nil
 }
 

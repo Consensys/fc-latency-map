@@ -54,6 +54,51 @@ func (rMgr *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error
 
 }
 
+func (rMgr *RipeMgrImpl) GetNearestProbe(latitude, longitude string) (*atlas.Probe, error) {
+	var err error
+	nearestProbes := []atlas.Probe{}
+
+	maxLocRange := rMgr.conf.GetFloat64("RIPE_LOCATION_RANGE_MAX")
+	coordRange := rMgr.conf.GetFloat64("RIPE_LOCATION_RANGE_INIT")
+
+	lat, _ := strconv.ParseFloat(latitude, 32)
+	long, _ := strconv.ParseFloat(longitude, 32)
+
+	for len(nearestProbes) < 1 && coordRange < maxLocRange {
+		latGte := fmt.Sprintf("%f", lat-coordRange)
+		latLte := fmt.Sprintf("%f", lat+coordRange)
+		longGte := fmt.Sprintf("%f", long-coordRange)
+		longLte := fmt.Sprintf("%f", long+coordRange)
+
+		log.WithFields(log.Fields{
+			"latitude__gte":  latGte,
+			"latitude__lte":  latLte,
+			"longitude__gte": longGte,
+			"longitude__lte": longLte,
+			"range":          coordRange,
+		}).Info("Get probes for geo location")
+
+		opts := make(map[string]string)
+		opts["latitude__gte"] = latGte
+		opts["latitude__lte"] = latLte
+		opts["longitude__gte"] = longGte
+		opts["longitude__lte"] = longLte
+		opts["status_name"] = "Connected"
+		opts["sort"] = "id"
+
+		nearestProbes, err = rMgr.c.GetProbes(opts)
+
+		if err != nil {
+			if err.Error() == "empty probe list" {
+				coordRange = coordRange * 2
+				continue
+			}
+			return nil, err
+		}
+	}
+	return &nearestProbes[0], nil
+}
+
 func (rMgr *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.MeasurementResult, error) {
 	var results []atlas.MeasurementResult
 	for k, v := range ms {
