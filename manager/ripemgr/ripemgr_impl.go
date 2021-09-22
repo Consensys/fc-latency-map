@@ -11,9 +11,10 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
+	atlas "github.com/keltia/ripe-atlas"
+
 	"github.com/ConsenSys/fc-latency-map/manager/addresses"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
-	atlas "github.com/keltia/ripe-atlas"
 )
 
 type RipeMgrImpl struct {
@@ -64,26 +65,7 @@ func (rMgr *RipeMgrImpl) GetNearestProbe(latitude, longitude string) (*atlas.Pro
 	long, _ := strconv.ParseFloat(longitude, 32)
 
 	for len(nearestProbes) < 1 && coordRange < maxLocRange {
-		latGte := fmt.Sprintf("%f", lat-coordRange)
-		latLte := fmt.Sprintf("%f", lat+coordRange)
-		longGte := fmt.Sprintf("%f", long-coordRange)
-		longLte := fmt.Sprintf("%f", long+coordRange)
-
-		log.WithFields(log.Fields{
-			"latitude__gte":  latGte,
-			"latitude__lte":  latLte,
-			"longitude__gte": longGte,
-			"longitude__lte": longLte,
-			"range":          coordRange,
-		}).Info("Get probes for geo location")
-
-		opts := make(map[string]string)
-		opts["latitude__gte"] = latGte
-		opts["latitude__lte"] = latLte
-		opts["longitude__gte"] = longGte
-		opts["longitude__lte"] = longLte
-		opts["status_name"] = "Connected"
-		opts["sort"] = "id"
+		opts := rMgr.getLatLongRange(lat, long, coordRange)
 
 		nearestProbes, err = rMgr.c.GetProbes(opts)
 
@@ -100,49 +82,28 @@ func (rMgr *RipeMgrImpl) GetNearestProbe(latitude, longitude string) (*atlas.Pro
 	return &nearestProbes[0], nil
 }
 
-func (rMgr *RipeMgrImpl) GetNearestProbe(latitude, longitude string) (*atlas.Probe, error) {
-	var err error
-	nearestProbes := []atlas.Probe{}
+func (rMgr *RipeMgrImpl) getLatLongRange(lat, long, coordRange float64) map[string]string {
+	latGte := fmt.Sprintf("%f", lat-coordRange)
+	latLte := fmt.Sprintf("%f", lat+coordRange)
+	longGte := fmt.Sprintf("%f", long-coordRange)
+	longLte := fmt.Sprintf("%f", long+coordRange)
 
-	maxLocRange := rMgr.conf.GetFloat64("RIPE_LOCATION_RANGE_MAX")
-	coordRange := rMgr.conf.GetFloat64("RIPE_LOCATION_RANGE_INIT")
+	log.WithFields(log.Fields{
+		"latitude__gte":  latGte,
+		"latitude__lte":  latLte,
+		"longitude__gte": longGte,
+		"longitude__lte": longLte,
+		"range":          coordRange,
+	}).Info("Get probes for geo location")
 
-	lat, _ := strconv.ParseFloat(latitude, 32)
-	long, _ := strconv.ParseFloat(longitude, 32)
-
-	for len(nearestProbes) < 1 && coordRange < maxLocRange {
-		latGte := fmt.Sprintf("%f", lat-coordRange)
-		latLte := fmt.Sprintf("%f", lat+coordRange)
-		longGte := fmt.Sprintf("%f", long-coordRange)
-		longLte := fmt.Sprintf("%f", long+coordRange)
-
-		log.WithFields(log.Fields{
-			"latitude__gte":  latGte,
-			"latitude__lte":  latLte,
-			"longitude__gte": longGte,
-			"longitude__lte": longLte,
-			"range":          coordRange,
-		}).Info("Get probes for geo location")
-
-		opts := make(map[string]string)
-		opts["latitude__gte"] = latGte
-		opts["latitude__lte"] = latLte
-		opts["longitude__gte"] = longGte
-		opts["longitude__lte"] = longLte
-		opts["status_name"] = "Connected"
-		opts["sort"] = "id"
-
-		nearestProbes, err = rMgr.c.GetProbes(opts)
-
-		if err != nil {
-			if err.Error() == "empty probe list" {
-				coordRange = coordRange * 2
-				continue
-			}
-			return nil, err
-		}
-	}
-	return &nearestProbes[0], nil
+	opts := make(map[string]string)
+	opts["latitude__gte"] = latGte
+	opts["latitude__lte"] = latLte
+	opts["longitude__gte"] = longGte
+	opts["longitude__lte"] = longLte
+	opts["status_name"] = "Connected"
+	opts["sort"] = "id"
+	return opts
 }
 
 func (rMgr *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.MeasurementResult, error) {
@@ -186,36 +147,11 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 		if miner.IP == "" {
 			continue
 		}
-		for _, ip := range strings.Split(miner.IP, ",") {
-			ipAdd := net.ParseIP(ip)
-			if ipAdd.IsPrivate() {
-				continue
-			}
-
-			definition := atlas.Definition{
-				Description: fmt.Sprintf("%s ping to %s", miner.Address, ip),
-				AF:          addresses.GetIPVersion(ipAdd),
-				Target:      ip,
-				Tags: []string{
-					miner.Address,
-				},
-				Type: "ping",
-			}
-			if !isOneOff {
-				definition.Interval = pingInterval
-			}
-			d = append(d, definition)
-		}
+		d = rMgr.getDefinitions(miner, isOneOff, pingInterval, d)
 	}
 
 	runningTime := rMgr.conf.GetInt("RIPE_PING_RUNNING_TIME")
-
-	mr := &atlas.MeasurementRequest{
-		Definitions: d,
-		StartTime:   int(time.Now().Unix()),
-		IsOneoff:    isOneOff,
-		Probes:      probes,
-	}
+	mr := rMgr.getMeasurementRequest(d, isOneOff, probes)
 
 	if !isOneOff {
 		mr.StopTime = int(time.Now().Unix()) + runningTime
@@ -250,4 +186,37 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 	}
 
 	return measurement, err
+}
+
+func (rMgr *RipeMgrImpl) getMeasurementRequest(d []atlas.Definition, isOneOff bool, probes []atlas.ProbeSet) *atlas.MeasurementRequest {
+	return &atlas.MeasurementRequest{
+		Definitions: d,
+		StartTime:   int(time.Now().Unix()),
+		IsOneoff:    isOneOff,
+		Probes:      probes,
+	}
+}
+
+func (rMgr *RipeMgrImpl) getDefinitions(miner *models.Miner, isOneOff bool, pingInterval int, d []atlas.Definition) []atlas.Definition {
+	for _, ip := range strings.Split(miner.IP, ",") {
+		ipAdd := net.ParseIP(ip)
+		if ipAdd.IsPrivate() {
+			continue
+		}
+
+		definition := atlas.Definition{
+			Description: fmt.Sprintf("%s ping to %s", miner.Address, ip),
+			AF:          addresses.GetIPVersion(ipAdd),
+			Target:      ip,
+			Tags: []string{
+				miner.Address,
+			},
+			Type: "ping",
+		}
+		if !isOneOff {
+			definition.Interval = pingInterval
+		}
+		d = append(d, definition)
+	}
+	return d
 }

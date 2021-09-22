@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"log"
 
+	_ "gorm.io/driver/sqlite"
+
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 	"github.com/ConsenSys/fc-latency-map/manager/seeds"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {

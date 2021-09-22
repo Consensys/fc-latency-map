@@ -7,10 +7,11 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 
+	atlas "github.com/keltia/ripe-atlas"
+
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	fmgr "github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
-	atlas "github.com/keltia/ripe-atlas"
 )
 
 type MeasurementServiceImpl struct {

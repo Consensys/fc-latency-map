@@ -41,7 +41,7 @@ func NewHandler() *Handler {
 	}
 }
 
-func (h *Handler) GetMeasures() {
+func (h *Handler) GetMeasures() { //nolint:revive
 	measures := (*h.Service).getMeasuresLastResultTime()
 	results, err := (*h.ripeMgr).GetMeasurementResults(measures)
 	if err != nil {

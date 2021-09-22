@@ -11,6 +11,7 @@ import (
 
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
+	_ "gorm.io/driver/sqlite"
 
 	"github.com/ConsenSys/fc-latency-map/manager/export"
 	"github.com/ConsenSys/fc-latency-map/manager/locations"
@@ -110,16 +111,17 @@ func completer(d prompt.Document) []prompt.Suggest {
 	return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
 }
 
+//nolint:funlen
 // executor executes the command
 func (c *LatencyMapCLI) executor(in string) {
 	fmt.Println("executor ", in)
-	in = strings.TrimSpace(in)
-	blocks := strings.Split(in, " ")
+	blocks := strings.Split(strings.TrimSpace(in), " ")
+
+	fmt.Printf("Command: %s\n", blocks[0])
 
 	switch blocks[0] {
 	// Locations list
 	case locationsList:
-		fmt.Printf("Command: %s\n", blocks[0])
 		c.locations.GetLocations()
 
 	// New location
@@ -132,11 +134,9 @@ func (c *LatencyMapCLI) executor(in string) {
 
 		// probes
 	case probesUpdate:
-		fmt.Printf("Command: %s\n", blocks[0])
 		c.probes.Update()
 
 	case probesList:
-		fmt.Printf("Command: %s\n", blocks[0])
 		c.probes.GetAllProbes()
 
 		// Measurements
@@ -144,7 +144,6 @@ func (c *LatencyMapCLI) executor(in string) {
 		c.measurements.CreateMeasurements()
 
 	case measuresGet:
-		fmt.Printf("Command: %s\n", blocks[0])
 		c.measurements.GetMeasures()
 
 	case measuresList:
@@ -154,7 +153,6 @@ func (c *LatencyMapCLI) executor(in string) {
 		c.measuresExport(blocks)
 
 	case minersList:
-		fmt.Printf("Command: %s\n", blocks[0])
 		c.miners.GetAllMiners()
 
 	case minersUpdate:
@@ -164,8 +162,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		c.minersParse(blocks)
 
 	case seedData:
-		fmt.Println("Seed data ...")
-		seeds.Seed()
+		c.seedData()
 
 	case "exit":
 		fmt.Println("Shutdown ...")
@@ -177,12 +174,17 @@ func (c *LatencyMapCLI) executor(in string) {
 	}
 }
 
+func (c *LatencyMapCLI) seedData() {
+	fmt.Println("Seed data ...")
+	seeds.Seed()
+}
+
 func (c *LatencyMapCLI) locationsAdd(blocks []string) {
 	if len(blocks) == 1 {
 		fmt.Println("Error: missing location to add")
 		return
 	}
-	fmt.Printf("Command: %s\n", blocks[0])
+
 	fmt.Println("Add a location")
 	location, err := c.locations.AddLocation(blocks[1])
 	if err != nil {
@@ -197,7 +199,7 @@ func (c *LatencyMapCLI) locationsDelete(blocks []string) {
 		fmt.Println("missing location to delete")
 		return
 	}
-	fmt.Printf("Command: %s\n", blocks[0])
+
 	fmt.Println("Delete a location")
 	c.locations.DeleteLocation(blocks[1])
 }
@@ -207,7 +209,6 @@ func (c *LatencyMapCLI) measuresList(blocks []string) {
 		fmt.Println("Error: missing limit number")
 		return
 	}
-	fmt.Printf("Command: %s\n", blocks[0])
 }
 
 func (c *LatencyMapCLI) measuresExport(blocks []string) {
@@ -219,7 +220,6 @@ func (c *LatencyMapCLI) measuresExport(blocks []string) {
 }
 
 func (c *LatencyMapCLI) minersUpdate(blocks []string) {
-	fmt.Printf("Command: %s\n", blocks[0])
 	blockHeight := ""
 	if len(blocks) > 1 {
 		blockHeight = blocks[1]
@@ -228,7 +228,6 @@ func (c *LatencyMapCLI) minersUpdate(blocks []string) {
 }
 
 func (c *LatencyMapCLI) minersParse(blocks []string) {
-	fmt.Printf("Command: %s\n", blocks[0])
 	if len(blocks) == 1 {
 		fmt.Println("Error: missing block height")
 		return

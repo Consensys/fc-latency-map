@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
+	jg "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm/clause"
 
@@ -30,14 +30,14 @@ func (m *ExportServiceImpl) export(fn string) {
 
 	fullJSON, err := json.MarshalIndent(measurements.MinersLatency, "", "  ")
 	if err != nil {
-		log.WithFields(log.Fields{
+		jg.WithFields(jg.Fields{
 			"error": err,
 		}).Error("Create json data")
 		return
 	}
 
 	file.Create(fn, fullJSON)
-	log.WithFields(log.Fields{
+	jg.WithFields(jg.Fields{
 		"file": fn,
 	}).Info("Export successful")
 }
@@ -108,9 +108,8 @@ func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []
 			IP: ip,
 		}).
 		Find(&meas).Error
-
 	if err != nil {
-		log.WithFields(log.Fields{
+		jg.WithFields(jg.Fields{
 			"error": err,
 		}).Error("GetMeasureResults")
 		return nil
@@ -125,7 +124,7 @@ func (m *ExportServiceImpl) getProbes(l *models.Location) []*models.Probe {
 		CountryCode: l.Country,
 	}).Find(&probes).Error
 	if err != nil {
-		log.WithFields(log.Fields{
+		jg.WithFields(jg.Fields{
 			"error": err,
 		}).Error("GetProbes")
 
@@ -139,7 +138,7 @@ func (m *ExportServiceImpl) getMiners() []*models.Miner {
 
 	err := (m.DBMgr).GetDB().Find(&miners).Error
 	if err != nil {
-		log.WithFields(log.Fields{
+		jg.WithFields(jg.Fields{
 			"error": err,
 		}).Error("GetMiners")
 		return nil
@@ -152,11 +151,10 @@ func (m *ExportServiceImpl) getLocations() []*models.Location {
 	err := (m.DBMgr).GetDB().
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: false}).
 		Find(&loc).Error
-
 	if err != nil {
-		log.WithFields(log.Fields{
+		jg.WithFields(jg.Fields{
 			"error": err,
-		}).Error("GetLocations")
+		}).Error("DisplayLocations")
 
 		return nil
 	}

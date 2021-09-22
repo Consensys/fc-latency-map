@@ -7,7 +7,7 @@ import (
 type LocationService interface {
 
 	// GetLocations returns locations list
-	GetLocations() []*models.Location
+	DisplayLocations() []*models.Location
 
 	// GetLocation returns a location
 	GetLocation(location *models.Location) *models.Location

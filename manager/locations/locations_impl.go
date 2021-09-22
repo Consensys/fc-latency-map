@@ -21,7 +21,7 @@ func NewLocationServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) LocationSer
 	}
 }
 
-func (srv *LocationServiceImpl) GetLocations() []*models.Location {
+func (srv *LocationServiceImpl) DisplayLocations() []*models.Location {
 	var locsList = []*models.Location{}
 	(srv.DBMgr).GetDB().Find(&locsList)
 	for _, location := range locsList {

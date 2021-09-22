@@ -3,8 +3,9 @@ package ripemgr
 //go:generate mockgen -destination mocks/mocks.go -package ripemgr . RipeMgr
 
 import (
-	"github.com/ConsenSys/fc-latency-map/manager/models"
 	atlas "github.com/keltia/ripe-atlas"
+
+	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
 type RipeMgr interface {
