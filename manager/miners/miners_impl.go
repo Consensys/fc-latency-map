@@ -31,7 +31,7 @@ func NewMinerServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr, fMgr fmgr.File
 
 func (srv *MinerServiceImpl) GetAllMiners() []*models.Miner {
 	var miners []*models.Miner
-	(srv.DBMgr).GetDB().Find(&miners)
+	srv.DBMgr.GetDB().Find(&miners)
 	for _, m := range miners {
 		log.Printf("Miner address: %s - ip: %s\n", m.Address, m.IP)
 	}
@@ -85,7 +85,7 @@ func getMinerIP(minerInfo *miner.MinerInfo) string {
 }
 
 func (srv *MinerServiceImpl) upsertMinersInDB(miners []*models.Miner) {
-	(srv.DBMgr).GetDB().Clauses(clause.OnConflict{
+	srv.DBMgr.GetDB().Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "address"}},
 		DoUpdates: clause.AssignmentColumns([]string{"ip"}),
 	}).Create(&miners)

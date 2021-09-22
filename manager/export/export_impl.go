@@ -28,7 +28,7 @@ func NewExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) ExportService
 func (m *ExportServiceImpl) export(fn string) {
 	measurements := m.GetLatencyMeasurementsStored()
 
-	fullJSON, err := json.MarshalIndent(measurements.MinersLatency, "", "  ")
+	fullJSON, err := json.MarshalIndent(measurements.Country, "", "  ")
 	if err != nil {
 		jg.WithFields(jg.Fields{
 			"error": err,
@@ -44,34 +44,39 @@ func (m *ExportServiceImpl) export(fn string) {
 
 func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
 	results := &Result{
-		MinersLatency: map[string][]*Miner{},
+		Country: map[string]map[string][]*Miner{},
 	}
 
 	loc := m.getLocations()
 
 	for _, l := range loc {
+		if _, found := results.Country[l.Country]; !found {
+			results.Country[l.Country] = make(map[string][]*Miner)
+		}
+
 		miners := m.getMiners()
 
 		for _, miner := range miners {
 			latency := &Miner{
-				Address:  miner.Address,
-				Measures: []*MeasureIP{},
+				Address:   miner.Address,
+				Latitude:  miner.Latitude,
+				Longitude: miner.Longitude,
+				Measures:  []*MeasureIP{},
 			}
 			if miner.IP == "" {
 				continue
 			}
 			latency.IP = strings.Split(miner.IP, ",")
-			results.MinersLatency[l.Country] = append(results.MinersLatency[l.Country], latency)
 			probes := m.getProbes(l)
-
-			m.createLatency(probes, latency)
+			latency = m.createLatency(probes, latency)
+			results.Country[l.Country][l.IataCode] = append(results.Country[l.Country][l.IataCode], latency)
 		}
 	}
 
 	return results
 }
 
-func (m *ExportServiceImpl) createLatency(probes []*models.Probe, latency *Miner) {
+func (m *ExportServiceImpl) createLatency(probes []*models.Probe, latency *Miner) *Miner {
 	for _, probe := range probes {
 		for _, ip := range latency.IP {
 			measure := &MeasureIP{IP: ip}
@@ -91,6 +96,7 @@ func (m *ExportServiceImpl) createLatency(probes []*models.Probe, latency *Miner
 			}
 		}
 	}
+	return latency
 }
 
 func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []*models.MeasurementResult {

@@ -1,13 +1,15 @@
 package export
 
 type Result struct {
-	MinersLatency map[string][]*Miner `json:"minersLatency,omitempty"`
+	Country map[string]map[string][]*Miner `json:"country,omitempty"`
 }
 
 type Miner struct {
-	Address  string       `json:"address"`
-	IP       []string     `json:"ip,omitempty"`
-	Measures []*MeasureIP `json:"measures,omitempty"`
+	Address   string       `json:"address"`
+	IP        []string     `json:"ip,omitempty"`
+	Measures  []*MeasureIP `json:"measures,omitempty"`
+	Latitude  float64      `json:"latitude,omitempty"`
+	Longitude float64      `json:"longitude,omitempty"`
 }
 
 type MeasureIP struct {

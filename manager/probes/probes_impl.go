@@ -24,7 +24,7 @@ func NewProbeServiceImpl(dbMgr db.DatabaseMgr, ripeMgr ripemgr.RipeMgr) (ProbeSe
 
 func (srv *ProbeServiceImpl) RequestProbes() ([]*atlas.Probe, error) {
 	var locsList = []*models.Location{}
-	(srv.DBMgr).GetDB().Find(&locsList)
+	srv.DBMgr.GetDB().Find(&locsList)
 	var bestProbes []*atlas.Probe
 
 	for _, location := range locsList {
@@ -45,7 +45,7 @@ func (srv *ProbeServiceImpl) RequestProbes() ([]*atlas.Probe, error) {
 
 func (srv *ProbeServiceImpl) GetAllProbes() []*models.Probe {
 	var probesList = []*models.Probe{}
-	(srv.DBMgr).GetDB().Find(&probesList)
+	srv.DBMgr.GetDB().Find(&probesList)
 	for _, probe := range probesList {
 		log.Printf("Probe ID: %d - Country code: %s\n", probe.ProbeID, probe.CountryCode)
 	}
@@ -73,10 +73,10 @@ func (srv *ProbeServiceImpl) Update() {
 		}
 
 		var probeExits = models.Probe{}
-		(srv.DBMgr).GetDB().Where("probe_id = ?", probe.ID).First(&probeExits)
+		srv.DBMgr.GetDB().Where("probe_id = ?", probe.ID).First(&probeExits)
 
 		if (models.Probe{}) == probeExits {
-			err := (srv.DBMgr).GetDB().Debug().Model(&models.Probe{}).Create(&newProbe).Error
+			err := srv.DBMgr.GetDB().Debug().Model(&models.Probe{}).Create(&newProbe).Error
 			if err != nil {
 				panic("Unable to create probe")
 			}
@@ -88,15 +88,15 @@ func (srv *ProbeServiceImpl) Update() {
 
 	// update by removing probes not in location list
 	var probesList = []*models.Probe{}
-	(srv.DBMgr).GetDB().Find(&probesList)
+	srv.DBMgr.GetDB().Find(&probesList)
 	for _, probe := range probesList {
 		var location = models.Location{
 			Country: probe.CountryCode,
 		}
 		var locationExists = models.Location{}
-		(srv.DBMgr).GetDB().Where(&location).First(&locationExists)
+		srv.DBMgr.GetDB().Where(&location).First(&locationExists)
 		if locationExists == (models.Location{}) {
-			(srv.DBMgr).GetDB().Delete(&models.Probe{}, probe.ID)
+			srv.DBMgr.GetDB().Delete(&models.Probe{}, probe.ID)
 			log.WithFields(log.Fields{
 				"ID": probe.ID,
 			}).Info("Probe deleted")

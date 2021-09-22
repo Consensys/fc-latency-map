@@ -78,8 +78,11 @@ func (rMgr *RipeMgrImpl) GetNearestProbe(latitude, longitude string) (*atlas.Pro
 			return nil, err
 		}
 	}
+	if len(nearestProbes) > 0 {
+		return &nearestProbes[0], nil
+	}
 
-	return &nearestProbes[0], nil
+	return nil, err
 }
 
 func (rMgr *RipeMgrImpl) getLatLongRange(lat, long, coordRange float64) map[string]string {
@@ -150,11 +153,11 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 		d = rMgr.getDefinitions(miner, isOneOff, pingInterval, d)
 	}
 
-	runningTime := rMgr.conf.GetInt("RIPE_PING_RUNNING_TIME")
 	mr := rMgr.getMeasurementRequest(d, isOneOff, probes)
 
 	if !isOneOff {
-		mr.StopTime = int(time.Now().Unix()) + runningTime
+		runningTime := rMgr.conf.GetInt("RIPE_PING_RUNNING_TIME")
+		mr.StopTime = mr.StartTime + runningTime
 	}
 
 	p, err := rMgr.c.Ping(mr)
@@ -191,7 +194,7 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 func (rMgr *RipeMgrImpl) getMeasurementRequest(d []atlas.Definition, isOneOff bool, probes []atlas.ProbeSet) *atlas.MeasurementRequest {
 	return &atlas.MeasurementRequest{
 		Definitions: d,
-		StartTime:   int(time.Now().Unix()),
+		StartTime:   int(time.Now().Unix() + 10),
 		IsOneoff:    isOneOff,
 		Probes:      probes,
 	}
