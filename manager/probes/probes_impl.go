@@ -1,9 +1,8 @@
 package probes
 
 import (
-	log "github.com/sirupsen/logrus"
-
 	atlas "github.com/keltia/ripe-atlas"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
@@ -68,16 +67,17 @@ func (srv *ProbeServiceImpl) Update() {
 			CountryCode: probe.CountryCode,
 		}
 
-		var probe = models.Probe{}
-		(*srv.DbMgr).GetDb().Where("country_code = ?", probe.CountryCode).First(&probe)
-		if (models.Probe{}) == probe {
+		var probeExits = models.Probe{}
+		(*srv.DbMgr).GetDb().Where("country_code = ?", probe.CountryCode).First(&probeExits)
+		
+		if (models.Probe{}) == probeExits {
 			err := (*srv.DbMgr).GetDb().Debug().Model(&models.Probe{}).Create(&newProbe).Error
 			if err != nil {
 				panic("Unable to create probe")
 			}
 			log.Printf("Add new location, ID: %v", newProbe.ProbeID)
 		} else {
-			log.Printf("Probe already exists, Probe ID: %v", probe.ProbeID)
+			log.Printf("Probe already exists, Probe ID: %v", probeExits.ProbeID)
 		}
 	}
 

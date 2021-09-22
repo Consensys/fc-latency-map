@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
@@ -39,12 +40,12 @@ func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
 	}, nil
 }
 
-func (rMge *RipeMgrImpl) GetProbe(id int) (*atlas.Probe, error) {
-	return rMge.c.GetProbe(id)
+func (rMgr *RipeMgrImpl) GetProbe(id int) (*atlas.Probe, error) {
+	return rMgr.c.GetProbe(id)
 }
 
-func (rMge *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error) {
-	probes, err := rMge.c.GetProbes(opts)
+func (rMgr *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error) {
+	probes, err := rMgr.c.GetProbes(opts)
 	if err != nil {
 		return nil, err
 	}
@@ -53,12 +54,12 @@ func (rMge *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error
 
 }
 
-func (rMge *RipeMgrImpl) GetNearestProbe(latitude, longitude string) (*atlas.Probe, error) {
+func (rMgr *RipeMgrImpl) GetNearestProbe(latitude, longitude string) (*atlas.Probe, error) {
 	var err error
 	nearestProbes := []atlas.Probe{}
 
-	maxLocRange := rMge.conf.GetFloat64("RIPE_LOCATION_RANGE_MAX")
-	coordRange := rMge.conf.GetFloat64("RIPE_LOCATION_RANGE_INIT")
+	maxLocRange := rMgr.conf.GetFloat64("RIPE_LOCATION_RANGE_MAX")
+	coordRange := rMgr.conf.GetFloat64("RIPE_LOCATION_RANGE_INIT")
 
 	lat, _ := strconv.ParseFloat(latitude, 32)
 	long, _ := strconv.ParseFloat(longitude, 32)
@@ -85,7 +86,7 @@ func (rMge *RipeMgrImpl) GetNearestProbe(latitude, longitude string) (*atlas.Pro
 		opts["status_name"] = "Connected"
 		opts["sort"] = "id"
 
-		nearestProbes, err = rMge.c.GetProbes(opts)
+		nearestProbes, err = rMgr.c.GetProbes(opts)
 
 		if err != nil {
 			if err.Error() == "empty probe list" {
@@ -98,11 +99,11 @@ func (rMge *RipeMgrImpl) GetNearestProbe(latitude, longitude string) (*atlas.Pro
 	return &nearestProbes[0], nil
 }
 
-func (rMge *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.MeasurementResult, error) {
+func (rMgr *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.MeasurementResult, error) {
 	var results []atlas.MeasurementResult
 	for k, v := range ms {
-		rMge.c.SetOption("start", strconv.Itoa(v))
-		measurementResult, err := rMge.c.GetResults(k)
+		rMgr.c.SetOption("start", strconv.Itoa(v))
+		measurementResult, err := rMgr.c.GetResults(k)
 		if err != nil {
 			return nil, err
 		}
@@ -113,7 +114,10 @@ func (rMge *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.Measurem
 	return results, nil
 }
 
-func (rMge *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs string) ([]*atlas.Measurement, error) {
+func (rMgr *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs string) ([]*atlas.Measurement, error) {
+	if len(miners) == 0 {
+		return nil, errors.New("miners are missing")
+	}
 	probes := []atlas.ProbeSet{
 		{
 			Type:      "probes",
@@ -122,13 +126,15 @@ func (rMge *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs str
 		},
 	}
 
-	return rMge.createPing(miners, probes)
+	return rMgr.createPing(miners, probes)
 }
 
-func (rMge *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet) ([]*atlas.Measurement, error) {
+func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet) ([]*atlas.Measurement, error) {
 	var d []atlas.Definition
 
-	pingInterval := rMge.conf.GetInt("RIPE_PING_INTERVAL")
+	isOneOff := rMgr.conf.GetBool("RIPE_ONE_OFF")
+
+	pingInterval := rMgr.conf.GetInt("RIPE_PING_INTERVAL")
 
 	for _, miner := range miners {
 		if miner.IP == "" {
@@ -140,31 +146,36 @@ func (rMge *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 				continue
 			}
 
-			d = append(d, atlas.Definition{
+			definition := atlas.Definition{
 				Description: fmt.Sprintf("%s ping to %s", miner.Address, ip),
 				AF:          addresses.GetIPVersion(ipAdd),
 				Target:      ip,
 				Tags: []string{
 					miner.Address,
 				},
-				Type:     "ping",
-				Interval: pingInterval,
-			})
+				Type: "ping",
+			}
+			if !isOneOff {
+				definition.Interval = pingInterval
+			}
+			d = append(d, definition)
 		}
 	}
 
-	isOneOff := rMge.conf.GetBool("RIPE_ONE_OFF")
-	runningTime := rMge.conf.GetInt("RIPE_PING_RUNNING_TIME")
+	runningTime := rMgr.conf.GetInt("RIPE_PING_RUNNING_TIME")
 
 	mr := &atlas.MeasurementRequest{
 		Definitions: d,
 		StartTime:   int(time.Now().Unix()),
-		StopTime:    int(time.Now().Unix()) + runningTime,
 		IsOneoff:    isOneOff,
 		Probes:      probes,
 	}
 
-	p, err := rMge.c.Ping(mr)
+	if !isOneOff {
+		mr.StopTime = int(time.Now().Unix()) + runningTime
+	}
+
+	p, err := rMgr.c.Ping(mr)
 
 	if err != nil {
 		log.WithFields(log.Fields{
