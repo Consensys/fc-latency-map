@@ -120,7 +120,7 @@ func (c *LatencyMapCLI) executor(in string) {
 
 	// Locations list
 	case locationsList:
-		fmt.Printf("Command: %s \n", blocks[0])
+		fmt.Printf("Command: %s\n", blocks[0])
 		fmt.Println("List all location from db")
 		c.locations.GetLocations()
 
@@ -130,13 +130,13 @@ func (c *LatencyMapCLI) executor(in string) {
 			fmt.Println("Error: missing location to add")
 			return
 		}
-		fmt.Printf("Command: %s \n", blocks[0])
+		fmt.Printf("Command: %s\n", blocks[0])
 		fmt.Println("Add a location")
 		location, err := c.locations.AddLocation(blocks[1])
 		if err != nil {
 			log.Error(err)
 		} else {
-			fmt.Printf("ID: %d", location.ID)
+			fmt.Printf("ID: %d\n", location.ID)
 		}
 
 	// Delete location
@@ -145,17 +145,17 @@ func (c *LatencyMapCLI) executor(in string) {
 			fmt.Println("missing location to delete")
 			return
 		}
-		fmt.Printf("Command: %s \n", blocks[0])
+		fmt.Printf("Command: %s\n", blocks[0])
 		fmt.Println("Delete a location")
 		c.locations.DeleteLocation(blocks[1])
 
 		// probes
 	case probesUpdate:
-		fmt.Printf("Command: %s \n", blocks[0])
+		fmt.Printf("Command: %s\n", blocks[0])
 		c.probes.Update()
 
 	case probesList:
-		fmt.Printf("Command: %s \n", blocks[0])
+		fmt.Printf("Command: %s\n", blocks[0])
 		c.probes.GetAllProbes()
 
 		// Measurements
@@ -163,7 +163,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		c.measurements.CreateMeasurements()
 
 	case measuresGet:
-		fmt.Printf("Command: %s \n", blocks[0])
+		fmt.Printf("Command: %s\n", blocks[0])
 
 		c.measurements.GetMeasures()
 
@@ -172,21 +172,21 @@ func (c *LatencyMapCLI) executor(in string) {
 			fmt.Println("Error: missing limit number")
 			return
 		}
-		fmt.Printf("Command: %s \n", blocks[0])
+		fmt.Printf("Command: %s\n", blocks[0])
 
 	case measuresExport:
 		var fn string
 		if len(blocks) == 1 {
-			fn = fmt.Sprintf("data_%v.json", time.Now().Unix())
+			fn = fmt.Sprintf("data_%v.json\n", time.Now().Unix())
 		}
 		c.export.Export(fn)
 
 	case minersList:
-		fmt.Printf("Command: %s \n", blocks[0])
+		fmt.Printf("Command: %s\n", blocks[0])
 		c.miners.GetAllMiners()
 
 	case minersUpdate:
-		fmt.Printf("Command: %s \n", blocks[0])
+		fmt.Printf("Command: %s\n", blocks[0])
 		blockHeight := ""
 		if len(blocks) > 1 {
 			blockHeight = blocks[1]
@@ -194,7 +194,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		c.miners.MinersUpdate(blockHeight)
 
 	case minersParse:
-		fmt.Printf("Command: %s \n", blocks[0])
+		fmt.Printf("Command: %s\n", blocks[0])
 		if len(blocks) == 1 {
 			fmt.Println("Error: missing block height")
 			return

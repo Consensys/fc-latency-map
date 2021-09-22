@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
@@ -34,16 +35,17 @@ func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
 	log.Println("api version ", ver)
 
 	return &RipeMgrImpl{
-		c: c,
+		c:    c,
+		conf: conf,
 	}, nil
 }
 
-func (fMgr *RipeMgrImpl) GetProbe(id int) (*atlas.Probe, error) {
-	return fMgr.c.GetProbe(id)
+func (rMgr *RipeMgrImpl) GetProbe(id int) (*atlas.Probe, error) {
+	return rMgr.c.GetProbe(id)
 }
 
-func (fMgr *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error) {
-	probes, err := fMgr.c.GetProbes(opts)
+func (rMgr *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error) {
+	probes, err := rMgr.c.GetProbes(opts)
 	if err != nil {
 		return nil, err
 	}
@@ -52,11 +54,11 @@ func (fMgr *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error
 
 }
 
-func (m *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.MeasurementResult, error) {
+func (rMgr *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.MeasurementResult, error) {
 	var results []atlas.MeasurementResult
 	for k, v := range ms {
-		m.c.SetOption("start", strconv.Itoa(v))
-		measurementResult, err := m.c.GetResults(k)
+		rMgr.c.SetOption("start", strconv.Itoa(v))
+		measurementResult, err := rMgr.c.GetResults(k)
 		if err != nil {
 			return nil, err
 		}
@@ -67,7 +69,10 @@ func (m *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.Measurement
 	return results, nil
 }
 
-func (m *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs string) ([]*atlas.Measurement, error) {
+func (rMgr *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs string) ([]*atlas.Measurement, error) {
+	if len(miners) == 0 {
+		return nil, errors.New("miners are missing")
+	}
 	probes := []atlas.ProbeSet{
 		{
 			Type:      "probes",
@@ -76,13 +81,15 @@ func (m *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs string
 		},
 	}
 
-	return m.createPing(miners, probes)
+	return rMgr.createPing(miners, probes)
 }
 
-func (m *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet) ([]*atlas.Measurement, error) {
+func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet) ([]*atlas.Measurement, error) {
 	var d []atlas.Definition
 
-	pingInterval := m.conf.GetInt("RIPE_PING_INTERVAL")
+	isOneOff := rMgr.conf.GetBool("RIPE_ONE_OFF")
+
+	pingInterval := rMgr.conf.GetInt("RIPE_PING_INTERVAL")
 
 	for _, miner := range miners {
 		if miner.IP == "" {
@@ -94,31 +101,36 @@ func (m *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet
 				continue
 			}
 
-			d = append(d, atlas.Definition{
+			definition := atlas.Definition{
 				Description: fmt.Sprintf("%s ping to %s", miner.Address, ip),
 				AF:          addresses.GetIPVersion(ipAdd),
 				Target:      ip,
 				Tags: []string{
 					miner.Address,
 				},
-				Type:     "ping",
-				Interval: pingInterval,
-			})
+				Type: "ping",
+			}
+			if !isOneOff {
+				definition.Interval = pingInterval
+			}
+			d = append(d, definition)
 		}
 	}
 
-	isOneOff := m.conf.GetBool("RIPE_ONE_OFF")
-	runningTime := m.conf.GetInt("RIPE_PING_RUNNING_TIME")
+	runningTime := rMgr.conf.GetInt("RIPE_PING_RUNNING_TIME")
 
 	mr := &atlas.MeasurementRequest{
 		Definitions: d,
 		StartTime:   int(time.Now().Unix()),
-		StopTime:    int(time.Now().Unix()) + runningTime,
 		IsOneoff:    isOneOff,
 		Probes:      probes,
 	}
 
-	p, err := m.c.Ping(mr)
+	if !isOneOff {
+		mr.StopTime = int(time.Now().Unix()) + runningTime
+	}
+
+	p, err := rMgr.c.Ping(mr)
 
 	if err != nil {
 		log.WithFields(log.Fields{
