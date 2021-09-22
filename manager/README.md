@@ -24,6 +24,20 @@ Is available an example of configuration on [.env.example](./manager/.env.exampl
 cp .env.example .env
 ```
 
+## Development
+
+* Run golangci
+```shell
+# fix format and import order
+golangci-lint run -v --no-config --disable-all -E whitespace --fix
+golangci-lint run -v --no-config --disable-all -E goimports --fix
+golangci-lint run -v --no-config --disable-all -E gofmt --fix
+
+# run golint-ci
+golangci-lint run ./...
+```
+
+
 ## SQLite commands
 
 1. Open database

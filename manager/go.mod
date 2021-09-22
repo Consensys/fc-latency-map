@@ -10,11 +10,12 @@ require (
 	github.com/filecoin-project/lotus v1.11.1
 	github.com/filecoin-project/specs-actors v0.9.14
 	github.com/go-gormigrate/gormigrate/v2 v2.0.0
-	github.com/go-sql-driver/mysql v1.5.0
+	github.com/golang/mock v1.6.0
 	github.com/ipfs/go-cid v0.0.7
 	github.com/keltia/ripe-atlas v0.0.0-20210506215806-13f0d38c56e7
 	github.com/mattn/go-sqlite3 v1.14.8 // indirect
 	github.com/multiformats/go-multiaddr v0.3.3
+	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0
@@ -54,7 +55,6 @@ require (
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
-	github.com/golang/mock v1.6.0 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/gorilla/mux v1.7.4 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
@@ -127,7 +127,6 @@ require (
 	github.com/nkovacs/streamquote v0.0.0-20170412213628-49af9bddb229 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pelletier/go-toml v1.9.3 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pkg/term v1.2.0-beta.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/polydawn/refmt v0.0.0-20190809202753-05966cbd336a // indirect

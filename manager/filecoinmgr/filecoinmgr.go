@@ -12,7 +12,7 @@ type FilecoinMgr interface {
 	// GetChainHead return chainhead data
 	GetChainHead() (*types.TipSet, error)
 
-	// GetChainHead return chainhead block height
+	// GetBlockHeight return chainhead block height
 	GetBlockHeight() (abi.ChainEpoch, error)
 
 	// GetVerifiedDealsByBlockRange return verified deals for a range of block

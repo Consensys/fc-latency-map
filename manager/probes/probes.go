@@ -1,5 +1,7 @@
 package probes
 
+//go:generate mockgen -destination mocks/mocks.go -package probes . ProbeService
+
 import (
 	atlas "github.com/keltia/ripe-atlas"
 
@@ -8,13 +10,13 @@ import (
 
 type Miner struct {
 	Address string
-	Ip      []string
+	IP      []string
 }
 
 type ProbeService interface {
 
 	// RequestProbes returns Probes from Ripe
-	RequestProbes() ([]atlas.Probe, error)
+	RequestProbes() ([]*atlas.Probe, error)
 
 	// GetAllProbes returns all Probes
 	GetAllProbes() []*models.Probe

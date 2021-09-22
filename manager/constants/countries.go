@@ -1,7 +1,7 @@
 package constants
 
 type Country struct {
-	Code  string
+	Code string
 	Name string
 }
 

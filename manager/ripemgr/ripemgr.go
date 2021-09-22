@@ -1,8 +1,11 @@
 package ripemgr
 
+//go:generate mockgen -destination mocks/mocks.go -package ripemgr . RipeMgr
+
 import (
-	"github.com/ConsenSys/fc-latency-map/manager/models"
 	atlas "github.com/keltia/ripe-atlas"
+
+	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
 type RipeMgr interface {
@@ -13,7 +16,7 @@ type RipeMgr interface {
 	// GetProbes return probes list
 	GetProbes(opts map[string]string) ([]atlas.Probe, error)
 
-	// GetNearestProbes get the nearest probe from a location
+	// GetNearestProbe get the nearest probe from a location
 	GetNearestProbe(latitude, longitude string) (*atlas.Probe, error)
 
 	// CreateMeasurements create ripe measurements

@@ -15,66 +15,67 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
+//nolint:tagliatelle
 type Airport struct {
-	Continent 	string `json:"continent"`
+	Continent   string `json:"continent"`
 	Coordinates string `json:"coordinates"`
-	IataCode 		string `json:"iata_code"`
-	IsoCountry 	string `json:"iso_country"`
+	IataCode    string `json:"iata_code"`
+	IsoCountry  string `json:"iso_country"`
 }
 
 type LocationServiceImpl struct {
 	Conf  *viper.Viper
-	DbMgr *db.DatabaseMgr
+	DBMgr db.DatabaseMgr
 }
 
-func NewLocationServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr) LocationService {
+func NewLocationServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) LocationService {
 	return &LocationServiceImpl{
 		Conf:  conf,
-		DbMgr: dbMgr,
+		DBMgr: dbMgr,
 	}
 }
 
-func (srv *LocationServiceImpl) GetLocations() []*models.Location {
+func (srv *LocationServiceImpl) DisplayLocations() []*models.Location {
 	var locsList = []*models.Location{}
-	(*srv.DbMgr).GetDb().Find(&locsList)
+	srv.DBMgr.GetDB().Find(&locsList)
 	for _, location := range locsList {
 		log.Printf("ID:%d - Country code: %s\n", location.ID, location.Country)
 	}
 	return locsList
 }
 
-func (srv *LocationServiceImpl) GetLocation(location models.Location) models.Location {
-	if err := (*srv.DbMgr).GetDb().Where(location).First(&location).Error; err != nil {
-		return models.Location{}
+func (srv *LocationServiceImpl) GetLocation(location *models.Location) *models.Location {
+	if err := srv.DBMgr.GetDB().Where(location).First(&location).Error; err != nil {
+		return nil
 	}
 	return location
 }
 
-func (srv *LocationServiceImpl) AddLocation(newLocation models.Location) models.Location {
+func (srv *LocationServiceImpl) AddLocation(newLocation *models.Location) *models.Location {
 	var location = models.Location{}
-	(*srv.DbMgr).GetDb().Where("iata_code = ?", newLocation.IataCode).First(&location)
+	srv.DBMgr.GetDB().Where("iata_code = ?", newLocation.IataCode).First(&location)
 	if location == (models.Location{}) {
-		(*srv.DbMgr).GetDb().Create(&newLocation) 
+		srv.DBMgr.GetDB().Create(&newLocation)
 		log.Printf("New location, ID:%d - Country code: %s\n", newLocation.ID, newLocation.Country)
 	} else {
 		log.Printf("Location already exists, ID:%d\n", location.ID)
 	}
-	return location
+	return &location
 }
 
-func (srv *LocationServiceImpl) DeleteLocation(location models.Location) bool {
-	location = srv.GetLocation(location)
-	if (location == models.Location{}) {
+func (srv *LocationServiceImpl) DeleteLocation(location *models.Location) bool {
+	l := srv.GetLocation(location)
+	if l == nil {
 		log.Printf("Unable to find location %s\n", location.Country)
 	} else {
-		(*srv.DbMgr).GetDb().Delete(&location)
+		srv.DBMgr.GetDB().Delete(&location)
 		log.Printf("Location %d deleted\n", location.ID)
 	}
-	
+
 	return true
 }
 
-func (srv *LocationServiceImpl) CheckCountry(countryCode string) bool {	
+func (srv *LocationServiceImpl) CheckCountry(countryCode string) bool {
 	for _, country := range constants.Countries {
 		if countryCode == country.Code {
 			return true
@@ -91,13 +92,13 @@ func (srv *LocationServiceImpl) FindAirport(iataCode string) (Airport, error) {
 	}
 	fmt.Printf("Successfully Opened: %s\n", filename)
 	defer jsonFile.Close()
-	
+
 	jsonData, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
 		return Airport{}, err
 	}
 
-	airports := make([]Airport,0)
+	airports := make([]Airport, 0)
 	if err := json.Unmarshal(jsonData, &airports); err != nil {
 		return Airport{}, err
 	}
@@ -107,6 +108,6 @@ func (srv *LocationServiceImpl) FindAirport(iataCode string) (Airport, error) {
 			return airport, nil
 		}
 	}
-	
+
 	return Airport{}, errors.New("airport IataCode not found")
 }

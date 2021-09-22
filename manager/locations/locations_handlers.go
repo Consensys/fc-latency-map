@@ -18,39 +18,39 @@ func NewLocationHandler() *LocationHandler {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	lSer := NewLocationServiceImpl(conf, &dbMgr)
+	lSer := NewLocationServiceImpl(conf, dbMgr)
 	return &LocationHandler{
 		LSer: &lSer,
 	}
 }
 
-// GetLocationsHandler handle locations get cli command
-func (mHdl *LocationHandler) GetLocations() {
-	(*mHdl.LSer).GetLocations()
+// GetLocations handle locations get cli command
+func (mHdl *LocationHandler) GetLocations() { //nolint:revive
+	(*mHdl.LSer).DisplayLocations()
 }
 
-// AddLocationHandler handle location add cli command
-func (mHdl *LocationHandler) AddLocation(airportCode string)  (models.Location, error) {
+// AddLocation handle location add cli command
+func (mHdl *LocationHandler) AddLocation(airportCode string) (*models.Location, error) {
 	airport, err := (*mHdl.LSer).FindAirport(airportCode)
 	if err != nil {
-		return models.Location{}, err
+		return nil, err
 	}
 
 	coords := strings.Split(airport.Coordinates, ", ")
-	location := models.Location{
-		Country: airport.IsoCountry,
-		IataCode: airport.IataCode,
-		Latitude:    coords[0],
-		Longitude: coords[1],
+	location := &models.Location{
+		Country:   airport.IsoCountry,
+		IataCode:  airport.IataCode,
+		Latitude:  coords[1],
+		Longitude: coords[0],
 	}
-	
+
 	location = (*mHdl.LSer).AddLocation(location)
 	return location, nil
 }
 
 // DeleteLocation handle location delete cli command
 func (mHdl *LocationHandler) DeleteLocation(countryCode string) {
-	location := models.Location{
+	location := &models.Location{
 		Country: countryCode,
 	}
 	(*mHdl.LSer).DeleteLocation(location)

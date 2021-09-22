@@ -1,0 +1,178 @@
+linters-settings:
+  dupl:
+    threshold: 100
+  funlen:
+    lines: 55
+    statements: 26
+  goconst:
+    min-len: 2
+    min-occurrences: 2
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - dupImport # https://github.com/go-critic/go-critic/issues/845
+      - ifElseChain
+      - octalLiteral
+      - whyNoLint
+      - wrapperFunc
+  goimports:
+    local-prefixes: github.com/ConsenSys/fc-latency-map
+  gomnd:
+    settings:
+      mnd:
+        # don't include the "operation" and "assign"
+        checks: argument,case,condition,return
+  govet:
+    check-shadowing: true
+  lll:
+    line-length: 160
+  maligned:
+    suggest-new: true
+  misspell:
+    locale: US
+  nolintlint:
+    allow-leading-space: true # don't require machine-readable nolint directives (i.e. with no leading space)
+    allow-unused: false # report any unused nolint directives
+    require-explanation: false # don't require an explanation for nolint directives
+    require-specific: false # don't require nolint directives to be specific about which linter is being skipped
+  nestif:
+    min-complexity: 4
+  godox:
+     keywords:
+      - TODO
+      - BUG
+      - FIXME
+      - OPTIMIZE
+      - HACK
+  gocognit:
+    min-complexity: 13
+  gocyclo:
+    min-complexity: 15
+  staticcheck:
+    go: "1.17"
+    checks: ["all"]
+  stylecheck:
+    go: "1.17"
+    checks: [ "all" ]
+  revive:
+    ignore-generated-header: true
+    severity: warning
+    rules:
+      - name: bare-return
+      - name: blank-imports
+      - name: bool-literal-in-expr
+      - name: confusing-results
+      - name: constant-logical-expr
+      - name: context-as-argument
+      - name: context-keys-type
+      - name: dot-imports
+      - name: duplicated-imports
+      - name: early-return
+      - name: empty-block
+      - name: empty-lines
+      - name: error-naming
+      - name: error-return
+      - name: error-strings
+      - name: errorf
+      - name: get-return
+      - name: identical-branches
+      - name: if-return
+      - name: import-shadowing
+      - name: increment-decrement
+      - name: indent-error-flow
+      - name: modifies-parameter
+      - name: modifies-value-receiver
+      - name: nested-structs
+      - name: string-format
+      - name: string-of-int
+      - name: struct-tag
+      - name: superfluous-else
+      - name: time-naming
+      - name: unconditional-recursion
+      - name: unexported-naming
+      - name: unexported-return
+      - name: unnecessary-stmt
+      - name: unreachable-code
+      - name: unused-parameter
+      - name: useless-break
+      - name: var-declaration
+      - name: var-naming
+      - name: function-result-limit
+        arguments: 3
+      - name: argument-limit
+        arguments: 4
+      - name: cyclomatic
+        arguments: 16
+      - name: add-constant
+        arguments:
+          - maxLitCount: "5"
+            allowStrs: '"","error"'
+            allowInts: "0,1,2,4,10,32,64,6"
+#      - name: exported
+#      - name: flag-parameter
+#      - name: deep-exit
+#      - name: package-comments
+#      - name: unused-receiver
+linters:
+  disable-all: true
+  enable:
+    - asciicheck
+    - bodyclose
+    - deadcode
+    - depguard
+    - dogsled
+    - dupl
+    - errcheck
+    - exhaustive
+    - exportloopref
+    - funlen
+    - gochecknoinits
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - godox
+    - gofmt
+    - goimports
+    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - importas
+    - ineffassign
+    - lll
+    - misspell
+    - nakedret
+    - nestif
+    - noctx
+    - nolintlint
+    - revive
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - tagliatelle
+    - typecheck
+    - unconvert
+    - unconvert
+    - unparam
+    - unused
+    - varcheck
+    - wastedassign
+    - whitespace
+
+  # don't enable:
+  # - wrapcheck
+  # - prealloc
+  # - revive # see https://github.com/mgechev/revive#available-rules for details.
+  # - wsl
+
+run:
+  tests: false
+  concurrency: 4

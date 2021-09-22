@@ -6,8 +6,6 @@ import (
 	"github.com/go-gormigrate/gormigrate/v2"
 	"gorm.io/gorm"
 
-	_ "gorm.io/driver/sqlite"
-
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
@@ -20,15 +18,15 @@ func Seed() {
 		panic("failed to connect database")
 	}
 
-	err = Execute(dbMgr.GetDb())
+	err = Execute(dbMgr.GetDB())
 	if err != nil {
 		log.Fatalf("cannot seed tables: %v", err)
 	}
 }
 
+//nolint
 // Execute runs the data seed process
 func Execute(dbc *gorm.DB) error {
-
 	m := gormigrate.New(dbc, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		{
 			ID: "2021091516",

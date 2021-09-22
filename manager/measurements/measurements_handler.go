@@ -22,8 +22,8 @@ func NewHandler() *Handler {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	nodeUrl := conf.GetString("FILECOIN_NODE_URL")
-	fMgr, err := fmgr.NewFilecoinImpl(nodeUrl)
+	nodeURL := conf.GetString("FILECOIN_NODE_URL")
+	fMgr, err := fmgr.NewFilecoinImpl(nodeURL)
 	if err != nil {
 		log.Fatalf("connecting with lotus failed: %s", err)
 	}
@@ -33,7 +33,7 @@ func NewHandler() *Handler {
 		log.Fatalf("connecting with lotus failed: %s", err)
 	}
 
-	mSer := NewMeasurementServiceImpl(conf, &dbMgr, &fMgr)
+	mSer := NewMeasurementServiceImpl(conf, dbMgr, fMgr)
 
 	return &Handler{
 		Service: &mSer,
@@ -41,7 +41,7 @@ func NewHandler() *Handler {
 	}
 }
 
-func (h *Handler) GetMeasures() {
+func (h *Handler) GetMeasures() { //nolint:revive
 	measures := (*h.Service).getMeasuresLastResultTime()
 	results, err := (*h.ripeMgr).GetMeasurementResults(measures)
 	if err != nil {
@@ -55,7 +55,6 @@ func (h *Handler) GetMeasures() {
 }
 
 func (h *Handler) CreateMeasurements() {
-
 	pIDs := strings.Join((*h.Service).getProbIDs(), ",")
 	measures, err := (*h.ripeMgr).CreateMeasurements((*h.Service).getMiners(), pIDs)
 	if err != nil {

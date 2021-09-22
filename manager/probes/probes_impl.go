@@ -1,8 +1,9 @@
 package probes
 
 import (
-	atlas "github.com/keltia/ripe-atlas"
 	log "github.com/sirupsen/logrus"
+
+	atlas "github.com/keltia/ripe-atlas"
 
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
@@ -10,33 +11,33 @@ import (
 )
 
 type ProbeServiceImpl struct {
-	DbMgr   *db.DatabaseMgr
-	RipeMgr *ripemgr.RipeMgr
+	DBMgr   db.DatabaseMgr
+	RipeMgr ripemgr.RipeMgr
 }
 
-func NewProbeServiceImpl(dbMgr *db.DatabaseMgr, ripeMgr *ripemgr.RipeMgr) (ProbeService, error) {
+func NewProbeServiceImpl(dbMgr db.DatabaseMgr, ripeMgr ripemgr.RipeMgr) (ProbeService, error) {
 	return &ProbeServiceImpl{
-		DbMgr:   dbMgr,
+		DBMgr:   dbMgr,
 		RipeMgr: ripeMgr,
 	}, nil
 }
 
-func (srv *ProbeServiceImpl) RequestProbes() ([]atlas.Probe, error) {
+func (srv *ProbeServiceImpl) RequestProbes() ([]*atlas.Probe, error) {
 	var locsList = []*models.Location{}
-	(*srv.DbMgr).GetDb().Find(&locsList)
-	var bestProbes []atlas.Probe
+	srv.DBMgr.GetDB().Find(&locsList)
+	var bestProbes []*atlas.Probe
 
 	for _, location := range locsList {
 		log.WithFields(log.Fields{
 			"country": location.Country,
 		}).Info("Get probes for country")
 
-		nearestProbe, err := (*srv.RipeMgr).GetNearestProbe(location.Latitude, location.Longitude)
+		nearestProbe, err := srv.RipeMgr.GetNearestProbe(location.Latitude, location.Longitude)
 		if err != nil {
 			return nil, err
 		}
 
-		bestProbes = append(bestProbes, *nearestProbe)
+		bestProbes = append(bestProbes, nearestProbe)
 	}
 
 	return bestProbes, nil
@@ -44,7 +45,7 @@ func (srv *ProbeServiceImpl) RequestProbes() ([]atlas.Probe, error) {
 
 func (srv *ProbeServiceImpl) GetAllProbes() []*models.Probe {
 	var probesList = []*models.Probe{}
-	(*srv.DbMgr).GetDb().Find(&probesList)
+	srv.DBMgr.GetDB().Find(&probesList)
 	for _, probe := range probesList {
 		log.Printf("Probe ID: %d - Country code: %s\n", probe.ProbeID, probe.CountryCode)
 	}
@@ -66,12 +67,16 @@ func (srv *ProbeServiceImpl) Update() {
 			ProbeID:     probe.ID,
 			CountryCode: probe.CountryCode,
 		}
+		if probe.Geometry.Type == "Point" {
+			newProbe.Latitude = probe.Geometry.Coordinates[0]
+			newProbe.Longitude = probe.Geometry.Coordinates[1]
+		}
 
 		var probeExits = models.Probe{}
-		(*srv.DbMgr).GetDb().Where("country_code = ?", probe.CountryCode).First(&probeExits)
-		
+		srv.DBMgr.GetDB().Where("probe_id = ?", probe.ID).First(&probeExits)
+
 		if (models.Probe{}) == probeExits {
-			err := (*srv.DbMgr).GetDb().Debug().Model(&models.Probe{}).Create(&newProbe).Error
+			err := srv.DBMgr.GetDB().Debug().Model(&models.Probe{}).Create(&newProbe).Error
 			if err != nil {
 				panic("Unable to create probe")
 			}
@@ -83,19 +88,18 @@ func (srv *ProbeServiceImpl) Update() {
 
 	// update by removing probes not in location list
 	var probesList = []*models.Probe{}
-	(*srv.DbMgr).GetDb().Find(&probesList)
+	srv.DBMgr.GetDB().Find(&probesList)
 	for _, probe := range probesList {
 		var location = models.Location{
 			Country: probe.CountryCode,
 		}
 		var locationExists = models.Location{}
-		(*srv.DbMgr).GetDb().Where(&location).First(&locationExists)
+		srv.DBMgr.GetDB().Where(&location).First(&locationExists)
 		if locationExists == (models.Location{}) {
-			(*srv.DbMgr).GetDb().Delete(&models.Probe{}, probe.ID)
+			srv.DBMgr.GetDB().Delete(&models.Probe{}, probe.ID)
 			log.WithFields(log.Fields{
 				"ID": probe.ID,
 			}).Info("Probe deleted")
-
 		}
 	}
 

@@ -10,7 +10,7 @@ import (
 )
 
 type DatabaseMgrImpl struct {
-	Db *gorm.DB
+	db *gorm.DB
 }
 
 func NewDatabaseMgrImpl(conf *viper.Viper) (DatabaseMgr, error) {
@@ -23,7 +23,7 @@ func NewDatabaseMgrImpl(conf *viper.Viper) (DatabaseMgr, error) {
 	}
 	migrate(db)
 	return &DatabaseMgrImpl{
-		Db: db,
+		db: db,
 	}, nil
 }
 
@@ -35,6 +35,6 @@ func migrate(db *gorm.DB) {
 	_ = db.AutoMigrate(&models.Probe{})
 }
 
-func (dbMgr *DatabaseMgrImpl) GetDb() *gorm.DB {
-	return dbMgr.Db
+func (dbMgr *DatabaseMgrImpl) GetDB() *gorm.DB {
+	return dbMgr.db
 }
