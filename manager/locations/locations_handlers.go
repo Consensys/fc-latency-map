@@ -1,10 +1,9 @@
 package locations
 
 import (
-	"errors"
+	"strings"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
-	"github.com/ConsenSys/fc-latency-map/manager/constants"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
@@ -31,17 +30,20 @@ func (mHdl *LocationHandler) GetLocations() {
 }
 
 // AddLocationHandler handle location add cli command
-func (mHdl *LocationHandler) AddLocation(countryCode string)  (models.Location, error) {
-	if !checkCountry(countryCode) {
-		err := errors.New("country code not found")
+func (mHdl *LocationHandler) AddLocation(airportCode string)  (models.Location, error) {
+	airport, err := (*mHdl.LSer).FindAirport(airportCode)
+	if err != nil {
 		return models.Location{}, err
 	}
 
+	coords := strings.Split(airport.Coordinates, ", ")
 	location := models.Location{
-		Country: countryCode,
-		Latitude:    "0",
-		Longitude: "0",
+		Country: airport.IsoCountry,
+		IataCode: airport.IataCode,
+		Latitude:    coords[0],
+		Longitude: coords[1],
 	}
+	
 	location = (*mHdl.LSer).AddLocation(location)
 	return location, nil
 }
@@ -52,14 +54,4 @@ func (mHdl *LocationHandler) DeleteLocation(countryCode string) {
 		Country: countryCode,
 	}
 	(*mHdl.LSer).DeleteLocation(location)
-}
-
-// checkCountry checks the country code exists
-func checkCountry(countryCode string) bool {
-	for _, country := range constants.Countries {
-		if countryCode == country.Code {
-			return true
-		}
-	}
-	return false
 }

@@ -17,4 +17,10 @@ type LocationService interface {
 
 	// DeleteLocation deletes a location
 	DeleteLocation(location models.Location) bool
+
+	// CheckCountry checks if country exists
+	CheckCountry(countryCode string) bool
+
+	// FindAirport finds and returns airport
+	FindAirport(airportCode string) (Airport, error)
 }
