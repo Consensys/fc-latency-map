@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/filecoin-project/go-address"
-	jsonrpc "github.com/filecoin-project/go-jsonrpc"
+	"github.com/filecoin-project/go-jsonrpc"
 	"github.com/filecoin-project/go-state-types/abi"
 	lotusapi "github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
@@ -98,11 +98,11 @@ func CheckIsVerifiedDeal(verifiedDeal VerifiedDeal, verifiedDeals []VerifiedDeal
 }
 
 func (fMgr *FilecoinMgrImpl) GetVerifiedDealsByBlockHeight(height abi.ChainEpoch) ([]VerifiedDeal, error) {
-	fmt.Printf("Block number: %v\n", height)	
+	fmt.Printf("Block number: %v\n", height)
 	verifiedDeals, err := fMgr.getVerifiedDealsByBlock(height)
-		if err != nil {
-			return []VerifiedDeal{}, err
-		}
+	if err != nil {
+		return []VerifiedDeal{}, err
+	}
 	return verifiedDeals, nil
 }
 
@@ -116,32 +116,37 @@ func (fMgr *FilecoinMgrImpl) getVerifiedDealsByBlock(height abi.ChainEpoch) ([]V
 		}
 		for _, message := range messages.BlsMessages {
 			// Method 4 is PublishStorageDeals
-			if message.Method == 4 {
-				var params market.PublishStorageDealsParams
-				err = params.UnmarshalCBOR(bytes.NewReader(message.Params))
-				if err != nil {
-					return []VerifiedDeal{}, err
-				}
-
-				for _, deal := range params.Deals {
-					proposal := deal.Proposal
-					if proposal.VerifiedDeal {
-
-						// TODO: Get deal Id
-						verifiedDeal := VerifiedDeal{
-							MessageCid: message.Cid(),
-							Provider:   proposal.Provider,
-						}
-						if !CheckIsVerifiedDeal(verifiedDeal, verifiedDeals) {
-							fmt.Println("Verified deal found")
-							verifiedDeals = append(verifiedDeals, verifiedDeal)
-						}
-					}
-				}
+			if message.Method != 4 {
+				continue
 			}
+			params := &market.PublishStorageDealsParams{}
+			err = params.UnmarshalCBOR(bytes.NewReader(message.Params))
+			if err != nil {
+				return []VerifiedDeal{}, err
+			}
+
+			verifiedDeals = fMgr.getVerifiedDeals(params, message, verifiedDeals)
 		}
 	}
 
 	fmt.Printf("verifiedDeals: %+v\n", verifiedDeals)
 	return verifiedDeals, nil
+}
+
+func (fMgr *FilecoinMgrImpl) getVerifiedDeals(params *market.PublishStorageDealsParams, message *types.Message, verifiedDeals []VerifiedDeal) []VerifiedDeal {
+	for _, deal := range params.Deals { //nolint:gocritic
+		proposal := deal.Proposal
+
+		if proposal.VerifiedDeal {
+			verifiedDeal := VerifiedDeal{
+				MessageCid: message.Cid(),
+				Provider:   proposal.Provider,
+			}
+			if !CheckIsVerifiedDeal(verifiedDeal, verifiedDeals) {
+				fmt.Println("Verified deal found")
+				verifiedDeals = append(verifiedDeals, verifiedDeal)
+			}
+		}
+	}
+	return verifiedDeals
 }

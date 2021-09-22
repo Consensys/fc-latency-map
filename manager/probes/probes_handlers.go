@@ -23,7 +23,7 @@ func NewProbeHandler() *ProbeHandler {
 	if err != nil {
 		log.Fatalf("connecting with lotus failed: %s", err)
 	}
-	pSer, err := NewProbeServiceImpl(&dbMgr, &ripeMgr)
+	pSer, err := NewProbeServiceImpl(dbMgr, ripeMgr)
 	if err != nil {
 		panic("failed to start probe service")
 	}

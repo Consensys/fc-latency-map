@@ -10,19 +10,19 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	fmgr "github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
-	"github.com/keltia/ripe-atlas"
+	atlas "github.com/keltia/ripe-atlas"
 )
 
 type MeasurementServiceImpl struct {
 	Conf  *viper.Viper
-	DbMgr *db.DatabaseMgr
-	FMgr  *fmgr.FilecoinMgr
+	DBMgr db.DatabaseMgr
+	FMgr  fmgr.FilecoinMgr
 }
 
-func NewMeasurementServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr, fMgr *fmgr.FilecoinMgr) MeasurementService {
+func NewMeasurementServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr, fMgr fmgr.FilecoinMgr) MeasurementService {
 	return &MeasurementServiceImpl{
 		Conf:  conf,
-		DbMgr: dbMgr,
+		DBMgr: dbMgr,
 		FMgr:  fMgr,
 	}
 }
@@ -55,7 +55,7 @@ func (m *MeasurementServiceImpl) getMeasuresLastResultTime() map[int]int {
 }
 
 func (m *MeasurementServiceImpl) dbCreate(measurements []*models.Measurement) {
-	err := (*m.DbMgr).GetDb().Create(&measurements).Error
+	err := (m.DBMgr).GetDB().Create(&measurements).Error
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -67,7 +67,7 @@ func (m *MeasurementServiceImpl) dbCreate(measurements []*models.Measurement) {
 func (m *MeasurementServiceImpl) getMiners() []*models.Miner {
 	var miners []*models.Miner
 
-	err := (*m.DbMgr).GetDb().Find(&miners).Error
+	err := (m.DBMgr).GetDB().Find(&miners).Error
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -78,9 +78,9 @@ func (m *MeasurementServiceImpl) getMiners() []*models.Miner {
 }
 
 func (m *MeasurementServiceImpl) importMeasurement(mr []atlas.MeasurementResult) {
-	dbc := (*m.DbMgr).GetDb().Debug()
+	dbc := (m.DBMgr).GetDB().Debug()
 	var insert []*models.MeasurementResult
-	for _, result := range mr {
+	for _, result := range mr { //nolint:gocritic
 		t := time.Unix(int64(result.Timestamp), 0)
 		insert = append(insert, &models.MeasurementResult{
 			IP:                   result.DstAddr,
@@ -108,14 +108,14 @@ func (m *MeasurementServiceImpl) importMeasurement(mr []atlas.MeasurementResult)
 
 func (m *MeasurementServiceImpl) getRipeMeasurementsID() []int {
 	var ripeIDs []int
-	dbc := (*m.DbMgr).GetDb().Debug()
+	dbc := (m.DBMgr).GetDB().Debug()
 	dbc.Model(&models.Measurement{}).Pluck("measurement_id", &ripeIDs)
 
 	return ripeIDs
 }
 
 func (m *MeasurementServiceImpl) getLastMeasurementResultTime(measurementID int) int {
-	dbc := (*m.DbMgr).GetDb().Debug()
+	dbc := (m.DBMgr).GetDB().Debug()
 
 	measurementResults := &models.MeasurementResult{}
 
@@ -130,7 +130,7 @@ func (m *MeasurementServiceImpl) getLastMeasurementResultTime(measurementID int)
 func (m *MeasurementServiceImpl) getProbIDs() []string {
 	var probesIDs []string
 
-	err := (*m.DbMgr).GetDb().Model(models.Probe{}).Select("probe_id").Find(&probesIDs).Error
+	err := (m.DBMgr).GetDB().Model(models.Probe{}).Select("probe_id").Find(&probesIDs).Error
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,

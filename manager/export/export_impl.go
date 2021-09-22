@@ -15,13 +15,13 @@ import (
 
 type ExportServiceImpl struct {
 	Conf  *viper.Viper
-	DbMgr *db.DatabaseMgr
+	DBMgr db.DatabaseMgr
 }
 
-func NewExportServiceImpl(conf *viper.Viper, dbMgr *db.DatabaseMgr) ExportService {
+func NewExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) ExportService {
 	return &ExportServiceImpl{
 		Conf:  conf,
-		DbMgr: dbMgr,
+		DBMgr: dbMgr,
 	}
 }
 
@@ -64,35 +64,38 @@ func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
 			results.MinersLatency[l.Country] = append(results.MinersLatency[l.Country], latency)
 			probes := m.getProbes(l)
 
-			for _, probe := range probes {
-
-				for _, ip := range latency.IP {
-					measure := &MeasureIP{IP: ip}
-
-					meas := m.getMeasureResults(probe, ip)
-					if len(meas) > 0 {
-						latency.Measures = append(latency.Measures, measure)
-					}
-					for _, m := range meas {
-						measureData := &Latency{
-							Avg:  m.TimeAverage,
-							Min:  m.TimeMin,
-							Max:  m.TimeMax,
-							Date: m.MeasurementDate,
-						}
-						measure.Latency = append(measure.Latency, measureData)
-					}
-				}
-			}
+			m.createLatency(probes, latency)
 		}
 	}
 
 	return results
 }
 
+func (m *ExportServiceImpl) createLatency(probes []*models.Probe, latency *Miner) {
+	for _, probe := range probes {
+		for _, ip := range latency.IP {
+			measure := &MeasureIP{IP: ip}
+
+			meas := m.getMeasureResults(probe, ip)
+			if len(meas) > 0 {
+				latency.Measures = append(latency.Measures, measure)
+			}
+			for _, m := range meas {
+				measureData := &Latency{
+					Avg:  m.TimeAverage,
+					Min:  m.TimeMin,
+					Max:  m.TimeMax,
+					Date: m.MeasurementDate,
+				}
+				measure.Latency = append(measure.Latency, measureData)
+			}
+		}
+	}
+}
+
 func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []*models.MeasurementResult {
 	var meas []*models.MeasurementResult
-	err := (*m.DbMgr).GetDb().Debug().Select(
+	err := (m.DBMgr).GetDB().Debug().Select(
 		"ip," +
 			"date(measurement_timestamp, 'unixepoch') measurement_date," +
 			"avg(time_average) time_average," +
@@ -118,7 +121,7 @@ func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []
 
 func (m *ExportServiceImpl) getProbes(l *models.Location) []*models.Probe {
 	var probes []*models.Probe
-	err := (*m.DbMgr).GetDb().Where(&models.Probe{
+	err := (m.DBMgr).GetDB().Where(&models.Probe{
 		CountryCode: l.Country,
 	}).Find(&probes).Error
 	if err != nil {
@@ -134,7 +137,7 @@ func (m *ExportServiceImpl) getProbes(l *models.Location) []*models.Probe {
 func (m *ExportServiceImpl) getMiners() []*models.Miner {
 	var miners []*models.Miner
 
-	err := (*m.DbMgr).GetDb().Find(&miners).Error
+	err := (m.DBMgr).GetDB().Find(&miners).Error
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -146,7 +149,7 @@ func (m *ExportServiceImpl) getMiners() []*models.Miner {
 
 func (m *ExportServiceImpl) getLocations() []*models.Location {
 	var loc []*models.Location
-	err := (*m.DbMgr).GetDb().
+	err := (m.DBMgr).GetDB().
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: false}).
 		Find(&loc).Error
 

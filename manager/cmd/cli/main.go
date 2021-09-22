@@ -117,37 +117,18 @@ func (c *LatencyMapCLI) executor(in string) {
 	blocks := strings.Split(in, " ")
 
 	switch blocks[0] {
-
 	// Locations list
 	case locationsList:
 		fmt.Printf("Command: %s\n", blocks[0])
-		fmt.Println("List all location from db")
 		c.locations.GetLocations()
 
 	// New location
 	case locationsAdd:
-		if len(blocks) == 1 {
-			fmt.Println("Error: missing location to add")
-			return
-		}
-		fmt.Printf("Command: %s\n", blocks[0])
-		fmt.Println("Add a location")
-		location, err := c.locations.AddLocation(blocks[1])
-		if err != nil {
-			log.Error(err)
-		} else {
-			fmt.Printf("ID: %d\n", location.ID)
-		}
+		c.locationsAdd(blocks)
 
 	// Delete location
 	case locationsDelete:
-		if len(blocks) == 1 {
-			fmt.Println("missing location to delete")
-			return
-		}
-		fmt.Printf("Command: %s\n", blocks[0])
-		fmt.Println("Delete a location")
-		c.locations.DeleteLocation(blocks[1])
+		c.locationsDelete(blocks)
 
 		// probes
 	case probesUpdate:
@@ -164,47 +145,23 @@ func (c *LatencyMapCLI) executor(in string) {
 
 	case measuresGet:
 		fmt.Printf("Command: %s\n", blocks[0])
-
 		c.measurements.GetMeasures()
 
 	case measuresList:
-		if len(blocks) == 1 {
-			fmt.Println("Error: missing limit number")
-			return
-		}
-		fmt.Printf("Command: %s\n", blocks[0])
+		c.measuresList(blocks)
 
 	case measuresExport:
-		var fn string
-		if len(blocks) == 1 {
-			fn = fmt.Sprintf("data_%v.json\n", time.Now().Unix())
-		}
-		c.export.Export(fn)
+		c.measuresExport(blocks)
 
 	case minersList:
 		fmt.Printf("Command: %s\n", blocks[0])
 		c.miners.GetAllMiners()
 
 	case minersUpdate:
-		fmt.Printf("Command: %s\n", blocks[0])
-		blockHeight := ""
-		if len(blocks) > 1 {
-			blockHeight = blocks[1]
-		}
-		c.miners.MinersUpdate(blockHeight)
+		c.minersUpdate(blocks)
 
 	case minersParse:
-		fmt.Printf("Command: %s\n", blocks[0])
-		if len(blocks) == 1 {
-			fmt.Println("Error: missing block height")
-			return
-		}
-		height, err := strconv.ParseInt(blocks[1], 10, 64)
-		if err != nil {
-			fmt.Println("Error: provided block height is not a valid integer")
-			return
-		}
-		c.miners.MinersParse(height)
+		c.minersParse(blocks)
 
 	case seedData:
 		fmt.Println("Seed data ...")
@@ -218,6 +175,70 @@ func (c *LatencyMapCLI) executor(in string) {
 	default:
 		fmt.Printf("unknown command: %s\n", blocks[0])
 	}
+}
+
+func (c *LatencyMapCLI) locationsAdd(blocks []string) {
+	if len(blocks) == 1 {
+		fmt.Println("Error: missing location to add")
+		return
+	}
+	fmt.Printf("Command: %s\n", blocks[0])
+	fmt.Println("Add a location")
+	location, err := c.locations.AddLocation(blocks[1])
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	fmt.Printf("ID: %d\n", location.ID)
+}
+
+func (c *LatencyMapCLI) locationsDelete(blocks []string) {
+	if len(blocks) == 1 {
+		fmt.Println("missing location to delete")
+		return
+	}
+	fmt.Printf("Command: %s\n", blocks[0])
+	fmt.Println("Delete a location")
+	c.locations.DeleteLocation(blocks[1])
+}
+
+func (c *LatencyMapCLI) measuresList(blocks []string) {
+	if len(blocks) == 1 {
+		fmt.Println("Error: missing limit number")
+		return
+	}
+	fmt.Printf("Command: %s\n", blocks[0])
+}
+
+func (c *LatencyMapCLI) measuresExport(blocks []string) {
+	var fn string
+	if len(blocks) == 1 {
+		fn = fmt.Sprintf("data_%v.json\n", time.Now().Unix())
+	}
+	c.export.Export(fn)
+}
+
+func (c *LatencyMapCLI) minersUpdate(blocks []string) {
+	fmt.Printf("Command: %s\n", blocks[0])
+	blockHeight := ""
+	if len(blocks) > 1 {
+		blockHeight = blocks[1]
+	}
+	c.miners.MinersUpdate(blockHeight)
+}
+
+func (c *LatencyMapCLI) minersParse(blocks []string) {
+	fmt.Printf("Command: %s\n", blocks[0])
+	if len(blocks) == 1 {
+		fmt.Println("Error: missing block height")
+		return
+	}
+	height, err := strconv.ParseInt(blocks[1], 10, 64)
+	if err != nil {
+		fmt.Println("Error: provided block height is not a valid integer")
+		return
+	}
+	c.miners.MinersParse(height)
 }
 
 // handleExit fixes the problem of broken terminal when exit in Linux

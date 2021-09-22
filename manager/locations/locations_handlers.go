@@ -1,7 +1,7 @@
 package locations
 
 import (
-	"errors"
+	"github.com/pkg/errors"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/constants"
@@ -19,27 +19,27 @@ func NewLocationHandler() *LocationHandler {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	lSer := NewLocationServiceImpl(conf, &dbMgr)
+	lSer := NewLocationServiceImpl(conf, dbMgr)
 	return &LocationHandler{
 		LSer: &lSer,
 	}
 }
 
-// GetLocationsHandler handle locations get cli command
+// GetLocations handle locations get cli command
 func (mHdl *LocationHandler) GetLocations() {
 	(*mHdl.LSer).GetLocations()
 }
 
-// AddLocationHandler handle location add cli command
-func (mHdl *LocationHandler) AddLocation(countryCode string)  (models.Location, error) {
+// AddLocation handle location add cli command
+func (mHdl *LocationHandler) AddLocation(countryCode string) (*models.Location, error) {
 	if !checkCountry(countryCode) {
 		err := errors.New("country code not found")
-		return models.Location{}, err
+		return nil, err
 	}
 
-	location := models.Location{
-		Country: countryCode,
-		Latitude:    "0",
+	location := &models.Location{
+		Country:   countryCode,
+		Latitude:  "0",
 		Longitude: "0",
 	}
 	location = (*mHdl.LSer).AddLocation(location)
@@ -48,7 +48,7 @@ func (mHdl *LocationHandler) AddLocation(countryCode string)  (models.Location, 
 
 // DeleteLocation handle location delete cli command
 func (mHdl *LocationHandler) DeleteLocation(countryCode string) {
-	location := models.Location{
+	location := &models.Location{
 		Country: countryCode,
 	}
 	(*mHdl.LSer).DeleteLocation(location)

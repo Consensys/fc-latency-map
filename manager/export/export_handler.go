@@ -16,7 +16,7 @@ func NewExportHandler() *ExportHandler {
 		panic("failed to connect database")
 	}
 
-	mSer := NewExportServiceImpl(conf, &dbMgr)
+	mSer := NewExportServiceImpl(conf, dbMgr)
 
 	return &ExportHandler{
 		Service: &mSer,

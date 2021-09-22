@@ -7,5 +7,5 @@ import (
 type DatabaseMgr interface {
 
 	// Get database connection instance
-	GetDb() (db *gorm.DB)
+	GetDB() (db *gorm.DB)
 }

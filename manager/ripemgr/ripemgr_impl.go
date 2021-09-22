@@ -51,7 +51,6 @@ func (rMgr *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error
 	}
 
 	return probes, nil
-
 }
 
 func (rMgr *RipeMgrImpl) GetNearestProbe(latitude, longitude string) (*atlas.Probe, error) {
@@ -90,12 +89,14 @@ func (rMgr *RipeMgrImpl) GetNearestProbe(latitude, longitude string) (*atlas.Pro
 
 		if err != nil {
 			if err.Error() == "empty probe list" {
-				coordRange = coordRange * 2
+				coordRange *= 2
 				continue
 			}
+
 			return nil, err
 		}
 	}
+
 	return &nearestProbes[0], nil
 }
 

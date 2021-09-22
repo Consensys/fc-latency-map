@@ -1,8 +1,10 @@
 package measurements
 
+//go:generate mockgen -destination mocks/measurements_impl.go -package measurements . MeasurementService
+
 import (
 	"github.com/ConsenSys/fc-latency-map/manager/models"
-	"github.com/keltia/ripe-atlas"
+	atlas "github.com/keltia/ripe-atlas"
 )
 
 type MeasurementService interface {

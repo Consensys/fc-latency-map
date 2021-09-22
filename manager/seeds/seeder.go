@@ -20,7 +20,7 @@ func Seed() {
 		panic("failed to connect database")
 	}
 
-	err = Execute(dbMgr.GetDb())
+	err = Execute(dbMgr.GetDB())
 	if err != nil {
 		log.Fatalf("cannot seed tables: %v", err)
 	}
@@ -28,7 +28,6 @@ func Seed() {
 
 // Execute runs the data seed process
 func Execute(dbc *gorm.DB) error {
-
 	m := gormigrate.New(dbc, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		{
 			ID: "2021091516",
