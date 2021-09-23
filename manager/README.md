@@ -27,6 +27,7 @@ cp .env.example .env
 ## Development
 
 * Run golangci
+
 ```shell
 # fix format and import order
 golangci-lint run -v --no-config --disable-all -E whitespace --fix
@@ -37,6 +38,12 @@ golangci-lint run -v --no-config --disable-all -E gofmt --fix
 golangci-lint run ./...
 ```
 
+* Install pre-commit hooks
+
+```shell
+# @ project root
+pre-commit install
+```
 
 ## SQLite commands
 
