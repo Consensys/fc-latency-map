@@ -1,6 +1,6 @@
 package probes
 
-//go:generate mockgen -destination mocks/mocks.go -package probes . ProbeService
+//go:generate mockgen -destination mocks.go -package probes . ProbeService
 
 import (
 	atlas "github.com/keltia/ripe-atlas"

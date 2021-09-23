@@ -59,7 +59,6 @@ linters-settings:
   gocritic:
     disabled-checks:
       - dupImport
-      - ifElseChain
       - octalLiteral
       - whyNoLint
       - wrapperFunc
@@ -216,6 +215,6 @@ linters-settings:
 run:
   concurrency: 4
   skip-dirs:
-    - extern/ripe-atlas/
+    - ./extern
   tests: false
 

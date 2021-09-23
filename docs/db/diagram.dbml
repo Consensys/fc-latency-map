@@ -39,5 +39,5 @@ Table measurements {
 // You can also define relaionship separately
 // > many-to-one; < one-to-many; - one-to-one
 Ref: probes.location_id > locations.id
-Ref: measurements.miner_id > miners.id  
+Ref: measurements.miner_id > miners.id
 Ref: measurements.probe_id > probes.id

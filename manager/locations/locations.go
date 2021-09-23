@@ -1,12 +1,14 @@
 package locations
 
+//go:generate mockgen -destination mocks.go -package locations . LocationService
+
 import (
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
 type LocationService interface {
 
-	// GetLocations returns locations list
+	// DisplayLocations returns locations list
 	DisplayLocations() []*models.Location
 
 	// GetLocation returns a location

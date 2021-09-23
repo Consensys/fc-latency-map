@@ -1,6 +1,6 @@
 package ripemgr
 
-//go:generate mockgen -destination mocks/mocks.go -package ripemgr . RipeMgr
+//go:generate mockgen -destination mocks.go -package ripemgr . RipeMgr
 
 import (
 	atlas "github.com/keltia/ripe-atlas"

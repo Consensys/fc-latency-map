@@ -1,9 +1,8 @@
 sequenceDiagram
     Manager->>+Database: Insert locations list
     Database-->>-Manager: Get locations list
-    
+
     Manager->>+Ripe Atlas: Request probes
     Ripe Atlas-->>-Manager: Returns probes list
 
     Manager->>+Database: Store probes
-    
