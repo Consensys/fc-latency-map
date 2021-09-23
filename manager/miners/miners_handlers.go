@@ -17,7 +17,7 @@ import (
 
 type MinerHandler struct {
 	Conf *viper.Viper
-	MSer *MinerService
+	MSer MinerService
 }
 
 func NewMinerHandler() *MinerHandler {
@@ -37,18 +37,18 @@ func NewMinerHandler() *MinerHandler {
 
 	return &MinerHandler{
 		Conf: conf,
-		MSer: &mSer,
+		MSer: mSer,
 	}
 }
 
 func (mHdl *MinerHandler) GetAllMiners() []*models.Miner {
-	return (*mHdl.MSer).GetAllMiners()
+	return mHdl.MSer.GetAllMiners()
 }
 
 func (mHdl *MinerHandler) MinersUpdate(offset string) {
 	if strings.TrimSpace(offset) == "" {
 		off := mHdl.Conf.GetUint("FILECOIN_BLOCKS_OFFSET")
-		(*mHdl.MSer).ParseMiners(off)
+		mHdl.MSer.ParseMiners(off)
 		return
 	}
 	off, err := strconv.ParseUint(offset, 10, 64)
@@ -56,9 +56,9 @@ func (mHdl *MinerHandler) MinersUpdate(offset string) {
 		fmt.Println("Error: provided offset is not a valid integer")
 		return
 	}
-	(*mHdl.MSer).ParseMiners(uint(off))
+	mHdl.MSer.ParseMiners(uint(off))
 }
 
 func (mHdl *MinerHandler) MinersParse(height int64) {
-	(*mHdl.MSer).ParseMinersByBlockHeight(height)
+	mHdl.MSer.ParseMinersByBlockHeight(height)
 }

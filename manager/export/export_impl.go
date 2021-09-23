@@ -25,7 +25,7 @@ func NewExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) Service {
 	}
 }
 
-func (m *ExportServiceImpl) export(fn string) {
+func (m *ExportServiceImpl) Export(fn string) {
 	measurements := m.GetLatencyMeasurementsStored()
 
 	fullJSON, err := json.MarshalIndent(measurements.Country, "", "  ")

@@ -10,7 +10,7 @@ import (
 )
 
 type ProbeHandler struct {
-	PSer *ProbeService
+	PSer ProbeService
 }
 
 func NewProbeHandler() *ProbeHandler {
@@ -28,16 +28,16 @@ func NewProbeHandler() *ProbeHandler {
 		panic("failed to start probe service")
 	}
 	return &ProbeHandler{
-		PSer: &pSer,
+		PSer: pSer,
 	}
 }
 
 // Update handle updating probes list
 func (pHdl *ProbeHandler) Update() {
-	(*pHdl.PSer).Update()
+	pHdl.PSer.Update()
 }
 
-// Update handle updating probes list
+// GetAllProbes handle updating probes list
 func (pHdl *ProbeHandler) GetAllProbes() []*models.Probe {
-	return (*pHdl.PSer).GetAllProbes()
+	return pHdl.PSer.GetAllProbes()
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type ExportHandler struct {
-	Service *Service
+	Service Service
 }
 
 func NewExportHandler() *ExportHandler {
@@ -19,10 +19,10 @@ func NewExportHandler() *ExportHandler {
 	mSer := NewExportServiceImpl(conf, dbMgr)
 
 	return &ExportHandler{
-		Service: &mSer,
+		Service: mSer,
 	}
 }
 
 func (h *ExportHandler) Export(fn string) {
-	(*h.Service).export(fn)
+	h.Service.Export(fn)
 }

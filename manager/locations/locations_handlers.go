@@ -10,7 +10,7 @@ import (
 )
 
 type LocationHandler struct {
-	LSer *LocationService
+	LSer LocationService
 }
 
 func NewLocationHandler() *LocationHandler {
@@ -21,18 +21,18 @@ func NewLocationHandler() *LocationHandler {
 	}
 	lSer := NewLocationServiceImpl(conf, dbMgr)
 	return &LocationHandler{
-		LSer: &lSer,
+		LSer: lSer,
 	}
 }
 
 // GetLocations handle locations get cli command
 func (mHdl *LocationHandler) GetLocations() { //nolint:revive
-	(*mHdl.LSer).DisplayLocations()
+	mHdl.LSer.DisplayLocations()
 }
 
 // AddLocation handle location add cli command
 func (mHdl *LocationHandler) AddLocation(airportCode string) (*models.Location, error) {
-	airport, err := (*mHdl.LSer).FindAirport(airportCode)
+	airport, err := mHdl.LSer.FindAirport(airportCode)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (mHdl *LocationHandler) AddLocation(airportCode string) (*models.Location, 
 		Latitude:  lat,
 		Longitude: long,
 	}
-	location = (*mHdl.LSer).AddLocation(location)
+	location = mHdl.LSer.AddLocation(location)
 
 	return location, nil
 }
@@ -56,5 +56,5 @@ func (mHdl *LocationHandler) DeleteLocation(countryCode string) {
 	location := &models.Location{
 		Country: countryCode,
 	}
-	(*mHdl.LSer).DeleteLocation(location)
+	mHdl.LSer.DeleteLocation(location)
 }
