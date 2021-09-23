@@ -59,7 +59,9 @@ linters-settings:
   stylecheck:
     go: "1.17"
     checks: [ "all" ]
-
+  whitespace:
+    multi-if: true
+    multi-func: true
   revive:
     ignore-generated-header: true
     severity: warning
@@ -175,3 +177,6 @@ linters:
 run:
   tests: false
   concurrency: 4
+
+  skip-dirs:
+    - extern/ripe-atlas/
