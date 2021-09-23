@@ -121,6 +121,13 @@ linters-settings:
 #      - name: deep-exit
 #      - name: package-comments
 #      - name: unused-receiver
+  tagliatelle:
+    case:
+      use-field-name: true
+      rules:
+        # support string case: `camel`, `pascal`, `kebab`, `snake`, `goCamel`, `goPascal`, `goKebab`, `goSnake`, `upper`, `lower`
+        json: snake
+
 linters:
   disable-all: true
   enable:
@@ -167,6 +174,7 @@ linters:
     - varcheck
     - wastedassign
     - whitespace
+    - tagliatelle
 
   # don't enable:
   # - wrapcheck
