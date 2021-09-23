@@ -1,6 +1,7 @@
 package geomgr
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -21,7 +22,7 @@ func NewGeoMgrImpl(v *viper.Viper) GeoMgr {
 }
 
 func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
-	response, err := http.Get(g.ipgeoURL(ip))
+	response, err := http.NewRequestWithContext(context.Background(), "GET", g.ipgeoURL(ip), nil)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
