@@ -11,6 +11,7 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	fmgr "github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
+	"github.com/ConsenSys/fc-latency-map/manager/geomgr"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
@@ -30,7 +31,10 @@ func NewMinerHandler() *MinerHandler {
 	if err != nil {
 		log.Fatalf("connecting with lotus failed: %s", err)
 	}
-	mSer := NewMinerServiceImpl(conf, dbMgr, fMgr)
+
+	g := geomgr.NewGeoMgrImpl(conf)
+	mSer := NewMinerServiceImpl(conf, dbMgr, fMgr, g)
+
 	return &MinerHandler{
 		Conf: conf,
 		MSer: &mSer,

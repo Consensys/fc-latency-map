@@ -101,3 +101,32 @@ or with an offset of 10 (latest block heights)
 ```bash
 >>> miners-list
 ```
+
+
+## Demo
+
+```shell
+## use case - from scratch
+rm data/database.db
+
+go run cmd/cli/main.go miners-parse 1109742
+go run cmd/cli/main.go locations-add ORY
+go run cmd/cli/main.go locations-add JFK
+go run cmd/cli/main.go locations-add OPO
+
+go run cmd/cli/main.go probes-update
+
+go run cmd/cli/main.go measures-create
+#   wait until have ripe results
+go run cmd/cli/main.go measures-get
+go run cmd/cli/main.go measures-export
+
+
+## use case 2 - from seed data
+#rm data/database.db
+go run cmd/cli/main.go seed-data
+go run cmd/cli/main.go probes-update
+
+go run cmd/cli/main.go measures-get
+go run cmd/cli/main.go measures-export
+```

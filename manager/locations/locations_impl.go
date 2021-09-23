@@ -15,7 +15,6 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
-//nolint:tagliatelle
 type Airport struct {
 	Continent   string `json:"continent"`
 	Coordinates string `json:"coordinates"`
@@ -36,7 +35,7 @@ func NewLocationServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) LocationSer
 }
 
 func (srv *LocationServiceImpl) DisplayLocations() []*models.Location {
-	var locsList = []*models.Location{}
+	locsList := []*models.Location{}
 	srv.DBMgr.GetDB().Find(&locsList)
 	for _, location := range locsList {
 		log.Printf("ID:%d - Country code: %s\n", location.ID, location.Country)
@@ -52,7 +51,7 @@ func (srv *LocationServiceImpl) GetLocation(location *models.Location) *models.L
 }
 
 func (srv *LocationServiceImpl) AddLocation(newLocation *models.Location) *models.Location {
-	var location = models.Location{}
+	location := models.Location{}
 	srv.DBMgr.GetDB().Where("iata_code = ?", newLocation.IataCode).First(&location)
 	if location == (models.Location{}) {
 		srv.DBMgr.GetDB().Create(&newLocation)

@@ -59,6 +59,7 @@ linters-settings:
   stylecheck:
     go: "1.17"
     checks: [ "all" ]
+
   revive:
     ignore-generated-header: true
     severity: warning
@@ -157,9 +158,7 @@ linters:
     - staticcheck
     - structcheck
     - stylecheck
-    - tagliatelle
     - typecheck
-    - unconvert
     - unconvert
     - unparam
     - unused

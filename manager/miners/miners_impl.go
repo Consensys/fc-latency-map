@@ -12,6 +12,7 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/addresses"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	fmgr "github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
+	"github.com/ConsenSys/fc-latency-map/manager/geomgr"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
@@ -19,13 +20,15 @@ type MinerServiceImpl struct {
 	Conf  *viper.Viper
 	DBMgr db.DatabaseMgr
 	FMgr  fmgr.FilecoinMgr
+	GMgr  geomgr.GeoMgr
 }
 
-func NewMinerServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr, fMgr fmgr.FilecoinMgr) MinerService {
+func NewMinerServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr, fMgr fmgr.FilecoinMgr, gmgr geomgr.GeoMgr) MinerService {
 	return &MinerServiceImpl{
 		Conf:  conf,
 		DBMgr: dbMgr,
 		FMgr:  fMgr,
+		GMgr:  gmgr,
 	}
 }
 
@@ -54,7 +57,7 @@ func (srv *MinerServiceImpl) ParseMiners(offset uint) []*models.Miner {
 }
 
 func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*models.Miner {
-	var miners = []*models.Miner{}
+	miners := []*models.Miner{}
 	for _, deal := range deals {
 		provider := deal.Provider
 		address := provider.String()
@@ -63,9 +66,13 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 			log.Printf("unable to get miner info: %s. skip...", address)
 			continue
 		}
+		ip := getMinerIP(&minerInfo)
+		lat, long := srv.getGeoLocation(ip)
 		miners = append(miners, &models.Miner{
-			Address: address,
-			IP:      getMinerIP(&minerInfo),
+			Address:   address,
+			IP:        ip,
+			Latitude:  lat,
+			Longitude: long,
 		})
 	}
 	if len(miners) > 0 {
@@ -77,6 +84,14 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 		log.Printf("No miner parsed")
 	}
 	return miners
+}
+
+func (srv *MinerServiceImpl) getGeoLocation(ip string) (lat, long float64) {
+	if ip != "" {
+		split := strings.Split(ip, ",")
+		return srv.GMgr.IPGeolocation(split[0])
+	}
+	return 0, 0
 }
 
 func getMinerIP(minerInfo *miner.MinerInfo) string {
