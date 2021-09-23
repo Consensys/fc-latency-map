@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "country": {
+      "type": "object",
+      "properties": {
+        "iata": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string"
+                },
+                "ip": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "measures": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "ip": {
+                          "type": "string"
+                        },
+                        "latency": {
+                          "type": "array",
+                          "items": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "avg": {
+                                  "type": "number"
+                                },
+                                "max": {
+                                  "type": "number"
+                                },
+                                "min": {
+                                  "type": "number"
+                                },
+                                "date": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "avg",
+                                "max",
+                                "min",
+                                "date"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "ip",
+                        "latency"
+                      ]
+                    }
+                  ]
+                },
+                "latitude": {
+                  "type": "number"
+                },
+                "longitude": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "address"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "iata"
+      ]
+    }
+  },
+  "required": [
+    "country"
+  ]
+}
