@@ -32,6 +32,7 @@ cp .env.example .env
 | RIPE_REQUESTED_PROBES | number | Max number of probes to call miners |
 | RIPE_LOCATION_RANGE_INIT | float | Initial range to find probes from airport location |
 | RIPE_LOCATION_RANGE_MAX | float | Max range to find probes from airport location |
+| IPGEOLOCATION_ABSTRACTAPI_KEY | string | [IPGeolocation api key management](https://app.abstractapi.com/api/ip-geolocation/tester) to obtain miner geolocation |
 
 
 Edit .env to add a valid Ripe Atlas API Key
