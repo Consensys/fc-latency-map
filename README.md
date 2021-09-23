@@ -64,7 +64,3 @@ Export reasults
 ### Documentation
 
 [./manager/README.md](./manager/README.md)
-
-
-
-
