@@ -18,7 +18,7 @@ type ExportServiceImpl struct {
 	DBMgr db.DatabaseMgr
 }
 
-func NewExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) ExportService {
+func NewExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) Service {
 	return &ExportServiceImpl{
 		Conf:  conf,
 		DBMgr: dbMgr,

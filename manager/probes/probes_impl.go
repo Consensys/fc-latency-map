@@ -23,7 +23,7 @@ func NewProbeServiceImpl(dbMgr db.DatabaseMgr, ripeMgr ripemgr.RipeMgr) (ProbeSe
 }
 
 func (srv *ProbeServiceImpl) RequestProbes() ([]*atlas.Probe, error) {
-	var locsList = []*models.Location{}
+	locsList := []*models.Location{}
 	srv.DBMgr.GetDB().Find(&locsList)
 	var bestProbes []*atlas.Probe
 
@@ -44,7 +44,7 @@ func (srv *ProbeServiceImpl) RequestProbes() ([]*atlas.Probe, error) {
 }
 
 func (srv *ProbeServiceImpl) GetAllProbes() []*models.Probe {
-	var probesList = []*models.Probe{}
+	probesList := []*models.Probe{}
 	srv.DBMgr.GetDB().Find(&probesList)
 	for _, probe := range probesList {
 		log.Printf("Probe ID: %d - Country code: %s\n", probe.ProbeID, probe.CountryCode)
@@ -72,7 +72,7 @@ func (srv *ProbeServiceImpl) Update() {
 			newProbe.Longitude = probe.Geometry.Coordinates[1]
 		}
 
-		var probeExits = models.Probe{}
+		probeExits := models.Probe{}
 		srv.DBMgr.GetDB().Where("probe_id = ?", probe.ID).First(&probeExits)
 
 		if (models.Probe{}) == probeExits {
@@ -87,13 +87,13 @@ func (srv *ProbeServiceImpl) Update() {
 	}
 
 	// update by removing probes not in location list
-	var probesList = []*models.Probe{}
+	probesList := []*models.Probe{}
 	srv.DBMgr.GetDB().Find(&probesList)
 	for _, probe := range probesList {
-		var location = models.Location{
+		location := models.Location{
 			Country: probe.CountryCode,
 		}
-		var locationExists = models.Location{}
+		locationExists := models.Location{}
 		srv.DBMgr.GetDB().Where(&location).First(&locationExists)
 		if locationExists == (models.Location{}) {
 			srv.DBMgr.GetDB().Delete(&models.Probe{}, probe.ID)

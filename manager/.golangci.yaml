@@ -1,0 +1,220 @@
+linters:
+  disable-all: true
+  enable:
+    - asciicheck
+    - bodyclose
+    - deadcode
+    - depguard
+    - dogsled
+    - dupl
+    - errcheck
+    - exhaustive
+    - exportloopref
+    - funlen
+    - gochecknoinits
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - godox
+    - gofmt
+    - goimports
+    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - importas
+    - ineffassign
+    - lll
+    - misspell
+    - nakedret
+    - nestif
+    - noctx
+    - nolintlint
+    - revive
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - varcheck
+    - wastedassign
+    - whitespace
+    - tagliatelle
+linters-settings:
+  dupl:
+    threshold: 100
+  funlen:
+    lines: 55
+    statements: 26
+  gocognit:
+    min-complexity: 13
+  goconst:
+    min-len: 2
+    min-occurrences: 2
+  gocritic:
+    disabled-checks:
+      - dupImport
+      - octalLiteral
+      - whyNoLint
+      - wrapperFunc
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+  gocyclo:
+    min-complexity: 15
+  godox:
+    keywords:
+      - TODO
+      - BUG
+      - FIXME
+      - OPTIMIZE
+      - HACK
+  goimports:
+    local-prefixes: github.com/ConsenSys/fc-latency-map
+  gomnd:
+    settings:
+      mnd:
+        checks: "argument,case,condition,return"
+  govet:
+    check-shadowing: true
+  lll:
+    line-length: 160
+  maligned:
+    suggest-new: true
+  misspell:
+    locale: US
+  nestif:
+    min-complexity: 4
+  nolintlint:
+    allow-leading-space: true
+    allow-unused: false
+    require-explanation: false
+    require-specific: false
+  revive:
+    ignore-generated-header: true
+    rules:
+      -
+        name: bare-return
+      -
+        name: blank-imports
+      -
+        name: bool-literal-in-expr
+      -
+        name: confusing-results
+      -
+        name: constant-logical-expr
+      -
+        name: context-as-argument
+      -
+        name: context-keys-type
+      -
+        name: dot-imports
+      -
+        name: duplicated-imports
+      -
+        name: early-return
+      -
+        name: empty-block
+      -
+        name: empty-lines
+      -
+        name: error-naming
+      -
+        name: error-return
+      -
+        name: error-strings
+      -
+        name: errorf
+      -
+        name: get-return
+      -
+        name: identical-branches
+      -
+        name: if-return
+      -
+        name: import-shadowing
+      -
+        name: increment-decrement
+      -
+        name: indent-error-flow
+      -
+        name: modifies-parameter
+      -
+        name: modifies-value-receiver
+      -
+        name: nested-structs
+      -
+        name: string-format
+      -
+        name: string-of-int
+      -
+        name: struct-tag
+      -
+        name: superfluous-else
+      -
+        name: time-naming
+      -
+        name: unconditional-recursion
+      -
+        name: unexported-naming
+      -
+        name: unexported-return
+      -
+        name: unnecessary-stmt
+      -
+        name: unreachable-code
+      -
+        name: unused-parameter
+      -
+        name: useless-break
+      -
+        name: var-declaration
+      -
+        name: var-naming
+      -
+        arguments: 3
+        name: function-result-limit
+      -
+        arguments: 4
+        name: argument-limit
+      -
+        arguments: 16
+        name: cyclomatic
+      -
+        arguments:
+          -
+            allowInts: "0,1,2,4,10,32,64,6"
+            allowStrs: "\"\",\"error\""
+            maxLitCount: "5"
+        name: add-constant
+    severity: warning
+  staticcheck:
+    checks:
+      - all
+    go: "1.17"
+  stylecheck:
+    checks:
+      - all
+    go: "1.17"
+  tagliatelle:
+    case:
+      rules:
+        json: snake
+      use-field-name: true
+  whitespace:
+    multi-func: true
+    multi-if: true
+run:
+  concurrency: 4
+  skip-dirs:
+    - ./extern
+  tests: false
+

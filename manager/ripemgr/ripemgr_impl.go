@@ -54,15 +54,12 @@ func (rMgr *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error
 	return probes, nil
 }
 
-func (rMgr *RipeMgrImpl) GetNearestProbe(latitude, longitude string) (*atlas.Probe, error) {
+func (rMgr *RipeMgrImpl) GetNearestProbe(lat, long float64) (*atlas.Probe, error) {
 	var err error
 	nearestProbes := []atlas.Probe{}
 
 	maxLocRange := rMgr.conf.GetFloat64("RIPE_LOCATION_RANGE_MAX")
 	coordRange := rMgr.conf.GetFloat64("RIPE_LOCATION_RANGE_INIT")
-
-	lat, _ := strconv.ParseFloat(latitude, 32)
-	long, _ := strconv.ParseFloat(longitude, 32)
 
 	for len(nearestProbes) < 1 && coordRange < maxLocRange {
 		opts := rMgr.getLatLongRange(lat, long, coordRange)
@@ -161,7 +158,6 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 	}
 
 	p, err := rMgr.c.Ping(mr)
-
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err.Error(),

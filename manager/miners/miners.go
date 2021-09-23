@@ -1,6 +1,6 @@
 package miners
 
-//go:generate mockgen -destination mocks/mocks.go -package miners . MinerService
+//go:generate mockgen -destination mocks.go -package miners . MinerService
 
 import (
 	"github.com/ConsenSys/fc-latency-map/manager/models"

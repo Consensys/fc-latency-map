@@ -15,11 +15,11 @@ type Measurement struct {
 type MeasurementResult struct {
 	gorm.Model
 	ProbeID              int
-	MeasurementID        int
-	MeasurementTimestamp int
+	MeasurementID        int `gorm:"index"`
+	MeasurementTimestamp int `gorm:"index"`
 	MeasurementDate      string
 	TimeAverage          float64
 	TimeMax              float64
 	TimeMin              float64
-	IP                   string
+	IP                   string `gorm:"index"`
 }

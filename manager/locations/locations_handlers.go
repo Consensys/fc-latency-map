@@ -1,6 +1,7 @@
 package locations
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
@@ -37,14 +38,16 @@ func (mHdl *LocationHandler) AddLocation(airportCode string) (*models.Location, 
 	}
 
 	coords := strings.Split(airport.Coordinates, ", ")
+	lat, _ := strconv.ParseFloat(coords[1], 32)
+	long, _ := strconv.ParseFloat(coords[0], 32)
 	location := &models.Location{
 		Country:   airport.IsoCountry,
 		IataCode:  airport.IataCode,
-		Latitude:  coords[1],
-		Longitude: coords[0],
+		Latitude:  lat,
+		Longitude: long,
 	}
-
 	location = (*mHdl.LSer).AddLocation(location)
+
 	return location, nil
 }
 

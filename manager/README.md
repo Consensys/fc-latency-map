@@ -27,16 +27,25 @@ cp .env.example .env
 ## Development
 
 * Run golangci
-```shell
-# fix format and import order
-golangci-lint run -v --no-config --disable-all -E whitespace --fix
-golangci-lint run -v --no-config --disable-all -E goimports --fix
-golangci-lint run -v --no-config --disable-all -E gofmt --fix
 
+```shell
 # run golint-ci
-golangci-lint run ./...
+golangci-lint run ./... --fix
 ```
 
+* Install pre-commit hooks
+
+```shell
+# @ project root
+pre-commit install
+```
+
+* Execute pre-commit manually
+
+```shell
+# @ project root
+pre-commit run --all-files
+```
 
 ## SQLite commands
 
@@ -100,4 +109,33 @@ or with an offset of 10 (latest block heights)
 4. List miners
 ```bash
 >>> miners-list
+```
+
+
+## Demo
+
+```shell
+## use case - from scratch
+rm data/database.db
+
+go run cmd/cli/main.go miners-parse 1109742
+go run cmd/cli/main.go locations-add ORY
+go run cmd/cli/main.go locations-add JFK
+go run cmd/cli/main.go locations-add OPO
+
+go run cmd/cli/main.go probes-update
+
+go run cmd/cli/main.go measures-create
+#   wait until have ripe results
+go run cmd/cli/main.go measures-get
+go run cmd/cli/main.go measures-export
+
+
+## use case 2 - from seed data
+#rm data/database.db
+go run cmd/cli/main.go seed-data
+go run cmd/cli/main.go probes-update
+
+go run cmd/cli/main.go measures-get
+go run cmd/cli/main.go measures-export
 ```

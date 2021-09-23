@@ -8,11 +8,8 @@ It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of every a
 
 Get the project:
 
-```
+```shell
 git clone https://github.com/ConsenSys/fc-latency-map.git
-
-git rm --cached extern/ripe-atlas
-git submodule update --recursive
 ```
 
 ## Manager
@@ -21,14 +18,28 @@ git submodule update --recursive
 
 Start the Manager cli:
 
-```
+```shell
 cd manager
 cp .env.example .env
 ```
 
-Edit .env to add a valid Ripe Atlas API Key, then execute:
+| Key | Value type | Description |
+| --- | --- | --- |
+| RIPE_API_KEY| string | [Ripe Atlas key management](https://atlas.ripe.net/keys/)       |
+| RIPE_PING_INTERVAL| number  | Interval between ping to get miners latency |
+| RIPE_PING_RUNNING_TIME| number | Running period get latency|
+| RIPE_ONE_OFF | boolean | On ping only to get latency. When is 'true' the RIPE_PING_INTERVAL and RIPE_PING_RUNNING_TIME are ignored|
+| RIPE_REQUESTED_PROBES | number | Max number of probes to call miners |
+| RIPE_LOCATION_RANGE_INIT | float | Initial range to find probes from airport location |
+| RIPE_LOCATION_RANGE_MAX | float | Max range to find probes from airport location |
+| IPGEOLOCATION_ABSTRACTAPI_KEY | string | [IPGeolocation api key management](https://app.abstractapi.com/api/ip-geolocation/tester) to obtain miner geolocation |
 
-```
+
+Edit .env to add a valid Ripe Atlas API Key
+
+After update the .env file execute:
+
+```shell
 go run cmd/cli/cli.go
 ```
 

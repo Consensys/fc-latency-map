@@ -6,7 +6,7 @@ import (
 )
 
 type ExportHandler struct {
-	Service *ExportService
+	Service *Service
 }
 
 func NewExportHandler() *ExportHandler {

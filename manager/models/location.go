@@ -7,7 +7,7 @@ import (
 type Location struct {
 	gorm.Model
 	Country   string
-	IataCode  string
-	Latitude  string
-	Longitude string
+	IataCode  string `gorm:"index"`
+	Latitude  float64
+	Longitude float64
 }
