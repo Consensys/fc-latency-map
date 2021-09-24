@@ -1,10 +1,13 @@
 # FC Latency Map
 
+[![CI pipeline](https://github.com/ConsenSys/fc-latency-map/actions/workflows/workflow.yml/badge.svg)](https://github.com/ConsenSys/fc-latency-map/actions/workflows/workflow.yml)
+
 ## Description
 
 FC Latency Map are services for [Filecoin](https://filecoin.io/) blockchain to get latencies of active miners.
 
-It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of every active miners from relevant location on the world.
+It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of every active miners from relevant location on
+the world.
 
 Get the project:
 
