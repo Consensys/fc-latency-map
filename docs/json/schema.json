@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "title": "Filecoin Miners latency",
+  "description": "Filecoin Miners latency from Ripe probes",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "itemType": {
+      "$ref": "#/definitions/country"
+    }
+  },
+  "definitions": {
+    "country": {
+      "title": "country",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/iata"
+        }
+      }
+    },
+    "iata": {
+      "title": "iata code",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "ip": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "measures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Measure"
+          }
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "longitude",
+        "latitude",
+        "measures",
+        "ip",
+        "address"
+      ]
+    },
+    "Measure": {
+      "title": "Measure",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ip": {
+          "type": "string"
+        },
+        "latency": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Latency"
+          }
+        }
+      },
+      "required": [
+        "ip",
+        "latency"
+      ]
+    },
+    "Latency": {
+      "title": "Latency",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "avg": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "min": {
+          "type": "number"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "avg",
+        "date",
+        "max",
+        "min"
+      ]
+    }
+  }
+}
