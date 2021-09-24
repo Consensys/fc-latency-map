@@ -125,11 +125,15 @@ func (rMgr *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs str
 	if len(miners) == 0 {
 		return nil, errors.New("miners are missing")
 	}
+	nProbes := viper.GetInt("RIPE_REQUESTED_PROBES")
+	if nProbes == 0 {
+		nProbes = len(strings.Split(probeIDs, ","))
+	}
 	probes := []atlas.ProbeSet{
 		{
 			Type:      "probes",
 			Value:     probeIDs,
-			Requested: viper.GetInt("RIPE_REQUESTED_PROBES"),
+			Requested: nProbes,
 		},
 	}
 

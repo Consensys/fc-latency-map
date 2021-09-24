@@ -33,6 +33,12 @@ cp .env.example .env
 golangci-lint run ./... --fix
 ```
 
+* Install pre-commit tool
+
+```shell
+curl https://pre-commit.com/install-local.py | python -
+```
+
 * Install pre-commit hooks
 
 ```shell
