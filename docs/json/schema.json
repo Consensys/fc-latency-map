@@ -3,8 +3,7 @@
   "title": "Filecoin Miners latency",
   "description": "Filecoin Miners latency from Ripe probes",
   "type": "object",
-  "additionalProperties": true,
-  "properties": {
+  "additionalProperties": {
     "itemType": {
       "$ref": "#/definitions/country"
     }
@@ -12,6 +11,7 @@
   "definitions": {
     "country": {
       "title": "country",
+      "description": "country iso-code 2 - https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2",
       "type": "object",
       "additionalProperties": {
         "type": "array",
@@ -22,8 +22,9 @@
     },
     "iata": {
       "title": "iata code",
+      "description": " IATA aiport codes - https://www.iata.org/en/publications/directories/code-search/?airport.search=",
       "type": "object",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "properties": {
         "address": {
           "type": "string"
