@@ -78,6 +78,7 @@ func (m *MeasurementServiceImpl) GetMiners() []*models.Miner {
 
 		return nil
 	}
+
 	return miners
 }
 
