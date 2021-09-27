@@ -1,7 +1,14 @@
 package export
 
+import (
+	"github.com/ConsenSys/fc-latency-map/manager/models"
+)
+
 type Result struct {
-	Country map[string]map[string][]*Miner `json:"country,omitempty"`
+	Location     []*models.Location             `json:"location,omitempty"`
+	Miners       []*models.Miner                `json:"miners,omitempty"`
+	Probes       []*models.Probe                `json:"probes,omitempty"`
+	Measurements map[string]map[string][]*Miner `json:"measurements,omitempty"`
 }
 
 type Miner struct {

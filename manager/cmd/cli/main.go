@@ -214,7 +214,7 @@ func (c *LatencyMapCLI) measuresList(blocks []string) {
 func (c *LatencyMapCLI) measuresExport(blocks []string) {
 	var fn string
 	if len(blocks) == 1 {
-		fn = fmt.Sprintf("data_%v.json\n", time.Now().Unix())
+		fn = fmt.Sprintf("data_%v.json", time.Now().Unix())
 	}
 	c.export.Export(fn)
 }

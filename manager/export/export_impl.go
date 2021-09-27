@@ -28,7 +28,7 @@ func NewExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) Service {
 func (m *ExportServiceImpl) export(fn string) {
 	measurements := m.GetLatencyMeasurementsStored()
 
-	fullJSON, err := json.MarshalIndent(measurements.Country, "", "  ")
+	fullJSON, err := json.MarshalIndent(measurements, "", "  ")
 	if err != nil {
 		jg.WithFields(jg.Fields{
 			"error": err,
@@ -44,17 +44,16 @@ func (m *ExportServiceImpl) export(fn string) {
 
 func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
 	results := &Result{
-		Country: map[string]map[string][]*Miner{},
+		Measurements: map[string]map[string][]*Miner{},
 	}
 
 	loc := m.getLocations()
+	miners := m.getMiners()
 
 	for _, l := range loc {
-		if _, found := results.Country[l.Country]; !found {
-			results.Country[l.Country] = make(map[string][]*Miner)
+		if _, found := results.Measurements[l.Country]; !found {
+			results.Measurements[l.Country] = make(map[string][]*Miner)
 		}
-
-		miners := m.getMiners()
 
 		for _, miner := range miners {
 			latency := &Miner{
@@ -69,11 +68,20 @@ func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
 			latency.IP = strings.Split(miner.IP, ",")
 			probes := m.getProbes(l)
 			latency = m.createLatency(probes, latency)
-			results.Country[l.Country][l.IataCode] = append(results.Country[l.Country][l.IataCode], latency)
+			results.Measurements[l.Country][l.IataCode] = append(results.Measurements[l.Country][l.IataCode], latency)
 		}
 	}
-
+	results.Location = loc
+	results.Miners = miners
+	results.Probes = m.GetAllProbes()
 	return results
+}
+
+func (m *ExportServiceImpl) GetAllProbes() []*models.Probe {
+	probesList := []*models.Probe{}
+	m.DBMgr.GetDB().Find(&probesList)
+
+	return probesList
 }
 
 func (m *ExportServiceImpl) createLatency(probes []*models.Probe, latency *Miner) *Miner {
