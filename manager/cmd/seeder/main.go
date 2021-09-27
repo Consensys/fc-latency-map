@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 
 	_ "gorm.io/driver/sqlite"
 
@@ -27,5 +26,5 @@ func main() {
 	var locations []models.Location
 	var count int64
 	dbMgr.GetDB().Model(&locations).Count(&count)
-	fmt.Printf("Total locations: %d\n", count)
+	log.Printf("Total locations: %d\n", count)
 }

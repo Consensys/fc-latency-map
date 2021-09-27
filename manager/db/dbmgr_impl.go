@@ -22,6 +22,7 @@ func NewDatabaseMgrImpl(conf *viper.Viper) (DatabaseMgr, error) {
 		panic("failed to connect database")
 	}
 	migrate(db)
+
 	return &DatabaseMgrImpl{
 		db: db,
 	}, nil

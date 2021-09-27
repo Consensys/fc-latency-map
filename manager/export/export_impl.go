@@ -33,6 +33,7 @@ func (m *ExportServiceImpl) export(fn string) {
 		jg.WithFields(jg.Fields{
 			"error": err,
 		}).Error("Create json data")
+
 		return
 	}
 
@@ -96,6 +97,7 @@ func (m *ExportServiceImpl) createLatency(probes []*models.Probe, latency *Miner
 			}
 		}
 	}
+
 	return latency
 }
 
@@ -118,6 +120,7 @@ func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []
 		jg.WithFields(jg.Fields{
 			"error": err,
 		}).Error("GetMeasureResults")
+
 		return nil
 	}
 
@@ -136,6 +139,7 @@ func (m *ExportServiceImpl) getProbes(l *models.Location) []*models.Probe {
 
 		return nil
 	}
+
 	return probes
 }
 
@@ -147,8 +151,10 @@ func (m *ExportServiceImpl) getMiners() []*models.Miner {
 		jg.WithFields(jg.Fields{
 			"error": err,
 		}).Error("GetMiners")
+
 		return nil
 	}
+
 	return miners
 }
 

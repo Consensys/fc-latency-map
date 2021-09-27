@@ -8,11 +8,11 @@ import (
 )
 
 func Create(fn string, fullJSON []byte) {
-	err := os.WriteFile(fn, fullJSON, fs.ModePerm)
-	if err != nil {
+	if err := os.WriteFile(fn, fullJSON, fs.ModePerm); err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("Create file")
+
 		return
 	}
 }

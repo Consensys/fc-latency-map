@@ -91,7 +91,7 @@ func TestHandler_GetMeasuresRipeError(t *testing.T) {
 
 	service.EXPECT().ImportMeasurement(gomock.Any()).Times(0)
 
-	h.GetMeasures()
+	h.ImportMeasures()
 }
 func TestHandler_GetMeasures(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -113,5 +113,5 @@ func TestHandler_GetMeasures(t *testing.T) {
 
 	service.EXPECT().ImportMeasurement(gomock.Any()).Times(1)
 
-	h.GetMeasures()
+	h.ImportMeasures()
 }
