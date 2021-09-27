@@ -5,7 +5,7 @@ import (
 )
 
 type Probe struct {
-	gorm.Model
+	gorm.Model  `json:"-"`
 	ProbeID     int     `gorm:"column:probe_id;uniqueIndex" json:"probe_id"`
 	CountryCode string  `gorm:"column:country_code" json:"country_code"`
 	Latitude    float64 `gorm:"column:latitude" json:"latitude"`
