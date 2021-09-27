@@ -2,6 +2,9 @@
 
 [![CI pipeline](https://github.com/ConsenSys/fc-latency-map/actions/workflows/workflow.yml/badge.svg)](https://github.com/ConsenSys/fc-latency-map/actions/workflows/workflow.yml)
 
+[![MIT Licensed](https://img.shields.io/badge/License-MIT-brightgreen)](/LICENSE-MIT)
+[![Apache Licensed](https://img.shields.io/badge/License-APACHE-brightgreen)](/LICENSE-APACHE)
+
 ## Description
 
 FC Latency Map are services for [Filecoin](https://filecoin.io/) blockchain to get latencies of active miners.
