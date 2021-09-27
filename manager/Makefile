@@ -7,3 +7,6 @@ db-dump:
 
 start:
 	go run cmd/cli/main.go
+
+coverage:
+	./scripts/coverage.sh
