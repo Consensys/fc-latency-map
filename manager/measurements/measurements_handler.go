@@ -48,6 +48,7 @@ func (h *Handler) GetMeasures() { //nolint:revive
 		log.WithFields(log.Fields{
 			"err": err,
 		}).Info("GetMeasurementResults")
+
 		return
 	}
 
@@ -61,6 +62,7 @@ func (h *Handler) CreateMeasurements() {
 		log.WithFields(log.Fields{
 			"err": err,
 		}).Error("Create Ping")
+
 		return
 	}
 

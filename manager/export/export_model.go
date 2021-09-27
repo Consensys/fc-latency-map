@@ -12,11 +12,8 @@ type Result struct {
 }
 
 type Miner struct {
-	Address   string       `json:"address"`
-	IP        []string     `json:"ip,omitempty"`
-	Measures  []*MeasureIP `json:"measures,omitempty"`
-	Latitude  float64      `json:"latitude,omitempty"`
-	Longitude float64      `json:"longitude,omitempty"`
+	Address  string       `json:"address"`
+	Measures []*MeasureIP `json:"measures,omitempty"`
 }
 
 type MeasureIP struct {

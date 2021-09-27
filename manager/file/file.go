@@ -13,6 +13,7 @@ func Create(fn string, fullJSON []byte) {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("Create file")
+
 		return
 	}
 }

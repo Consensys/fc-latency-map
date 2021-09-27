@@ -52,6 +52,7 @@ func (m *MeasurementServiceImpl) GetMeasuresLastResultTime() map[int]int {
 	for _, id := range m.getRipeMeasurementsID() {
 		measurements[id] = m.getLastMeasurementResultTime(id)
 	}
+
 	return measurements
 }
 
@@ -61,6 +62,7 @@ func (m *MeasurementServiceImpl) dbCreate(measurements []*models.Measurement) {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("Create Measurement in db")
+
 		return
 	}
 }
@@ -73,8 +75,10 @@ func (m *MeasurementServiceImpl) GetMiners() []*models.Miner {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("GetMiners")
+
 		return nil
 	}
+
 	return miners
 }
 
