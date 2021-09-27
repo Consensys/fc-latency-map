@@ -3,10 +3,11 @@ package measurements
 import (
 	"time"
 
-	atlas "github.com/keltia/ripe-atlas"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
+
+	atlas "github.com/keltia/ripe-atlas"
 
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	fmgr "github.com/ConsenSys/fc-latency-map/manager/filecoinmgr"
@@ -31,7 +32,7 @@ type Probes struct {
 	gorm.Model
 }
 
-func (m *MeasurementServiceImpl) createMeasurements(mrs []*atlas.Measurement) {
+func (m *MeasurementServiceImpl) CreateMeasurements(mrs []*atlas.Measurement) {
 	measurements := []*models.Measurement{}
 	for _, mr := range mrs {
 		measurements = append(measurements,
@@ -46,7 +47,7 @@ func (m *MeasurementServiceImpl) createMeasurements(mrs []*atlas.Measurement) {
 	m.dbCreate(measurements)
 }
 
-func (m *MeasurementServiceImpl) getMeasuresLastResultTime() map[int]int {
+func (m *MeasurementServiceImpl) GetMeasuresLastResultTime() map[int]int {
 	measurements := make(map[int]int)
 	for _, id := range m.getRipeMeasurementsID() {
 		measurements[id] = m.getLastMeasurementResultTime(id)
@@ -64,7 +65,7 @@ func (m *MeasurementServiceImpl) dbCreate(measurements []*models.Measurement) {
 	}
 }
 
-func (m *MeasurementServiceImpl) getMiners() []*models.Miner {
+func (m *MeasurementServiceImpl) GetMiners() []*models.Miner {
 	var miners []*models.Miner
 
 	err := (m.DBMgr).GetDB().Find(&miners).Error
@@ -77,7 +78,7 @@ func (m *MeasurementServiceImpl) getMiners() []*models.Miner {
 	return miners
 }
 
-func (m *MeasurementServiceImpl) importMeasurement(mr []atlas.MeasurementResult) {
+func (m *MeasurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult) {
 	dbc := (m.DBMgr).GetDB().Debug()
 	var insert []*models.MeasurementResult
 	for _, result := range mr { //nolint:gocritic
@@ -127,7 +128,7 @@ func (m *MeasurementServiceImpl) getLastMeasurementResultTime(measurementID int)
 	return measurementResults.MeasurementTimestamp
 }
 
-func (m *MeasurementServiceImpl) getProbIDs() []string {
+func (m *MeasurementServiceImpl) GetProbIDs() []string {
 	var probesIDs []string
 
 	err := (m.DBMgr).GetDB().Model(models.Probe{}).Select("probe_id").Find(&probesIDs).Error

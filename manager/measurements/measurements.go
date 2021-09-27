@@ -1,6 +1,6 @@
 package measurements
 
-//go:generate mockgen -destination mocks/measurements_impl.go -package measurements . MeasurementService
+//go:generate mockgen -destination mocks.go -package measurements . MeasurementService
 
 import (
 	atlas "github.com/keltia/ripe-atlas"
@@ -9,14 +9,14 @@ import (
 )
 
 type MeasurementService interface {
-	importMeasurement(measures []atlas.MeasurementResult)
+	ImportMeasurement(measures []atlas.MeasurementResult)
 
-	getMiners() []*models.Miner
+	GetMiners() []*models.Miner
 
-	getProbIDs() []string
+	GetProbIDs() []string
 
-	createMeasurements([]*atlas.Measurement)
+	CreateMeasurements([]*atlas.Measurement)
 
 	// getMeasuresLastResultTime load RIPE MeasurementResults
-	getMeasuresLastResultTime() map[int]int
+	GetMeasuresLastResultTime() map[int]int
 }
