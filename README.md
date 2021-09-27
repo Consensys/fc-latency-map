@@ -1,6 +1,7 @@
 # FC Latency Map
 
 [![CI pipeline](https://github.com/ConsenSys/fc-latency-map/actions/workflows/workflow.yml/badge.svg)](https://github.com/ConsenSys/fc-latency-map/actions/workflows/workflow.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ConsenSys/fc-latency-map)](https://goreportcard.com/badge/github.com/ConsenSys/fc-latency-map)
 
 [![MIT Licensed](https://img.shields.io/badge/License-MIT-brightgreen)](/LICENSE-MIT)
 [![Apache Licensed](https://img.shields.io/badge/License-APACHE-brightgreen)](/LICENSE-APACHE)
