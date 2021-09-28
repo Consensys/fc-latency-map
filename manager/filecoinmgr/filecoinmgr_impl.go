@@ -109,8 +109,8 @@ func (fMgr *FilecoinMgrImpl) GetVerifiedDealsByBlockHeight(height abi.ChainEpoch
 func (fMgr *FilecoinMgrImpl) getVerifiedDealsByBlock(height abi.ChainEpoch) ([]VerifiedDeal, error) {
 	blockCids, _ := fMgr.api.ChainGetTipSetByHeight(context.Background(), height, types.TipSetKey{})
 	verifiedDeals := []VerifiedDeal{}
-	for _, cid := range blockCids.Cids() {
-		messages, err := fMgr.api.ChainGetBlockMessages(context.Background(), cid)
+	for _, cID := range blockCids.Cids() {
+		messages, err := fMgr.api.ChainGetBlockMessages(context.Background(), cID)
 		if err != nil {
 			return []VerifiedDeal{}, err
 		}
