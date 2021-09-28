@@ -2,10 +2,12 @@
 
 trgt_coverage=${1:-"80"}
 
-go test ./... -coverprofile cover.out.tmp
-cat cover.out.tmp | grep -v "mocks.go" > cover.out
+go test ./... -coverprofile cover.out.tmp -covermode=atomic
+cat cover.out.tmp | grep -v "mocks.go" > coverage.txt
 rm cover.out.tmp
-curr_coverage=$(go tool cover -func cover.out | grep total | awk '{print $3}' | tr -d '%')
+curr_coverage=$(go tool cover -func coverage.txt | grep total | awk '{print $3}' | tr -d '%')
+
+bash <(curl -s https://codecov.io/bash)
 
 echo "Total: $curr_coverage%"
 
