@@ -1,0 +1,24 @@
+codecov:
+  token: 269e54ad-1d13-4ead-b18c-d2896b275d90
+  require_ci_to_pass: yes
+  notify:
+    wait_for_ci: yes
+
+coverage:
+  precision: 2
+  round: down
+  range: 20...90
+
+  status:
+    # Learn more at http://docs.codecov.io/docs/codecov-yaml
+    project:
+      default:
+        enabled: yes
+        target: 1
+        threshold: 0.1
+    patch:
+      default:
+        enabled: off
+
+ignore:
+  - "**/mocks.go"
