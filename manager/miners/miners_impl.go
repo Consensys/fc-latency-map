@@ -46,15 +46,13 @@ func (srv *MinerServiceImpl) GetAllMiners() []*models.Miner {
 func (srv *MinerServiceImpl) ParseMiners(offset int) []*models.Miner {
 	blockHeight, err := (srv.FMgr).GetBlockHeight()
 	if err != nil {
-		log.Fatalf("GetBlockHeight failed: %s", err)
-
+		log.Printf("GetBlockHeight failed: %s", err)
 		return []*models.Miner{}
 	}
 	log.Printf("blockHeight: %+v\n", blockHeight)
 	deals, err := (srv.FMgr).GetVerifiedDealsByBlockRange(blockHeight, offset)
 	if err != nil {
 		log.Printf("get Verified Deals By Block Range failed: %s", err)
-
 		return []*models.Miner{}
 	}
 
@@ -104,6 +102,7 @@ func (srv *MinerServiceImpl) getGeoLocation(ip string) (lat, long float64) {
 }
 
 func getMinerIP(minerInfo *miner.MinerInfo) string {
+	log.Printf("minerInfo.Multiaddrs: %s", minerInfo.Multiaddrs)
 	ips := addresses.IPAddress(addresses.MultiAddrs(minerInfo.Multiaddrs))
 	return strings.Join(ips, ",")
 }

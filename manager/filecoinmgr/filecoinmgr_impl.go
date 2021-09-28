@@ -5,16 +5,15 @@ import (
 	"context"
 	"net/http"
 
-	log "github.com/sirupsen/logrus"
-
-	"github.com/filecoin-project/go-address"
-	"github.com/filecoin-project/go-jsonrpc"
+	address "github.com/filecoin-project/go-address"
+	jsonrpc "github.com/filecoin-project/go-jsonrpc"
 	"github.com/filecoin-project/go-state-types/abi"
 	lotusapi "github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/filecoin-project/specs-actors/actors/builtin/market"
-	"github.com/ipfs/go-cid"
+	cid "github.com/ipfs/go-cid"
+	log "github.com/sirupsen/logrus"
 )
 
 type VerifiedDeal struct {
@@ -111,8 +110,8 @@ func (fMgr *FilecoinMgrImpl) GetVerifiedDealsByBlockHeight(height abi.ChainEpoch
 func (fMgr *FilecoinMgrImpl) getVerifiedDealsByBlock(height abi.ChainEpoch) ([]VerifiedDeal, error) {
 	blockCids, _ := fMgr.api.ChainGetTipSetByHeight(context.Background(), height, types.TipSetKey{})
 	verifiedDeals := []VerifiedDeal{}
-	for _, cid := range blockCids.Cids() {
-		messages, err := fMgr.api.ChainGetBlockMessages(context.Background(), cid)
+	for _, cID := range blockCids.Cids() {
+		messages, err := fMgr.api.ChainGetBlockMessages(context.Background(), cID)
 		if err != nil {
 			return []VerifiedDeal{}, err
 		}

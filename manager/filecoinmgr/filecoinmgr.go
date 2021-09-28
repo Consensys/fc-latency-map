@@ -1,9 +1,9 @@
 package filecoinmgr
 
-//go:generatez mockgen -destination mocks.go -package filecoinmgr . FilecoinMgr
+//go:generate mockgen -destination mocks.go -package filecoinmgr . FilecoinMgr
 
 import (
-	"github.com/filecoin-project/go-address"
+	address "github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
 	"github.com/filecoin-project/lotus/chain/types"

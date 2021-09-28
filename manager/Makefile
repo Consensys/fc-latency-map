@@ -1,4 +1,6 @@
-.PHONY: db-dump start
+MIN_COV?=80
+
+.PHONY: db-dump start coverage
 
 db-dump:
 	sqlite3 data/database.db .schema > data/schema.sql
@@ -7,3 +9,6 @@ db-dump:
 
 start:
 	go run cmd/cli/main.go
+
+coverage:
+	./scripts/coverage.sh $(MIN_COV)
