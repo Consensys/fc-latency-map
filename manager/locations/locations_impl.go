@@ -3,10 +3,10 @@ package locations
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/viper"
 
@@ -63,8 +63,7 @@ func (srv *LocationServiceImpl) AddLocation(newLocation *models.Location) *model
 }
 
 func (srv *LocationServiceImpl) DeleteLocation(location *models.Location) bool {
-	l := srv.GetLocation(location)
-	if l == nil {
+	if l := srv.GetLocation(location); l == nil {
 		log.Printf("Unable to find location %s\n", location.Country)
 	} else {
 		srv.DBMgr.GetDB().Delete(&location)
@@ -89,7 +88,7 @@ func (srv *LocationServiceImpl) FindAirport(iataCode string) (Airport, error) {
 	if err != nil {
 		return Airport{}, err
 	}
-	fmt.Printf("Successfully Opened: %s\n", filename)
+	log.Printf("Successfully Opened: %s\n", filename)
 	defer jsonFile.Close()
 
 	jsonData, err := ioutil.ReadAll(jsonFile)
