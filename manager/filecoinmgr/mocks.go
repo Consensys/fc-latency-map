@@ -98,7 +98,7 @@ func (mr *MockFilecoinMgrMockRecorder) GetVerifiedDealsByBlockHeight(arg0 interf
 }
 
 // GetVerifiedDealsByBlockRange mocks base method.
-func (m *MockFilecoinMgr) GetVerifiedDealsByBlockRange(arg0 abi.ChainEpoch, arg1 uint) ([]VerifiedDeal, error) {
+func (m *MockFilecoinMgr) GetVerifiedDealsByBlockRange(arg0 abi.ChainEpoch, arg1 int) ([]VerifiedDeal, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetVerifiedDealsByBlockRange", arg0, arg1)
 	ret0, _ := ret[0].([]VerifiedDeal)

@@ -43,16 +43,16 @@ func (srv *MinerServiceImpl) GetAllMiners() []*models.Miner {
 	return miners
 }
 
-func (srv *MinerServiceImpl) ParseMiners(offset uint) []*models.Miner {
+func (srv *MinerServiceImpl) ParseMiners(offset int) []*models.Miner {
 	blockHeight, err := (srv.FMgr).GetBlockHeight()
 	if err != nil {
-		log.Printf("get block failed: %s", err)
+		log.Printf("GetBlockHeight failed: %s", err)
 		return []*models.Miner{}
 	}
 	log.Printf("blockHeight: %+v\n", blockHeight)
 	deals, err := (srv.FMgr).GetVerifiedDealsByBlockRange(blockHeight, offset)
 	if err != nil {
-		log.Printf("get block failed: %s", err)
+		log.Printf("get Verified Deals By Block Range failed: %s", err)
 		return []*models.Miner{}
 	}
 
@@ -117,7 +117,7 @@ func (srv *MinerServiceImpl) upsertMinersInDB(miners []*models.Miner) {
 func (srv *MinerServiceImpl) ParseMinersByBlockHeight(height int64) []*models.Miner {
 	deals, err := (srv.FMgr).GetVerifiedDealsByBlockHeight(abi.ChainEpoch(height))
 	if err != nil {
-		log.Printf("get block failed: %s", err)
+		log.Printf("get Verified Deals By Block Height failed: %s", err)
 		return []*models.Miner{}
 	}
 	return srv.parseMinersFromDeals(deals)

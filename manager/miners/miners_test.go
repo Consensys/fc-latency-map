@@ -35,7 +35,7 @@ var dummyVerifiedDeals = []fmgr.VerifiedDeal{
 }
 var dummyGeoLatitude = 37.39500
 var dummyGeoLongitude = -122.08167
-var dummyOffset = uint(42)
+var dummyOffset = int(42)
 var dummyBlockHeight = int64(42)
 var dummyMiner = models.Miner{
 	Address:   dummyMinerAddress.String(),

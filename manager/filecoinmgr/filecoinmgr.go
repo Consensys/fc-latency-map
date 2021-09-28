@@ -3,7 +3,7 @@ package filecoinmgr
 //go:generate mockgen -destination mocks.go -package filecoinmgr . FilecoinMgr
 
 import (
-	"github.com/filecoin-project/go-address"
+	address "github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
 	"github.com/filecoin-project/lotus/chain/types"
@@ -18,7 +18,7 @@ type FilecoinMgr interface {
 	GetBlockHeight() (abi.ChainEpoch, error)
 
 	// GetVerifiedDealsByBlockRange return verified deals for a range of block
-	GetVerifiedDealsByBlockRange(height abi.ChainEpoch, offset uint) ([]VerifiedDeal, error)
+	GetVerifiedDealsByBlockRange(height abi.ChainEpoch, offset int) ([]VerifiedDeal, error)
 
 	// GetVerifiedDealsByBlockHeight return verified deals for a block height
 	GetVerifiedDealsByBlockHeight(height abi.ChainEpoch) ([]VerifiedDeal, error)

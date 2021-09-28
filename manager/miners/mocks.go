@@ -49,7 +49,7 @@ func (mr *MockMinerServiceMockRecorder) GetAllMiners() *gomock.Call {
 }
 
 // ParseMiners mocks base method.
-func (m *MockMinerService) ParseMiners(arg0 uint) []*models.Miner {
+func (m *MockMinerService) ParseMiners(arg0 int) []*models.Miner {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ParseMiners", arg0)
 	ret0, _ := ret[0].([]*models.Miner)

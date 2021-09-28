@@ -47,18 +47,18 @@ func (mHdl *MinerHandler) GetAllMiners() []*models.Miner {
 
 func (mHdl *MinerHandler) MinersUpdate(offset string) {
 	if strings.TrimSpace(offset) == "" {
-		off := mHdl.Conf.GetUint("FILECOIN_BLOCKS_OFFSET")
+		off := mHdl.Conf.GetInt("FILECOIN_BLOCKS_OFFSET")
 		(*mHdl.MSer).ParseMiners(off)
 
 		return
 	}
-	off, err := strconv.ParseUint(offset, 10, 64)
+	off, err := strconv.Atoi(offset)
 	if err != nil {
 		log.Println("Error: provided offset is not a valid integer")
 
 		return
 	}
-	(*mHdl.MSer).ParseMiners(uint(off))
+	(*mHdl.MSer).ParseMiners(off)
 }
 
 func (mHdl *MinerHandler) MinersParse(height int64) {
