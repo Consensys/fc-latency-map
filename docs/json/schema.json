@@ -3,9 +3,33 @@
   "title": "Filecoin Miners latency",
   "description": "Filecoin Miners latency from Ripe probes",
   "type": "object",
-  "additionalProperties": {
-    "itemType": {
-      "$ref": "#/definitions/country"
+  "additionalProperties": false,
+  "properties": {
+    "measurements": {
+      "type": "object",
+      "additionalProperties": {
+        "itemType": {
+          "$ref": "#/definitions/country"
+        }
+      }
+    },
+    "probes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Probe"
+      }
+    },
+    "miners": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Miner"
+      }
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Location"
+      }
     }
   },
   "definitions": {
@@ -101,6 +125,87 @@
         "max",
         "min"
       ]
+    },
+    "Probe": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "probe_id": {
+          "type": "integer"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "country_code",
+        "latitude",
+        "longitude",
+        "probe_id"
+      ],
+      "title": "Probe"
+    },
+    "Miner": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "address",
+        "ip",
+        "latitude",
+        "longitude"
+      ],
+      "title": "Miner"
+    },
+    "Location": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "country": {
+          "type": "string"
+        },
+        "iata_code": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "country",
+        "iata_code",
+        "latitude",
+        "longitude"
+      ],
+      "title": "location"
     }
-  }
+  },
+  "required": [
+    "measurements",
+    "probes",
+    "locations",
+    "miners"
+  ]
 }
