@@ -1,6 +1,7 @@
 package miners
 
 import (
+	"errors"
 	"log"
 	"testing"
 
@@ -70,7 +71,7 @@ func Test_GetAllMiners_Empty(t *testing.T) {
 	assert.Empty(t, miners)
 }
 
-func Test_GetAllMiners_NotEmpty(t *testing.T) {
+func Test_GetAllMiners_OK(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -96,7 +97,91 @@ func Test_GetAllMiners_NotEmpty(t *testing.T) {
 	assert.Equal(t, dummyMiner.Longitude, actual.Longitude)
 }
 
-func Test_ParseMiners(t *testing.T) {
+func Test_ParseMiners_Error_GetBlockHeight(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
+	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
+	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
+
+	// Act
+	mockFMgr.EXPECT().GetBlockHeight().Return(abi.ChainEpoch(int64(0)), errors.New(""))
+	miners := srv.ParseMiners(dummyOffset)
+
+	// Assert
+	assert.NotNil(t, miners)
+	assert.Empty(t, miners)
+}
+
+func Test_ParseMiners_Error_GetVerifiedDealsByBlockRange(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
+	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
+	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
+
+	// Act
+	mockFMgr.EXPECT().GetBlockHeight().Return(abi.ChainEpoch(dummyBlockHeight), nil)
+	mockFMgr.EXPECT().GetVerifiedDealsByBlockRange(gomock.Any(), gomock.Any()).Return(make([]fmgr.VerifiedDeal, 0), errors.New(""))
+	miners := srv.ParseMiners(dummyOffset)
+
+	// Assert
+	assert.NotNil(t, miners)
+	assert.Empty(t, miners)
+}
+
+func Test_ParseMiners_Empty_GetVerifiedDealsByBlockRange(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
+	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
+	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
+
+	// Act
+	mockFMgr.EXPECT().GetBlockHeight().Return(abi.ChainEpoch(dummyBlockHeight), nil)
+	mockFMgr.EXPECT().GetVerifiedDealsByBlockRange(gomock.Any(), gomock.Any()).Return(make([]fmgr.VerifiedDeal, 0), nil)
+	miners := srv.ParseMiners(dummyOffset)
+
+	// Assert
+	assert.NotNil(t, miners)
+	assert.Empty(t, miners)
+}
+
+func Test_ParseMiners_Error_GetMinerInfo(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
+	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
+	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
+
+	// Act
+	mockFMgr.EXPECT().GetBlockHeight().Return(abi.ChainEpoch(dummyBlockHeight), nil)
+	mockFMgr.EXPECT().GetVerifiedDealsByBlockRange(gomock.Any(), gomock.Any()).Return(dummyVerifiedDeals, nil)
+	mockFMgr.EXPECT().GetMinerInfo(gomock.Any()).Return(miner.MinerInfo{}, errors.New(""))
+	miners := srv.ParseMiners(dummyOffset)
+
+	// Assert
+	assert.NotNil(t, miners)
+	assert.Empty(t, miners)
+}
+
+func Test_ParseMiners_OK(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -125,7 +210,68 @@ func Test_ParseMiners(t *testing.T) {
 	assert.Equal(t, dummyMiner.Longitude, actual.Longitude)
 }
 
-func Test_ParseMinersByBlockHeight(t *testing.T) {
+func Test_ParseMinersByBlockHeight_Error_GetVerifiedDealsByBlockHeight(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
+	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
+	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
+
+	// Act
+	mockFMgr.EXPECT().GetVerifiedDealsByBlockHeight(gomock.Any()).Return(make([]fmgr.VerifiedDeal, 0), errors.New(""))
+	miners := srv.ParseMinersByBlockHeight(dummyBlockHeight)
+
+	// Assert
+	assert.NotNil(t, miners)
+	assert.Empty(t, miners)
+}
+
+func Test_ParseMinersByBlockHeight_Empty_GetVerifiedDealsByBlockHeight(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
+	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
+	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
+
+	// Act
+	mockFMgr.EXPECT().GetVerifiedDealsByBlockHeight(gomock.Any()).Return(make([]fmgr.VerifiedDeal, 0), nil)
+	miners := srv.ParseMinersByBlockHeight(dummyBlockHeight)
+
+	// Assert
+	assert.NotNil(t, miners)
+	assert.Empty(t, miners)
+}
+
+func Test_ParseMinersByBlockHeight_Error_GetMinerInfo(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
+	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
+	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
+
+	// Act
+	mockFMgr.EXPECT().GetVerifiedDealsByBlockHeight(gomock.Any()).Return(dummyVerifiedDeals, nil)
+	mockFMgr.EXPECT().GetMinerInfo(gomock.Any()).Return(miner.MinerInfo{}, errors.New(""))
+	miners := srv.ParseMinersByBlockHeight(dummyBlockHeight)
+
+	// Assert
+	assert.NotNil(t, miners)
+	assert.Empty(t, miners)
+}
+
+func Test_ParseMinersByBlockHeight_OK(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
