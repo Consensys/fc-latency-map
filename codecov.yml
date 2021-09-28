@@ -20,5 +20,18 @@ coverage:
       default:
         enabled: off
 
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: true
+      macro: no
+
+comment:
+  layout: "reach,diff,flags,files,footer"
+  behavior: default
+  require_changes: false
+
 ignore:
   - "**/mocks.go"
