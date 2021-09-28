@@ -95,6 +95,7 @@ func (srv *MinerServiceImpl) getGeoLocation(ip string) (lat, long float64) {
 }
 
 func getMinerIP(minerInfo *miner.MinerInfo) string {
+	log.Printf("minerInfo.Multiaddrs: %s", minerInfo.Multiaddrs)
 	ips := addresses.IPAddress(addresses.MultiAddrs(minerInfo.Multiaddrs))
 	return strings.Join(ips, ",")
 }
