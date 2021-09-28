@@ -113,13 +113,12 @@ func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []
 		"ip," +
 			"date(measurement_timestamp, 'unixepoch') measurement_date," +
 			"avg(time_average) time_average," +
-			"avg(time_max) time_max," +
-			"avg(time_min) time_min").
+			"max(time_max) time_max," +
+			"min(time_min) time_min").
 		Group("ip, measurement_date").
 		Where(&models.MeasurementResult{
 			ProbeID: probe.ProbeID,
-			// MinerAddress: miner.Address,
-			IP: ip,
+			IP:      ip,
 		}).
 		Find(&meas).Error
 	if err != nil {
