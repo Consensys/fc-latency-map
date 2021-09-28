@@ -30,7 +30,8 @@ func (srv *ProbeServiceImpl) RequestProbes() ([]*atlas.Probe, error) {
 	for _, location := range locsList {
 		log.WithFields(log.Fields{
 			"country": location.Country,
-		}).Info("Get probes for country")
+			"iata":    location.IataCode,
+		}).Info("Get probes for airport")
 
 		nearestProbe, err := srv.RipeMgr.GetNearestProbe(location.Latitude, location.Longitude)
 		if err != nil {

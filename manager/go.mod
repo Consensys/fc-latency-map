@@ -15,6 +15,7 @@ require (
 	github.com/keltia/ripe-atlas v0.0.0-20210506215806-13f0d38c56e7
 	github.com/mattn/go-sqlite3 v1.14.8 // indirect
 	github.com/multiformats/go-multiaddr v0.3.3
+	github.com/multiformats/go-multihash v0.0.15
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.8.1
@@ -122,7 +123,6 @@ require (
 	github.com/multiformats/go-multiaddr-fmt v0.1.0 // indirect
 	github.com/multiformats/go-multiaddr-net v0.2.0 // indirect
 	github.com/multiformats/go-multibase v0.0.3 // indirect
-	github.com/multiformats/go-multihash v0.0.15 // indirect
 	github.com/multiformats/go-varint v0.0.6 // indirect
 	github.com/nkovacs/streamquote v0.0.0-20170412213628-49af9bddb229 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
@@ -142,7 +142,6 @@ require (
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/urfave/cli/v2 v2.2.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

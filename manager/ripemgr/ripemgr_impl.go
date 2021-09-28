@@ -81,7 +81,7 @@ func (rMgr *RipeMgrImpl) GetNearestProbe(lat, long float64) (*atlas.Probe, error
 		return &nearestProbes[0], nil
 	}
 
-	return nil, err
+	return &atlas.Probe{}, nil
 }
 
 func (rMgr *RipeMgrImpl) getLatLongRange(lat, long, coordRange float64) map[string]string {
