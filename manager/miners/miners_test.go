@@ -55,13 +55,17 @@ func Test_GetAllMiners_Empty(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	// Arrange
 	mockConfig := config.NewMockConfig()
 	mockDbMgr := db.NewMockDatabaseMgr()
 	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
 	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
 	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
 
+	// Act
 	miners := srv.GetAllMiners()
+
+	// Assert
 	assert.NotNil(t, miners)
 	assert.Empty(t, miners)
 }
@@ -70,16 +74,18 @@ func Test_GetAllMiners_NotEmpty(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	dummyMiners := []*models.Miner{&dummyMiner}
+	// Arrange
 	mockConfig := config.NewMockConfig()
 	mockDbMgr := db.NewMockDatabaseMgr()
 	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
 	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
 	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
 
-	mockDbMgr.GetDB().Create(&dummyMiners)
-
+	// Act
+	mockDbMgr.GetDB().Create(&([]*models.Miner{&dummyMiner}))
 	miners := srv.GetAllMiners()
+
+	// Assert
 	assert.NotNil(t, miners)
 	assert.NotEmpty(t, miners)
 
@@ -94,18 +100,21 @@ func Test_ParseMiners(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	// Arrange
 	mockConfig := config.NewMockConfig()
 	mockDbMgr := db.NewMockDatabaseMgr()
 	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
 	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
 	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
 
+	// Act
 	mockFMgr.EXPECT().GetBlockHeight().Return(abi.ChainEpoch(dummyBlockHeight), nil)
 	mockFMgr.EXPECT().GetVerifiedDealsByBlockRange(gomock.Any(), gomock.Any()).Return(dummyVerifiedDeals, nil)
 	mockFMgr.EXPECT().GetMinerInfo(gomock.Any()).Return(dummyMinerInfo, nil)
 	mockGMgr.EXPECT().IPGeolocation(gomock.Any()).Return(dummyGeoLatitude, dummyGeoLongitude)
-
 	miners := srv.ParseMiners(dummyOffset)
+
+	// Assert
 	assert.NotNil(t, miners)
 	assert.NotEmpty(t, miners)
 
@@ -120,17 +129,20 @@ func Test_ParseMinersByBlockHeight(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	// Arrange
 	mockConfig := config.NewMockConfig()
 	mockDbMgr := db.NewMockDatabaseMgr()
 	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
 	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
 	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
 
+	// Act
 	mockFMgr.EXPECT().GetVerifiedDealsByBlockHeight(gomock.Any()).Return(dummyVerifiedDeals, nil)
 	mockFMgr.EXPECT().GetMinerInfo(gomock.Any()).Return(dummyMinerInfo, nil)
 	mockGMgr.EXPECT().IPGeolocation(gomock.Any()).Return(dummyGeoLatitude, dummyGeoLongitude)
-
 	miners := srv.ParseMinersByBlockHeight(dummyBlockHeight)
+
+	// Assert
 	assert.NotNil(t, miners)
 	assert.NotEmpty(t, miners)
 
