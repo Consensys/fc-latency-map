@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
 env:
-  MIN_COVERAGE: 20
+  MIN_COVERAGE: 29
 jobs:
   lint:
     name: Run lint
