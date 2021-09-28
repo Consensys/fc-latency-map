@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "title": "Filecoin Miners latency",
+  "description": "Filecoin Miners latency from Ripe probes",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "measurements": {
+      "type": "object",
+      "additionalProperties": {
+        "itemType": {
+          "$ref": "#/definitions/country"
+        }
+      }
+    },
+    "probes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Probe"
+      }
+    },
+    "miners": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Miner"
+      }
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Location"
+      }
+    }
+  },
+  "definitions": {
+    "country": {
+      "title": "country",
+      "description": "country iso-code 2 - https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/iata"
+        }
+      }
+    },
+    "iata": {
+      "title": "iata code",
+      "description": " IATA aiport codes - https://www.iata.org/en/publications/directories/code-search/?airport.search=",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "ip": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "measures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Measure"
+          }
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "longitude",
+        "latitude",
+        "measures",
+        "ip",
+        "address"
+      ]
+    },
+    "Measure": {
+      "title": "Measure",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ip": {
+          "type": "string"
+        },
+        "latency": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Latency"
+          }
+        }
+      },
+      "required": [
+        "ip",
+        "latency"
+      ]
+    },
+    "Latency": {
+      "title": "Latency",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "avg": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "min": {
+          "type": "number"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "avg",
+        "date",
+        "max",
+        "min"
+      ]
+    },
+    "Probe": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "probe_id": {
+          "type": "integer"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "country_code",
+        "latitude",
+        "longitude",
+        "probe_id"
+      ],
+      "title": "Probe"
+    },
+    "Miner": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "address",
+        "ip",
+        "latitude",
+        "longitude"
+      ],
+      "title": "Miner"
+    },
+    "Location": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "country": {
+          "type": "string"
+        },
+        "iata_code": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "country",
+        "iata_code",
+        "latitude",
+        "longitude"
+      ],
+      "title": "location"
+    }
+  },
+  "required": [
+    "measurements",
+    "probes",
+    "locations",
+    "miners"
+  ]
+}

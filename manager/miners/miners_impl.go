@@ -1,8 +1,9 @@
 package miners
 
 import (
-	"log"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
@@ -38,6 +39,7 @@ func (srv *MinerServiceImpl) GetAllMiners() []*models.Miner {
 	for _, m := range miners {
 		log.Printf("Miner address: %s - ip: %s\n", m.Address, m.IP)
 	}
+
 	return miners
 }
 
@@ -53,6 +55,7 @@ func (srv *MinerServiceImpl) ParseMiners(offset uint) []*models.Miner {
 		log.Printf("get block failed: %s", err)
 		return []*models.Miner{}
 	}
+
 	return srv.parseMinersFromDeals(deals)
 }
 
@@ -64,6 +67,7 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 		minerInfo, err := (srv.FMgr).GetMinerInfo(provider)
 		if err != nil {
 			log.Printf("unable to get miner info: %s. skip...", address)
+
 			continue
 		}
 		ip := getMinerIP(&minerInfo)
@@ -83,14 +87,17 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 	} else {
 		log.Printf("No miner parsed")
 	}
+
 	return miners
 }
 
 func (srv *MinerServiceImpl) getGeoLocation(ip string) (lat, long float64) {
 	if ip != "" {
 		split := strings.Split(ip, ",")
+
 		return srv.GMgr.IPGeolocation(split[0])
 	}
+
 	return 0, 0
 }
 

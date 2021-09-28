@@ -114,15 +114,15 @@ func completer(d prompt.Document) []prompt.Suggest {
 //nolint:funlen
 // executor executes the command
 func (c *LatencyMapCLI) executor(in string) {
-	fmt.Println("executor ", in)
+	log.Println("executor ", in)
 	blocks := strings.Split(strings.TrimSpace(in), " ")
 
-	fmt.Printf("Command: %s\n", blocks[0])
+	log.Printf("Command: %s\n", blocks[0])
 
 	switch blocks[0] {
 	// Locations list
 	case locationsList:
-		c.locations.GetLocations()
+		c.locations.DisplayLocations()
 
 	// New location
 	case locationsAdd:
@@ -144,7 +144,7 @@ func (c *LatencyMapCLI) executor(in string) {
 		c.measurements.CreateMeasurements()
 
 	case measuresGet:
-		c.measurements.GetMeasures()
+		c.measurements.ImportMeasures()
 
 	case measuresList:
 		c.measuresList(blocks)
@@ -165,48 +165,48 @@ func (c *LatencyMapCLI) executor(in string) {
 		c.seedData()
 
 	case "exit":
-		fmt.Println("Shutdown ...")
-		fmt.Println("Bye!")
+		log.Println("Shutdown ...")
+		log.Println("Bye!")
 		os.Exit(0)
 
 	default:
-		fmt.Printf("unknown command: %s\n", blocks[0])
+		log.Printf("unknown command: %s\n", blocks[0])
 	}
 }
 
 func (c *LatencyMapCLI) seedData() {
-	fmt.Println("Seed data ...")
+	log.Println("Seed data ...")
 	seeds.Seed()
 }
 
 func (c *LatencyMapCLI) locationsAdd(blocks []string) {
 	if len(blocks) == 1 {
-		fmt.Println("Error: missing location to add")
+		log.Println("Error: missing location to add")
 		return
 	}
 
-	fmt.Println("Add a location")
+	log.Println("Add a location")
 	location, err := c.locations.AddLocation(blocks[1])
 	if err != nil {
 		log.Error(err)
 		return
 	}
-	fmt.Printf("ID: %d\n", location.ID)
+	log.Printf("ID: %d\n", location.ID)
 }
 
 func (c *LatencyMapCLI) locationsDelete(blocks []string) {
 	if len(blocks) == 1 {
-		fmt.Println("missing location to delete")
+		log.Println("missing location to delete")
 		return
 	}
 
-	fmt.Println("Delete a location")
+	log.Println("Delete a location")
 	c.locations.DeleteLocation(blocks[1])
 }
 
 func (c *LatencyMapCLI) measuresList(blocks []string) {
 	if len(blocks) == 1 {
-		fmt.Println("Error: missing limit number")
+		log.Println("Error: missing limit number")
 		return
 	}
 }
@@ -214,7 +214,7 @@ func (c *LatencyMapCLI) measuresList(blocks []string) {
 func (c *LatencyMapCLI) measuresExport(blocks []string) {
 	var fn string
 	if len(blocks) == 1 {
-		fn = fmt.Sprintf("data_%v.json\n", time.Now().Unix())
+		fn = fmt.Sprintf("data_%v.json", time.Now().Unix())
 	}
 	c.export.Export(fn)
 }
@@ -229,12 +229,14 @@ func (c *LatencyMapCLI) minersUpdate(blocks []string) {
 
 func (c *LatencyMapCLI) minersParse(blocks []string) {
 	if len(blocks) == 1 {
-		fmt.Println("Error: missing block height")
+		log.Println("Error: missing block height")
+
 		return
 	}
 	height, err := strconv.ParseInt(blocks[1], 10, 64)
 	if err != nil {
-		fmt.Println("Error: provided block height is not a valid integer")
+		log.Println("Error: provided block height is not a valid integer")
+
 		return
 	}
 	c.miners.MinersParse(height)

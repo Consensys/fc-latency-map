@@ -12,8 +12,8 @@ import (
 )
 
 type Handler struct {
-	Service *MeasurementService
-	ripeMgr *ripemgr.RipeMgr
+	Service MeasurementService
+	ripeMgr ripemgr.RipeMgr
 }
 
 func NewHandler() *Handler {
@@ -36,33 +36,35 @@ func NewHandler() *Handler {
 	mSer := NewMeasurementServiceImpl(conf, dbMgr, fMgr)
 
 	return &Handler{
-		Service: &mSer,
-		ripeMgr: &ripeMgr,
+		Service: mSer,
+		ripeMgr: ripeMgr,
 	}
 }
 
-func (h *Handler) GetMeasures() { //nolint:revive
-	measures := (*h.Service).getMeasuresLastResultTime()
-	results, err := (*h.ripeMgr).GetMeasurementResults(measures)
+func (h *Handler) ImportMeasures() {
+	measures := h.Service.GetMeasuresLastResultTime()
+	results, err := h.ripeMgr.GetMeasurementResults(measures)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
 		}).Info("GetMeasurementResults")
+
 		return
 	}
 
-	(*h.Service).importMeasurement(results)
+	h.Service.ImportMeasurement(results)
 }
 
 func (h *Handler) CreateMeasurements() {
-	pIDs := strings.Join((*h.Service).getProbIDs(), ",")
-	measures, err := (*h.ripeMgr).CreateMeasurements((*h.Service).getMiners(), pIDs)
+	pIDs := strings.Join(h.Service.GetProbIDs(), ",")
+	measures, err := h.ripeMgr.CreateMeasurements(h.Service.GetMiners(), pIDs)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
 		}).Error("Create Ping")
+
 		return
 	}
 
-	(*h.Service).createMeasurements(measures)
+	h.Service.CreateMeasurements(measures)
 }

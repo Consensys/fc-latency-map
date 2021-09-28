@@ -49,6 +49,7 @@ func (srv *ProbeServiceImpl) GetAllProbes() []*models.Probe {
 	for _, probe := range probesList {
 		log.Printf("Probe ID: %d - Country code: %s\n", probe.ProbeID, probe.CountryCode)
 	}
+
 	return probesList
 }
 
@@ -58,6 +59,7 @@ func (srv *ProbeServiceImpl) Update() {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("GetAllProbes")
+
 		return
 	}
 

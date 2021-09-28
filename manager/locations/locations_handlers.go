@@ -25,8 +25,8 @@ func NewLocationHandler() *LocationHandler {
 	}
 }
 
-// GetLocations handle locations get cli command
-func (mHdl *LocationHandler) GetLocations() { //nolint:revive
+// DisplayLocations handle locations get cli command
+func (mHdl *LocationHandler) DisplayLocations() {
 	(*mHdl.LSer).DisplayLocations()
 }
 

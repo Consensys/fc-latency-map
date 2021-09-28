@@ -1,10 +1,10 @@
 package miners
 
 import (
-	"fmt"
-	"log"
 	"strconv"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/viper"
 
@@ -49,11 +49,13 @@ func (mHdl *MinerHandler) MinersUpdate(offset string) {
 	if strings.TrimSpace(offset) == "" {
 		off := mHdl.Conf.GetUint("FILECOIN_BLOCKS_OFFSET")
 		(*mHdl.MSer).ParseMiners(off)
+
 		return
 	}
 	off, err := strconv.ParseUint(offset, 10, 64)
 	if err != nil {
-		fmt.Println("Error: provided offset is not a valid integer")
+		log.Println("Error: provided offset is not a valid integer")
+
 		return
 	}
 	(*mHdl.MSer).ParseMiners(uint(off))

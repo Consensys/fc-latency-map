@@ -1,7 +1,7 @@
 package seeds
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/go-gormigrate/gormigrate/v2"
 	"gorm.io/gorm"

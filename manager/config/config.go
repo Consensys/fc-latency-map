@@ -10,9 +10,9 @@ import (
 func NewConfig() *viper.Viper {
 	config := viper.New()
 	config.SetConfigFile(".env")
-	err := config.ReadInConfig()
-	if err != nil {
+	if err := config.ReadInConfig(); err != nil {
 		panic("Failed read config")
 	}
+
 	return config
 }

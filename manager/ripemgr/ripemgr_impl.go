@@ -30,6 +30,7 @@ func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
 	c, err := atlas.NewClient(cfgs...)
 	if err != nil {
 		log.Println("Connecting to Ripe Atlas API", err)
+
 		return nil, err
 	}
 	ver := atlas.GetVersion()
@@ -69,6 +70,7 @@ func (rMgr *RipeMgrImpl) GetNearestProbe(lat, long float64) (*atlas.Probe, error
 		if err != nil {
 			if err.Error() == "empty probe list" {
 				coordRange *= 2
+
 				continue
 			}
 
@@ -103,6 +105,7 @@ func (rMgr *RipeMgrImpl) getLatLongRange(lat, long, coordRange float64) map[stri
 	opts["longitude__lte"] = longLte
 	opts["status_name"] = "Connected"
 	opts["sort"] = "id"
+
 	return opts
 }
 
@@ -217,5 +220,6 @@ func (rMgr *RipeMgrImpl) getDefinitions(miner *models.Miner, isOneOff bool, ping
 		}
 		d = append(d, definition)
 	}
+
 	return d
 }
