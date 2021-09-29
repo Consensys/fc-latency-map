@@ -18,7 +18,7 @@ sudo apt install sqlite3
 
 Must have an ".env" file with the configurations to run.
 
-Is available an example of configuration on [.env.example](./manager/.env.example)
+Is available an example of configuration on [.env.example](./.env.example)
 
 ```bash
 cp .env.example .env
