@@ -171,7 +171,7 @@ func (m *ExportServiceImpl) getLocations() []*models.Location {
 	if err != nil {
 		jg.WithFields(jg.Fields{
 			"error": err,
-		}).Error("DisplayLocations")
+		}).Error("GetAllLocations")
 
 		return nil
 	}

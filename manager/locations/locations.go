@@ -8,8 +8,8 @@ import (
 
 type LocationService interface {
 
-	// DisplayLocations returns locations list
-	DisplayLocations() []*models.Location
+	// GetAllLocations returns locations list
+	GetAllLocations() []*models.Location
 
 	// UpdateLocations create airports in database
 	UpdateLocations(airportType string) (bool, error)

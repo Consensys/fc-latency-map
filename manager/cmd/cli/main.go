@@ -124,7 +124,7 @@ func (c *LatencyMapCLI) executor(in string) {
 	switch blocks[0] {
 	// Locations list
 	case locationsList:
-		c.locations.DisplayLocations()
+		c.locations.GetAllLocations()
 
 	// Locations update
 	case locationsUpdate:

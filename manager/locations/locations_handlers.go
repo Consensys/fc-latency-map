@@ -25,9 +25,9 @@ func NewLocationHandler() *LocationHandler {
 	}
 }
 
-// DisplayLocations handle locations get cli command
-func (mHdl *LocationHandler) DisplayLocations() {
-	(*mHdl.LSer).DisplayLocations()
+// GetAllLocations handle locations get cli command
+func (mHdl *LocationHandler) GetAllLocations() {
+	(*mHdl.LSer).GetAllLocations()
 }
 
 // UpdateLocations handle adding all airport in database
