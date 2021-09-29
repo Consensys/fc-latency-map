@@ -4,12 +4,15 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/spf13/viper"
+
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
 type LocationHandler struct {
+	Conf  *viper.Viper
 	LSer *LocationService
 }
 
@@ -21,6 +24,7 @@ func NewLocationHandler() *LocationHandler {
 	}
 	lSer := NewLocationServiceImpl(conf, dbMgr)
 	return &LocationHandler{
+		Conf:  conf,
 		LSer: &lSer,
 	}
 }
@@ -32,13 +36,13 @@ func (mHdl *LocationHandler) GetAllLocations() {
 
 // UpdateLocations handle adding all airport in database
 func (mHdl *LocationHandler) UpdateLocations(airportType string) error {
-	_, err := (*mHdl.LSer).UpdateLocations(airportType)
+	err := (*mHdl.LSer).UpdateLocations(airportType, mHdl.Conf.GetString("CONSTANT_AIRPORTS"))
 	return err
 }
 
 // AddLocation handle location add cli command
 func (mHdl *LocationHandler) AddLocation(airportCode string) (*models.Location, error) {
-	airport, err := (*mHdl.LSer).FindAirport(airportCode)
+	airport, err := (*mHdl.LSer).FindAirport(airportCode, mHdl.Conf.GetString("CONSTANT_AIRPORTS"))
 	if err != nil {
 		return nil, err
 	}
@@ -58,9 +62,9 @@ func (mHdl *LocationHandler) AddLocation(airportCode string) (*models.Location, 
 }
 
 // DeleteLocation handle location delete cli command
-func (mHdl *LocationHandler) DeleteLocation(countryCode string) {
+func (mHdl *LocationHandler) DeleteLocation(iataCode string) {
 	location := &models.Location{
-		Country: countryCode,
+		IataCode: iataCode,
 	}
 	(*mHdl.LSer).DeleteLocation(location)
 }

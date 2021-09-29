@@ -80,9 +80,16 @@ func (srv *LocationServiceImpl) DeleteLocation(location *models.Location) bool {
 	return true
 }
 
+func (srv *LocationServiceImpl) CheckCountry(countryCode string) bool {
+	for _, country := range constants.Countries {
+		if countryCode == country.Code {
+			return true
+		}
+	}
+	return false
+}
 
-
-func (srv *LocationServiceImpl) UpdateLocations(airportType string) (bool, error) {
+func (srv *LocationServiceImpl) UpdateLocations(airportType string, filename string) error {
 	var airportTypeFormated string
 	switch airportType {
 		case "large":
@@ -94,21 +101,21 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType string) (bool, error
 				fmt.Println("It's the small weekend")
 				airportTypeFormated = "small_airport"
 		default:
-			return false, errors.New("airport type not found")
+			return errors.New("airport type not found")
 	}
 	log.Printf("import airport type: %s\n", airportTypeFormated)
 
-	airports, err := srv.ExtractAirports()
+	airports, err := srv.ExtractAirports(filename)
 	if err != nil {
-		return false, nil
+		return nil
 	}
 
 	cpt := 0
 	for _, airport := range airports {
 		if airport.Type == airportTypeFormated {
 			coords := strings.Split(airport.Coordinates, ", ")
-			lat, _ := strconv.ParseFloat(coords[1], 32)
-			long, _ := strconv.ParseFloat(coords[0], 32)
+			lat, _ := strconv.ParseFloat(coords[0], 64)
+			long, _ := strconv.ParseFloat(coords[1], 64)
 			location := &models.Location{
 				Country:   airport.IsoCountry,
 				IataCode:  airport.IataCode,
@@ -127,20 +134,10 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType string) (bool, error
 	}
 	log.Printf("%d airport imported\n", cpt)
 
-	return true, nil
+	return nil
 }
 
-func (srv *LocationServiceImpl) CheckCountry(countryCode string) bool {
-	for _, country := range constants.Countries {
-		if countryCode == country.Code {
-			return true
-		}
-	}
-	return false
-}
-
-func (srv *LocationServiceImpl) ExtractAirports() ([]Airport, error) {
-	filename := srv.Conf.GetString("CONSTANT_AIRPORTS")
+func (srv *LocationServiceImpl) ExtractAirports(filename string) ([]Airport, error) {
 	jsonFile, err := os.Open(filename)
 	if err != nil {
 		return []Airport{}, err
@@ -161,8 +158,8 @@ func (srv *LocationServiceImpl) ExtractAirports() ([]Airport, error) {
 	return airports, nil
 }
 
-func (srv *LocationServiceImpl) FindAirport(iataCode string) (Airport, error) {
-	airports, err := srv.ExtractAirports()
+func (srv *LocationServiceImpl) FindAirport(iataCode string, filename string) (Airport, error) {
+	airports, err := srv.ExtractAirports(filename)
 	if err != nil {
 		return Airport{}, err
 	}

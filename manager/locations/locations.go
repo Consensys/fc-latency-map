@@ -11,9 +11,6 @@ type LocationService interface {
 	// GetAllLocations returns locations list
 	GetAllLocations() []*models.Location
 
-	// UpdateLocations create airports in database
-	UpdateLocations(airportType string) (bool, error)
-
 	// GetLocation returns a location
 	GetLocation(location *models.Location) *models.Location
 
@@ -26,9 +23,12 @@ type LocationService interface {
 	// CheckCountry checks if country exists
 	CheckCountry(countryCode string) bool
 
+	// UpdateLocations create airports in database
+	UpdateLocations(airportType string, filename string) error
+
 	// ExtractAirports returns airports
-	ExtractAirports() ([]Airport, error)
+	ExtractAirports(filename string) ([]Airport, error)
 
 	// FindAirport finds and returns airport
-	FindAirport(airportCode string) (Airport, error)
+	FindAirport(airportCode string, filename string) (Airport, error)
 }

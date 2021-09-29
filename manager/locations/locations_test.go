@@ -1,12 +1,13 @@
 package locations
 
 import (
-	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 	"testing"
 
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
@@ -30,16 +31,7 @@ var dummyLocation = models.Location{
 	Type: 			dummyType,
 }
 
-type TestSuite struct {
-	suite.Suite
-}
-
-// before each test
-func (suite *TestSuite) SetupTest() {
-	mockDbMgr := db.NewMockDatabaseMgr()
-	// mockDbMgr.GetDB().Delete(&models.Location{})
-	mockDbMgr.GetDB().Where("1 = 1").Delete(&models.Location{})
-}
+var mockAirportJson = `[{"continent": "EU", "coordinates": "1.90889, 48.843601", "elevation_ft": "371", "gps_code": "LFPF", "iata_code": null, "ident": "LFPF", "iso_country": "FR", "iso_region": "FR-IDF", "local_code": null, "municipality": "Creil", "name": "A\u00c3\u00a9rodrome de Beynes - Thiverval", "type": "small_airport"},{"continent": "EU", "coordinates": "2.55, 49.012798", "elevation_ft": "392", "gps_code": "LFPG", "iata_code": "CDG", "ident": "LFPG", "iso_country": "FR", "iso_region": "FR-IDF", "local_code": null, "municipality": "Paris", "name": "Charles de Gaulle International Airport", "type": "large_airport"},{"continent": "EU", "coordinates": "2.6075, 48.8978", "elevation_ft": "207", "gps_code": "LFPH", "iata_code": null, "ident": "LFPH", "iso_country": "FR", "iso_region": "FR-IDF", "local_code": null, "municipality": "Paris", "name": "A\u00c3\u00a9rodrome de Chelles-le-Pin", "type": "small_airport"}]`
 
 func Test_GetAllLocations_Empty(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -100,8 +92,6 @@ func Test_GetLocation_Empty(t *testing.T) {
 
 	// Act
 	location := srv.GetLocation(&dummyLocation)
-
-	fmt.Printf("===>>> %v\n\n", location)
 
 	// Assert
 	assert.Empty(t, location)
@@ -216,4 +206,62 @@ func Test_CheckCountry_Error(t *testing.T) {
 
 	// Assert
 	assert.Equal(t, false, isCountry)
+}
+
+func Test_UpdateLocations(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Mock file
+	file, err := ioutil.TempFile("", "airports")
+	if err != nil {
+			log.Fatal(err)
+	}
+	defer os.Remove(file.Name())
+	_, err = file.WriteString(mockAirportJson)
+	
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+	srv := NewLocationServiceImpl(mockConfig, mockDbMgr)
+
+	// Act
+	err = srv.UpdateLocations("large", file.Name())
+	location := &models.Location{
+		IataCode: dummyIataCode,
+	}
+	newLocation := srv.GetLocation(location)
+	
+	assert.Nil(t, err)
+	assert.Equal(t, dummyLocation.Country, newLocation.Country)
+	assert.Equal(t, dummyLocation.IataCode, newLocation.IataCode)
+	assert.Equal(t, dummyLocation.Latitude, newLocation.Latitude)
+	assert.Equal(t, dummyLocation.Longitude, newLocation.Longitude)
+	assert.Equal(t, dummyLocation.Type, newLocation.Type)
+}
+
+func Test_FindAirport(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Mock file
+	file, err := ioutil.TempFile("", "airports")
+	if err != nil {
+			log.Fatal(err)
+	}
+	defer os.Remove(file.Name())
+	_, err = file.WriteString(mockAirportJson)
+	
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+	srv := NewLocationServiceImpl(mockConfig, mockDbMgr)
+
+	// Act
+	airport, err := srv.FindAirport(dummyIataCode, file.Name())
+
+	// Assert
+	assert.Nil(t, err)
+	assert.Equal(t, dummyLocation.IataCode, airport.IataCode)
+	assert.Equal(t, dummyLocation.Type, airport.Type)
 }
