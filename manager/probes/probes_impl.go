@@ -81,7 +81,9 @@ func (srv *ProbeServiceImpl) Update() {
 		if (models.Probe{}) == probeExits {
 			err := srv.DBMgr.GetDB().Debug().Model(&models.Probe{}).Create(&newProbe).Error
 			if err != nil {
-				panic("Unable to create probe")
+				log.WithFields(log.Fields{
+					"error": err,
+				}).Error("unable to insert probes")
 			}
 			log.Printf("Add new location, ID: %v", newProbe.ProbeID)
 		} else {
