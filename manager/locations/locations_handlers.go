@@ -12,7 +12,7 @@ import (
 )
 
 type LocationHandler struct {
-	Conf  *viper.Viper
+	Conf *viper.Viper
 	LSer *LocationService
 }
 
@@ -24,7 +24,7 @@ func NewLocationHandler() *LocationHandler {
 	}
 	lSer := NewLocationServiceImpl(conf, dbMgr)
 	return &LocationHandler{
-		Conf:  conf,
+		Conf: conf,
 		LSer: &lSer,
 	}
 }

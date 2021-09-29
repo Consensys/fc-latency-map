@@ -100,35 +100,13 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType string, filename str
 		default:
 			return errors.New("airport type not found")
 	}
-	log.Printf("import airport type: %s\n", airportTypeFormated)
-
+	
 	airports, err := srv.ExtractAirports(filename)
 	if err != nil {
 		return err
 	}
 
 	cpt := 0
-	// for _, airport := range airports {
-	// 	if airport.Type == airportTypeFormated {
-	// 		coords := strings.Split(airport.Coordinates, ", ")
-	// 		lat, _ := strconv.ParseFloat(coords[0], 64)
-	// 		long, _ := strconv.ParseFloat(coords[1], 64)
-	// 		location := &models.Location{
-	// 			Country:   airport.IsoCountry,
-	// 			IataCode:  airport.IataCode,
-	// 			Latitude:  lat,
-	// 			Longitude: long,
-	// 			Type: airport.Type,
-	// 		}
-
-	// 		existsLocation := models.Location{}
-	// 		srv.DBMgr.GetDB().Where("iata_code = ?", location.IataCode).First(&existsLocation)
-	// 		if existsLocation == (models.Location{}) {
-	// 			srv.DBMgr.GetDB().Create(&location)
-	// 			cpt++
-	// 		}
-	// 	}
-	// }
 	for _, airport := range airports {
 		if airport.Type == airportTypeFormated {
 			existsLocation := models.Location{}
@@ -148,7 +126,7 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType string, filename str
 			}
 		}
 	}
-	log.Printf("%d airport imported\n", cpt)
+	log.Printf("%d airport imported, type: %s\n", cpt, airportTypeFormated)
 
 	return nil
 }

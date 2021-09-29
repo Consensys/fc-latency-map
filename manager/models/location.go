@@ -10,5 +10,5 @@ type Location struct {
 	IataCode   string  `gorm:"index" json:"iata_code"`
 	Latitude   float64 `json:"latitude"`
 	Longitude  float64 `json:"longitude"`
-	Type  			string `json:"type"`
+	Type       string  `json:"type"`
 }
