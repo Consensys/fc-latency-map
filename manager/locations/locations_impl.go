@@ -114,11 +114,7 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType string, filename str
 			lat, _ := strconv.ParseFloat(coords[0], 64)
 			long, _ := strconv.ParseFloat(coords[1], 64)
 			location := &models.Location{
-				Country:   airport.IsoCountry,
-				IataCode:  airport.IataCode,
-				Latitude:  lat,
-				Longitude: long,
-				Type: airport.Type,
+				Country:   airport.IsoCountry, IataCode:  airport.IataCode, Latitude:  lat, Longitude: long, Type: airport.Type,
 			}
 
 			existsLocation := models.Location{}
