@@ -29,8 +29,8 @@ func NewLocationHandler() *LocationHandler {
 	}
 }
 
-// GetAllLocations handle locations get cli command
-func (mHdl *LocationHandler) GetAllLocations() {
+// DisplayAllLocations handle locations get cli command
+func (mHdl *LocationHandler) DisplayAllLocations() {
 	(*mHdl.LSer).GetAllLocations()
 }
 
