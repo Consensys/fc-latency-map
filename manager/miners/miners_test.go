@@ -110,7 +110,7 @@ func Test_ParseMiners_Error_GetBlockHeight(t *testing.T) {
 
 	// Act
 	mockFMgr.EXPECT().GetBlockHeight().Return(abi.ChainEpoch(int64(0)), errors.New(""))
-	miners := srv.ParseMiners(dummyOffset)
+	miners := srv.ParseMinersByBlockOffset(dummyOffset)
 
 	// Assert
 	assert.NotNil(t, miners)
@@ -131,7 +131,7 @@ func Test_ParseMiners_Error_GetVerifiedDealsByBlockRange(t *testing.T) {
 	// Act
 	mockFMgr.EXPECT().GetBlockHeight().Return(abi.ChainEpoch(dummyBlockHeight), nil)
 	mockFMgr.EXPECT().GetVerifiedDealsByBlockRange(gomock.Any(), gomock.Any()).Return(make([]fmgr.VerifiedDeal, 0), errors.New(""))
-	miners := srv.ParseMiners(dummyOffset)
+	miners := srv.ParseMinersByBlockOffset(dummyOffset)
 
 	// Assert
 	assert.NotNil(t, miners)
@@ -152,7 +152,7 @@ func Test_ParseMiners_Empty_GetVerifiedDealsByBlockRange(t *testing.T) {
 	// Act
 	mockFMgr.EXPECT().GetBlockHeight().Return(abi.ChainEpoch(dummyBlockHeight), nil)
 	mockFMgr.EXPECT().GetVerifiedDealsByBlockRange(gomock.Any(), gomock.Any()).Return(make([]fmgr.VerifiedDeal, 0), nil)
-	miners := srv.ParseMiners(dummyOffset)
+	miners := srv.ParseMinersByBlockOffset(dummyOffset)
 
 	// Assert
 	assert.NotNil(t, miners)
@@ -174,7 +174,7 @@ func Test_ParseMiners_Error_GetMinerInfo(t *testing.T) {
 	mockFMgr.EXPECT().GetBlockHeight().Return(abi.ChainEpoch(dummyBlockHeight), nil)
 	mockFMgr.EXPECT().GetVerifiedDealsByBlockRange(gomock.Any(), gomock.Any()).Return(dummyVerifiedDeals, nil)
 	mockFMgr.EXPECT().GetMinerInfo(gomock.Any()).Return(miner.MinerInfo{}, errors.New(""))
-	miners := srv.ParseMiners(dummyOffset)
+	miners := srv.ParseMinersByBlockOffset(dummyOffset)
 
 	// Assert
 	assert.NotNil(t, miners)
@@ -197,7 +197,7 @@ func Test_ParseMiners_OK(t *testing.T) {
 	mockFMgr.EXPECT().GetVerifiedDealsByBlockRange(gomock.Any(), gomock.Any()).Return(dummyVerifiedDeals, nil)
 	mockFMgr.EXPECT().GetMinerInfo(gomock.Any()).Return(dummyMinerInfo, nil)
 	mockGMgr.EXPECT().IPGeolocation(gomock.Any()).Return(dummyGeoLatitude, dummyGeoLongitude)
-	miners := srv.ParseMiners(dummyOffset)
+	miners := srv.ParseMinersByBlockOffset(dummyOffset)
 
 	// Assert
 	assert.NotNil(t, miners)

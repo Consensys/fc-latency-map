@@ -43,7 +43,7 @@ func (srv *MinerServiceImpl) GetAllMiners() []*models.Miner {
 	return miners
 }
 
-func (srv *MinerServiceImpl) ParseMiners(offset int) []*models.Miner {
+func (srv *MinerServiceImpl) ParseMinersByBlockOffset(offset int) []*models.Miner {
 	blockHeight, err := (srv.FMgr).GetBlockHeight()
 	if err != nil {
 		log.Printf("GetBlockHeight failed: %s", err)
