@@ -127,15 +127,8 @@ func (c *LatencyMapCLI) executor(in string) {
 		c.locations.DisplayAllLocations()
 
 	// Locations update
-	// case locationsUpdate:
-	// 	airportType := "large"
-	// 	if len(blocks) == 2 {
-	// 		airportType = blocks[1]
-	// 	}
-	// 	err := c.locations.UpdateLocations(airportType)
-	// 	if err != nil {
-	// 		log.Errorf("Error: %s\n", err)
-	// 	}
+	case locationsUpdate:
+		c.locationsUpdate(blocks)
 
 	// New location
 	case locationsAdd:
@@ -190,6 +183,17 @@ func (c *LatencyMapCLI) executor(in string) {
 func (c *LatencyMapCLI) seedData() {
 	log.Println("Seed data ...")
 	seeds.Seed()
+}
+
+func (c *LatencyMapCLI) locationsUpdate(blocks []string) {
+	airportType := "large"
+	if len(blocks) == 2 {
+		airportType = blocks[1]
+	}
+	err := c.locations.UpdateLocations(airportType)
+	if err != nil {
+		log.Errorf("Error: %s\n", err)
+	}
 }
 
 func (c *LatencyMapCLI) locationsAdd(blocks []string) {
