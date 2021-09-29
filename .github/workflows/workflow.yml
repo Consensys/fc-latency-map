@@ -10,8 +10,6 @@ on:
       - main
     paths-ignore:
       - '**.md'
-env:
-  MIN_COVERAGE: 29
 jobs:
   lint:
     name: Run lint
@@ -51,5 +49,6 @@ jobs:
       - name: Run test and coverage
         run: |
           cd manager/
-          chmod +x scripts/coverage.sh
-          ./scripts/coverage.sh $MIN_COVERAGE
+          go test ./... -coverprofile cover.out.tmp -covermode=atomic
+          cat cover.out.tmp | grep -v "mocks.go" > coverage.txt
+          bash <(curl -s https://codecov.io/bash)
