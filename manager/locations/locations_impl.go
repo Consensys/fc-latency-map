@@ -104,7 +104,7 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType string, filename str
 
 	airports, err := srv.ExtractAirports(filename)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	cpt := 0
