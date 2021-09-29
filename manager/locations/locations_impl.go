@@ -108,22 +108,45 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType string, filename str
 	}
 
 	cpt := 0
+	// for _, airport := range airports {
+	// 	if airport.Type == airportTypeFormated {
+	// 		coords := strings.Split(airport.Coordinates, ", ")
+	// 		lat, _ := strconv.ParseFloat(coords[0], 64)
+	// 		long, _ := strconv.ParseFloat(coords[1], 64)
+	// 		location := &models.Location{
+	// 			Country:   airport.IsoCountry,
+	// 			IataCode:  airport.IataCode,
+	// 			Latitude:  lat,
+	// 			Longitude: long,
+	// 			Type: airport.Type,
+	// 		}
+
+	// 		existsLocation := models.Location{}
+	// 		srv.DBMgr.GetDB().Where("iata_code = ?", location.IataCode).First(&existsLocation)
+	// 		if existsLocation == (models.Location{}) {
+	// 			srv.DBMgr.GetDB().Create(&location)
+	// 			cpt++
+	// 		}
+	// 	}
+	// }
 	for _, airport := range airports {
 		if airport.Type == airportTypeFormated {
-			coords := strings.Split(airport.Coordinates, ", ")
-			lat, _ := strconv.ParseFloat(coords[0], 64)
-			long, _ := strconv.ParseFloat(coords[1], 64)
-			location := &models.Location{
-				Country:   airport.IsoCountry, IataCode:  airport.IataCode, Latitude:  lat, Longitude: long, Type: airport.Type,
-			}
-
 			existsLocation := models.Location{}
-			srv.DBMgr.GetDB().Where("iata_code = ?", location.IataCode).First(&existsLocation)
+			srv.DBMgr.GetDB().Where("iata_code = ?", airport.IataCode).First(&existsLocation)
 			if existsLocation == (models.Location{}) {
-				srv.DBMgr.GetDB().Create(&location)
+				coords := strings.Split(airport.Coordinates, ", ")
+				lat, _ := strconv.ParseFloat(coords[0], 64)
+				long, _ := strconv.ParseFloat(coords[1], 64)
+				srv.DBMgr.GetDB().Create(&models.Location{
+					Country:   airport.IsoCountry,
+					IataCode:  airport.IataCode,
+					Latitude:  lat,
+					Longitude: long,
+					Type: airport.Type,
+				})
 				cpt++
 			}
-		}		
+		}
 	}
 	log.Printf("%d airport imported\n", cpt)
 
