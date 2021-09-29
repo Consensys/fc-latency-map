@@ -3,7 +3,6 @@ package locations
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -95,10 +94,8 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType string, filename str
 		case "large":
 				airportTypeFormated = "large_airport"
 		case "medium":
-				fmt.Println("It's the medium weekend")
 				airportTypeFormated = "medium_airport"
 		case "small":
-				fmt.Println("It's the small weekend")
 				airportTypeFormated = "small_airport"
 		default:
 			return errors.New("airport type not found")
