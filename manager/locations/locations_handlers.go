@@ -30,6 +30,12 @@ func (mHdl *LocationHandler) DisplayLocations() {
 	(*mHdl.LSer).DisplayLocations()
 }
 
+// UpdateLocations handle adding all airport in database
+func (mHdl *LocationHandler) UpdateLocations(airportType string) error {
+	_, err := (*mHdl.LSer).UpdateLocations(airportType)
+	return err
+}
+
 // AddLocation handle location add cli command
 func (mHdl *LocationHandler) AddLocation(airportCode string) (*models.Location, error) {
 	airport, err := (*mHdl.LSer).FindAirport(airportCode)

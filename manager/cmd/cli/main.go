@@ -23,6 +23,7 @@ import (
 
 const (
 	locationsList   = "locations-list"
+	locationsUpdate = "locations-update"
 	locationsAdd    = "locations-add"
 	locationsDelete = "locations-delete"
 	probesUpdate    = "probes-update"
@@ -86,6 +87,7 @@ func completer(d prompt.Document) []prompt.Suggest {
 		// location
 		{Text: seedData, Description: "Seed data(location, probes, miners, measures)"},
 		{Text: locationsList, Description: "List all locations"},
+		{Text: locationsUpdate, Description: "insert airports in database. options: large / medium / small"},
 		{Text: locationsAdd, Description: "Add location by country code. ex: location-add <country_code>"},
 		{Text: locationsDelete, Description: "Delete location by country code. ex: location-delete <country_code>"},
 
@@ -123,6 +125,17 @@ func (c *LatencyMapCLI) executor(in string) {
 	// Locations list
 	case locationsList:
 		c.locations.DisplayLocations()
+
+	// Locations update
+	case locationsUpdate:
+		airportType := "large"
+		if len(blocks) == 2 {
+			airportType = blocks[1]
+		}
+		err := c.locations.UpdateLocations(airportType)
+		if err != nil {
+			log.Errorf("Error: %s\n", err)
+		}
 
 	// New location
 	case locationsAdd:
