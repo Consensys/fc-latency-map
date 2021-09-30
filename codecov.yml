@@ -24,5 +24,6 @@ comment:
   require_changes: false
   require_base: true
   require_head: true
+  show_carryforward_flags: true
 ignore:
   - "**/mocks.go"
