@@ -40,15 +40,11 @@ func (srv *LocationServiceImpl) GetAllLocations() []*models.Location {
 	locsList := []*models.Location{}
 	srv.DBMgr.GetDB().Find(&locsList)
 	for _, location := range locsList {
-<<<<<<< HEAD
-		log.Printf("ID:%d - Iata code: %s - Country code: %s\n", location.ID, location.IataCode, location.Country)
-=======
 		log.Printf("ID:%d - Iata code: %s - Country code: %s - Type: %s\n",
 			location.ID,
 			location.IataCode,
 			location.Country,
 			location.Type)
->>>>>>> main
 	}
 	return locsList
 }
@@ -65,11 +61,7 @@ func (srv *LocationServiceImpl) AddLocation(newLocation *models.Location) *model
 	srv.DBMgr.GetDB().Where("iata_code = ?", newLocation.IataCode).First(&location)
 	if location == (models.Location{}) {
 		srv.DBMgr.GetDB().Create(&newLocation)
-<<<<<<< HEAD
-		log.Printf("New location, ID:%d - Iata code: %s - Country code: %s\n", newLocation.ID, newLocation.IataCode, newLocation.Country)
-=======
 		log.Printf("new location, ID:%d - Country code: %s\n", newLocation.ID, newLocation.Country)
->>>>>>> main
 	} else {
 		log.Printf("location already exists, ID:%d\n", location.ID)
 	}
