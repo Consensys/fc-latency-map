@@ -1,4 +1,4 @@
-package geolocation
+package measurements
 
 import (
 	log "github.com/sirupsen/logrus"
@@ -8,13 +8,16 @@ import (
 
 func FindNearest(q Place, amount int, table string, dbi *gorm.DB) []int {
 	var places []Place
-
-	if err := dbi.Table(table).Where("deleted_at IS null").Find(&places).Error; err != nil {
+	err := dbi.Debug().Table(table).Where("deleted_at IS null").Find(&places).Error
+	if err != nil {
 		log.WithFields(log.Fields{
 			"table": table,
 			"error": err,
 		}).Error("find latitude/longitude from db")
 		return nil
+	}
+	if len(places) == 0 {
+		return []int{}
 	}
 	var comparables []vptree.Comparable
 	for _, place := range places {

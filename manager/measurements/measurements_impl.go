@@ -3,8 +3,6 @@ package measurements
 import (
 	"time"
 
-	"github.com/ConsenSys/fc-latency-map/manager/geolocation"
-
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -138,9 +136,9 @@ func (m *MeasurementServiceImpl) GetProbIDs(lat, long float64) []string {
 	if lat == 0 && long == 0 {
 		return []string{}
 	}
-	p := geolocation.Place{Latitude: lat, Longitude: long}
+	p := Place{Latitude: lat, Longitude: long}
 	nearestProbesAmount := m.Conf.GetInt("NEAREST_PROBES_AMOUNT")
-	nearestProbeIDs := geolocation.FindNearest(p, nearestProbesAmount, "probes", m.DBMgr.GetDB())
+	nearestProbeIDs := FindNearest(p, nearestProbesAmount, "probes", m.DBMgr.GetDB())
 
 	var ripeIDs []string
 	m.DBMgr.GetDB().Debug().Model(&models.Probe{}).

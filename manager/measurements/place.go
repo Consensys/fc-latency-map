@@ -1,4 +1,4 @@
-package geolocation
+package measurements
 
 import (
 	"math"
