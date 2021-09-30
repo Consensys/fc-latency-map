@@ -139,6 +139,9 @@ func (m *MeasurementServiceImpl) GetProbIDs(lat, long float64) []string {
 	p := Place{Latitude: lat, Longitude: long}
 	nearestProbesAmount := m.Conf.GetInt("NEAREST_PROBES_AMOUNT")
 	nearestProbeIDs := FindNearest(p, nearestProbesAmount, "probes", m.DBMgr.GetDB())
+	if len(nearestProbeIDs) == 0 {
+		return []string{}
+	}
 
 	var ripeIDs []string
 	m.DBMgr.GetDB().Debug().Model(&models.Probe{}).

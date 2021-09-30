@@ -26,7 +26,14 @@ func FindNearest(q Place, amount int, table string, dbi *gorm.DB) []int {
 	const effort = 5
 	t, err := vptree.New(comparables, effort, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.WithFields(log.Fields{
+			"error":  err,
+			"lat":    q.Latitude,
+			"lon":    q.Longitude,
+			"amount": amount,
+		}).Error("findNearest locations vptree")
+
+		return []int{}
 	}
 
 	// Find the five closest probes to the residence.
@@ -40,7 +47,6 @@ func FindNearest(q Place, amount int, table string, dbi *gorm.DB) []int {
 	}
 
 	log.WithFields(log.Fields{
-
 		"Probe IDs": ids,
 		"lat":       q.Latitude,
 		"lon":       q.Longitude,
