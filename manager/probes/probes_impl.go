@@ -33,7 +33,7 @@ func (srv *ProbeServiceImpl) RequestProbes() ([]*atlas.Probe, error) {
 			"iata":    location.IataCode,
 		}).Info("Get probes for airport")
 
-		nearestProbe, err := srv.RipeMgr.GetNearestProbe(location.Latitude, location.Longitude)
+		nearestProbe, err := srv.RipeMgr.GetNearestProbe(location.GeoLocation.Latitude, location.GeoLocation.Longitude)
 		if err != nil {
 			return nil, err
 		}
@@ -71,8 +71,10 @@ func (srv *ProbeServiceImpl) Update() {
 			CountryCode: probe.CountryCode,
 		}
 		if probe.Geometry.Type == "Point" {
-			newProbe.Latitude = probe.Geometry.Coordinates[0]
-			newProbe.Longitude = probe.Geometry.Coordinates[1]
+			newProbe.GeoLocation = models.GeoLocation{
+				Latitude:  probe.Geometry.Coordinates[0],
+				Longitude: probe.Geometry.Coordinates[1],
+			}
 		}
 
 		probeExits := models.Probe{}
@@ -91,7 +93,13 @@ func (srv *ProbeServiceImpl) Update() {
 		}
 	}
 
-	// update by removing probes not in location list
+	srv.removeDeprecated()
+
+	log.Println("Probes successfully updated")
+}
+
+// removeDeprecated update by removing probes not in location list
+func (srv *ProbeServiceImpl) removeDeprecated() {
 	probesList := []*models.Probe{}
 	srv.DBMgr.GetDB().Find(&probesList)
 	for _, probe := range probesList {
@@ -107,6 +115,4 @@ func (srv *ProbeServiceImpl) Update() {
 			}).Info("Probe deleted")
 		}
 	}
-
-	log.Println("Probes successfully updated")
 }

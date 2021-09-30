@@ -76,7 +76,7 @@ func (mr *MockMeasurementServiceMockRecorder) GetMiners() *gomock.Call {
 }
 
 // GetProbIDs mocks base method.
-func (m *MockMeasurementService) GetProbIDs() []string {
+func (m *MockMeasurementService) GetProbIDs(float64, float64) []string {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetProbIDs")
 	ret0, _ := ret[0].([]string)

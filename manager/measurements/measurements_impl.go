@@ -1,7 +1,10 @@
 package measurements
 
 import (
+	"math"
 	"time"
+
+	"github.com/ConsenSys/fc-latency-map/manager/radians"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -132,10 +135,23 @@ func (m *MeasurementServiceImpl) getLastMeasurementResultTime(measurementID int)
 	return measurementResults.MeasurementTimestamp
 }
 
-func (m *MeasurementServiceImpl) GetProbIDs() []string {
+func (m *MeasurementServiceImpl) GetProbIDs(lat, long float64) []string {
 	var probesIDs []string
 
-	err := (m.DBMgr).GetDB().Model(models.Probe{}).Select("probe_id").Find(&probesIDs).Error
+	err := (m.DBMgr).GetDB().Debug().
+		Model(models.Probe{}).
+		Select("probe_id").
+		Where("id in (SELECT id from (("+
+			"SELECT id, "+
+			"(? * cos_latitude * (cos_longitude * ? + sin_longitude * ?) + ? * sin_latitude) distance "+
+			" FROM probes "+
+			"ORDER BY distance desc LIMIT ? )))",
+			math.Cos(radians.Radians(lat)),
+			math.Cos(radians.Radians(long)),
+			math.Sin(radians.Radians(long)),
+			math.Sin(radians.Radians(lat)),
+			m.Conf.GetInt("NEAREST_PROBES")).
+		Find(&probesIDs).Error
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,

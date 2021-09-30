@@ -13,7 +13,7 @@ type MeasurementService interface {
 
 	GetMiners() []*models.Miner
 
-	GetProbIDs() []string
+	GetProbIDs(latitude, longitude float64) []string
 
 	CreateMeasurements([]*atlas.Measurement)
 

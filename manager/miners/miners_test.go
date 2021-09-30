@@ -28,7 +28,7 @@ var dummyMinerInfo = miner.MinerInfo{
 	Multiaddrs: [][]byte{dummyMultiAddress.Bytes()},
 }
 var dummyVerifiedDeals = []fmgr.VerifiedDeal{
-	fmgr.VerifiedDeal{
+	{
 		MessageCid: makeCID("dummyCID"),
 		Provider:   dummyMinerAddress,
 	},
@@ -38,10 +38,12 @@ var dummyGeoLongitude = -122.08167
 var dummyOffset = int(42)
 var dummyBlockHeight = int64(42)
 var dummyMiner = models.Miner{
-	Address:   dummyMinerAddress.String(),
-	IP:        dummyIpAddress,
-	Latitude:  dummyGeoLatitude,
-	Longitude: dummyGeoLongitude}
+	Address: dummyMinerAddress.String(),
+	IP:      dummyIpAddress,
+	GeoLocation: models.GeoLocation{
+		Latitude:  dummyGeoLatitude,
+		Longitude: dummyGeoLongitude,
+	}}
 
 // See https://github.com/filecoin-project/lotus/blob/15d90c24edd3722b71df0b3828667ffde1982d3b/cmd/lotus-health/main_test.go#L160
 func makeCID(s string) cid.Cid {
@@ -93,8 +95,8 @@ func Test_GetAllMiners_OK(t *testing.T) {
 	actual := *(miners[0])
 	assert.Equal(t, dummyMiner.Address, actual.Address)
 	assert.Equal(t, dummyMiner.IP, actual.IP)
-	assert.Equal(t, dummyMiner.Latitude, actual.Latitude)
-	assert.Equal(t, dummyMiner.Longitude, actual.Longitude)
+	assert.Equal(t, dummyMiner.GeoLocation.Latitude, actual.GeoLocation.Latitude)
+	assert.Equal(t, dummyMiner.GeoLocation.Longitude, actual.GeoLocation.Longitude)
 }
 
 func Test_ParseMiners_Error_GetBlockHeight(t *testing.T) {
@@ -206,8 +208,8 @@ func Test_ParseMiners_OK(t *testing.T) {
 	actual := *(miners[0])
 	assert.Equal(t, dummyMiner.Address, actual.Address)
 	assert.Equal(t, dummyMiner.IP, actual.IP)
-	assert.Equal(t, dummyMiner.Latitude, actual.Latitude)
-	assert.Equal(t, dummyMiner.Longitude, actual.Longitude)
+	assert.Equal(t, dummyMiner.GeoLocation.Latitude, actual.GeoLocation.Latitude)
+	assert.Equal(t, dummyMiner.GeoLocation.Longitude, actual.GeoLocation.Longitude)
 }
 
 func Test_ParseMinersByBlockHeight_Error_GetVerifiedDealsByBlockHeight(t *testing.T) {
@@ -295,6 +297,6 @@ func Test_ParseMinersByBlockHeight_OK(t *testing.T) {
 	actual := *(miners[0])
 	assert.Equal(t, dummyMiner.Address, actual.Address)
 	assert.Equal(t, dummyMiner.IP, actual.IP)
-	assert.Equal(t, dummyMiner.Latitude, actual.Latitude)
-	assert.Equal(t, dummyMiner.Longitude, actual.Longitude)
+	assert.Equal(t, dummyMiner.GeoLocation.Latitude, actual.GeoLocation.Latitude)
+	assert.Equal(t, dummyMiner.GeoLocation.Longitude, actual.GeoLocation.Longitude)
 }

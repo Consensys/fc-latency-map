@@ -3,6 +3,8 @@ package measurements
 import (
 	"strings"
 
+	"github.com/ConsenSys/fc-latency-map/manager/models"
+
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
@@ -56,15 +58,25 @@ func (h *Handler) ImportMeasures() {
 }
 
 func (h *Handler) CreateMeasurements() {
-	pIDs := strings.Join(h.Service.GetProbIDs(), ",")
-	measures, err := h.ripeMgr.CreateMeasurements(h.Service.GetMiners(), pIDs)
-	if err != nil {
+	miners := h.Service.GetMiners()
+	for _, v := range miners {
+		pIDs := strings.Join(h.Service.GetProbIDs(v.GeoLocation.Latitude, v.GeoLocation.Longitude), ",")
 		log.WithFields(log.Fields{
-			"err": err,
-		}).Error("Create Ping")
+			"miner":   v,
+			"probeId": pIDs,
+		}).Info("create Measurements")
 
-		return
+		measures, err := h.ripeMgr.CreateMeasurements(
+			[]*models.Miner{v}, pIDs)
+
+		if err != nil {
+			log.WithFields(log.Fields{
+				"err": err,
+			}).Error("Create Ping")
+
+			continue
+		}
+
+		h.Service.CreateMeasurements(measures)
 	}
-
-	h.Service.CreateMeasurements(measures)
 }
