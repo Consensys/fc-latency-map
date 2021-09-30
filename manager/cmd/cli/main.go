@@ -113,7 +113,7 @@ func completer(d prompt.Document) []prompt.Suggest {
 	return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
 }
 
-//nolint:funlen
+//nolint
 // executor executes the command
 func (c *LatencyMapCLI) executor(in string) {
 	log.Println("executor ", in)
