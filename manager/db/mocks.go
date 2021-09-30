@@ -13,7 +13,7 @@ type DatabaseMgrMock struct {
 }
 
 func NewMockDatabaseMgr() DatabaseMgr {
-	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
 	if err != nil {

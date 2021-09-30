@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/c-bata/go-prompt"
+	prompt "github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 	_ "gorm.io/driver/sqlite"
 
@@ -22,19 +22,20 @@ import (
 )
 
 const (
-	locationsList   = "locations-list"
-	locationsAdd    = "locations-add"
-	locationsDelete = "locations-delete"
-	probesUpdate    = "probes-update"
-	probesList      = "probes-list"
-	measuresGet     = "measures-get"
-	measuresCreate  = "measures-create"
-	measuresList    = "measures-list"
-	measuresExport  = "measures-export"
-	minersList      = "miners-list"
-	minersUpdate    = "miners-update"
-	minersParse     = "miners-parse"
-	seedData        = "seed-data"
+	locationsList     = "locations-list"
+	locationsUpdate   = "locations-update"
+	locationsAdd      = "locations-add"
+	locationsDelete   = "locations-delete"
+	probesUpdate      = "probes-update"
+	probesList        = "probes-list"
+	measuresGet       = "measures-get"
+	measuresCreate    = "measures-create"
+	measuresList      = "measures-list"
+	measuresExport    = "measures-export"
+	minersList        = "miners-list"
+	minersParseOffset = "miners-parse-offset"
+	minersParseBlock  = "miners-parse-block"
+	seedData          = "seed-data"
 )
 
 type LatencyMapCLI struct {
@@ -86,6 +87,7 @@ func completer(d prompt.Document) []prompt.Suggest {
 		// location
 		{Text: seedData, Description: "Seed data(location, probes, miners, measures)"},
 		{Text: locationsList, Description: "List all locations"},
+		{Text: locationsUpdate, Description: "insert airports in database. options: large / medium / small"},
 		{Text: locationsAdd, Description: "Add location by country code. ex: location-add <country_code>"},
 		{Text: locationsDelete, Description: "Delete location by country code. ex: location-delete <country_code>"},
 
@@ -101,8 +103,8 @@ func completer(d prompt.Document) []prompt.Suggest {
 
 		// miners
 		{Text: minersList, Description: "List all miners"},
-		{Text: minersUpdate, Description: "Update miners list by finding active deals in past block heights. Offset is optional. ex: miners-update <offset>"},
-		{Text: minersParse, Description: "Update miners list by finding active deals in a given block height. ex: miners-parse <block_height>"},
+		{Text: minersParseOffset, Description: "Parse miners by finding active deals in past block heights. Offset is optional. ex: miners-parse-offset <offset>"},
+		{Text: minersParseBlock, Description: "Parse miners by finding active deals in a given block height. ex: miners-parse-block <block_height>"},
 
 		// exit
 		{Text: "exit", Description: "Exit the program"},
@@ -111,7 +113,7 @@ func completer(d prompt.Document) []prompt.Suggest {
 	return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
 }
 
-//nolint:funlen
+//nolint
 // executor executes the command
 func (c *LatencyMapCLI) executor(in string) {
 	log.Println("executor ", in)
@@ -122,7 +124,11 @@ func (c *LatencyMapCLI) executor(in string) {
 	switch blocks[0] {
 	// Locations list
 	case locationsList:
-		c.locations.DisplayLocations()
+		c.locations.DisplayAllLocations()
+
+	// Locations update
+	case locationsUpdate:
+		c.locationsUpdate(blocks)
 
 	// New location
 	case locationsAdd:
@@ -155,11 +161,11 @@ func (c *LatencyMapCLI) executor(in string) {
 	case minersList:
 		c.miners.GetAllMiners()
 
-	case minersUpdate:
-		c.minersUpdate(blocks)
+	case minersParseOffset:
+		c.minersParseOffset(blocks)
 
-	case minersParse:
-		c.minersParse(blocks)
+	case minersParseBlock:
+		c.minersParseBlock(blocks)
 
 	case seedData:
 		c.seedData()
@@ -177,6 +183,17 @@ func (c *LatencyMapCLI) executor(in string) {
 func (c *LatencyMapCLI) seedData() {
 	log.Println("Seed data ...")
 	seeds.Seed()
+}
+
+func (c *LatencyMapCLI) locationsUpdate(blocks []string) {
+	airportType := "large"
+	if len(blocks) == 2 {
+		airportType = blocks[1]
+	}
+	err := c.locations.UpdateLocations(airportType)
+	if err != nil {
+		log.Errorf("Error: %s\n", err)
+	}
 }
 
 func (c *LatencyMapCLI) locationsAdd(blocks []string) {
@@ -219,15 +236,15 @@ func (c *LatencyMapCLI) measuresExport(blocks []string) {
 	c.export.Export(fn)
 }
 
-func (c *LatencyMapCLI) minersUpdate(blocks []string) {
+func (c *LatencyMapCLI) minersParseOffset(blocks []string) {
 	blockHeight := ""
 	if len(blocks) > 1 {
 		blockHeight = blocks[1]
 	}
-	c.miners.MinersUpdate(blockHeight)
+	c.miners.MinersParseOffset(blockHeight)
 }
 
-func (c *LatencyMapCLI) minersParse(blocks []string) {
+func (c *LatencyMapCLI) minersParseBlock(blocks []string) {
 	if len(blocks) == 1 {
 		log.Println("Error: missing block height")
 
@@ -239,7 +256,7 @@ func (c *LatencyMapCLI) minersParse(blocks []string) {
 
 		return
 	}
-	c.miners.MinersParse(height)
+	c.miners.MinersParseBlock(height)
 }
 
 // handleExit fixes the problem of broken terminal when exit in Linux

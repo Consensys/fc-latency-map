@@ -18,5 +18,4 @@
 .env
 
 main
-/coverage.txt
-/cover.out.tmp
+coverage.txt
