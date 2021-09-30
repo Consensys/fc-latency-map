@@ -76,18 +76,18 @@ func (mr *MockLocationServiceMockRecorder) DeleteLocation(arg0 interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLocation", reflect.TypeOf((*MockLocationService)(nil).DeleteLocation), arg0)
 }
 
-// DisplayLocations mocks base method.
-func (m *MockLocationService) DisplayLocations() []*models.Location {
+// GetAllLocations mocks base method.
+func (m *MockLocationService) GetAllLocations() []*models.Location {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DisplayLocations")
+	ret := m.ctrl.Call(m, "GetAllLocations")
 	ret0, _ := ret[0].([]*models.Location)
 	return ret0
 }
 
-// DisplayLocations indicates an expected call of DisplayLocations.
-func (mr *MockLocationServiceMockRecorder) DisplayLocations() *gomock.Call {
+// GetAllLocations indicates an expected call of GetAllLocations.
+func (mr *MockLocationServiceMockRecorder) GetAllLocations() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisplayLocations", reflect.TypeOf((*MockLocationService)(nil).DisplayLocations))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllLocations", reflect.TypeOf((*MockLocationService)(nil).GetAllLocations))
 }
 
 // FindAirport mocks base method.
