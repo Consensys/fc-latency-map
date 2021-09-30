@@ -6,11 +6,13 @@ codecov:
 github_checks:
   annotations: true
 coverage:
-  precision: 2
-  round: down
-  range: 60...90
   status:
-    patch: false
+    patch:
+      default:
+        target: '80'
+    project:
+      default:
+        target: '60'
 parsers:
   gcov:
     branch_detection:
