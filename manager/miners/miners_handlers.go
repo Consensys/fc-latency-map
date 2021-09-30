@@ -1,10 +1,10 @@
 package miners
 
 import (
-	"fmt"
-	"log"
 	"strconv"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/viper"
 
@@ -45,20 +45,22 @@ func (mHdl *MinerHandler) GetAllMiners() []*models.Miner {
 	return (*mHdl.MSer).GetAllMiners()
 }
 
-func (mHdl *MinerHandler) MinersUpdate(offset string) {
+func (mHdl *MinerHandler) MinersParseOffset(offset string) {
 	if strings.TrimSpace(offset) == "" {
-		off := mHdl.Conf.GetUint("FILECOIN_BLOCKS_OFFSET")
-		(*mHdl.MSer).ParseMiners(off)
+		off := mHdl.Conf.GetInt("FILECOIN_BLOCKS_OFFSET")
+		(*mHdl.MSer).ParseMinersByBlockOffset(off)
+
 		return
 	}
-	off, err := strconv.ParseUint(offset, 10, 64)
+	off, err := strconv.Atoi(offset)
 	if err != nil {
-		fmt.Println("Error: provided offset is not a valid integer")
+		log.Println("Error: provided offset is not a valid integer")
+
 		return
 	}
-	(*mHdl.MSer).ParseMiners(uint(off))
+	(*mHdl.MSer).ParseMinersByBlockOffset(off)
 }
 
-func (mHdl *MinerHandler) MinersParse(height int64) {
+func (mHdl *MinerHandler) MinersParseBlock(height int64) {
 	(*mHdl.MSer).ParseMinersByBlockHeight(height)
 }

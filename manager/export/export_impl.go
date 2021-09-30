@@ -28,11 +28,12 @@ func NewExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) Service {
 func (m *ExportServiceImpl) export(fn string) {
 	measurements := m.GetLatencyMeasurementsStored()
 
-	fullJSON, err := json.MarshalIndent(measurements.Country, "", "  ")
+	fullJSON, err := json.MarshalIndent(measurements, "", "  ")
 	if err != nil {
 		jg.WithFields(jg.Fields{
 			"error": err,
 		}).Error("Create json data")
+
 		return
 	}
 
@@ -44,41 +45,47 @@ func (m *ExportServiceImpl) export(fn string) {
 
 func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
 	results := &Result{
-		Country: map[string]map[string][]*Miner{},
+		Measurements: map[string]map[string][]*Miner{},
 	}
 
 	loc := m.getLocations()
+	miners := m.getMiners()
 
 	for _, l := range loc {
-		if _, found := results.Country[l.Country]; !found {
-			results.Country[l.Country] = make(map[string][]*Miner)
+		if _, found := results.Measurements[l.Country]; !found {
+			results.Measurements[l.Country] = make(map[string][]*Miner)
 		}
-
-		miners := m.getMiners()
 
 		for _, miner := range miners {
 			latency := &Miner{
-				Address:   miner.Address,
-				Latitude:  miner.Latitude,
-				Longitude: miner.Longitude,
-				Measures:  []*MeasureIP{},
+				Address:  miner.Address,
+				Measures: []*MeasureIP{},
 			}
 			if miner.IP == "" {
 				continue
 			}
-			latency.IP = strings.Split(miner.IP, ",")
 			probes := m.getProbes(l)
-			latency = m.createLatency(probes, latency)
-			results.Country[l.Country][l.IataCode] = append(results.Country[l.Country][l.IataCode], latency)
+			latency = m.createLatency(probes, latency, miner.IP)
+			results.Measurements[l.Country][l.IataCode] = append(results.Measurements[l.Country][l.IataCode], latency)
 		}
 	}
+	results.Location = loc
+	results.Miners = miners
+	results.Probes = m.GetAllProbes()
 
 	return results
 }
 
-func (m *ExportServiceImpl) createLatency(probes []*models.Probe, latency *Miner) *Miner {
+func (m *ExportServiceImpl) GetAllProbes() []*models.Probe {
+	var probesList []*models.Probe
+	m.DBMgr.GetDB().Find(&probesList)
+
+	return probesList
+}
+
+func (m *ExportServiceImpl) createLatency(probes []*models.Probe, latency *Miner, ip string) *Miner {
 	for _, probe := range probes {
-		for _, ip := range latency.IP {
+		for _, ip := range strings.Split(ip, ",") {
 			measure := &MeasureIP{IP: ip}
 
 			meas := m.getMeasureResults(probe, ip)
@@ -96,6 +103,7 @@ func (m *ExportServiceImpl) createLatency(probes []*models.Probe, latency *Miner
 			}
 		}
 	}
+
 	return latency
 }
 
@@ -105,19 +113,19 @@ func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []
 		"ip," +
 			"date(measurement_timestamp, 'unixepoch') measurement_date," +
 			"avg(time_average) time_average," +
-			"avg(time_max) time_max," +
-			"avg(time_min) time_min").
+			"max(time_max) time_max," +
+			"min(time_min) time_min").
 		Group("ip, measurement_date").
 		Where(&models.MeasurementResult{
 			ProbeID: probe.ProbeID,
-			// MinerAddress: miner.Address,
-			IP: ip,
+			IP:      ip,
 		}).
 		Find(&meas).Error
 	if err != nil {
 		jg.WithFields(jg.Fields{
 			"error": err,
 		}).Error("GetMeasureResults")
+
 		return nil
 	}
 
@@ -136,6 +144,7 @@ func (m *ExportServiceImpl) getProbes(l *models.Location) []*models.Probe {
 
 		return nil
 	}
+
 	return probes
 }
 
@@ -147,8 +156,10 @@ func (m *ExportServiceImpl) getMiners() []*models.Miner {
 		jg.WithFields(jg.Fields{
 			"error": err,
 		}).Error("GetMiners")
+
 		return nil
 	}
+
 	return miners
 }
 
@@ -160,7 +171,7 @@ func (m *ExportServiceImpl) getLocations() []*models.Location {
 	if err != nil {
 		jg.WithFields(jg.Fields{
 			"error": err,
-		}).Error("DisplayLocations")
+		}).Error("GetAllLocations")
 
 		return nil
 	}

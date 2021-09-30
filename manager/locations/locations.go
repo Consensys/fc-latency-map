@@ -8,8 +8,8 @@ import (
 
 type LocationService interface {
 
-	// DisplayLocations returns locations list
-	DisplayLocations() []*models.Location
+	// GetAllLocations returns locations list
+	GetAllLocations() []*models.Location
 
 	// GetLocation returns a location
 	GetLocation(location *models.Location) *models.Location
@@ -23,6 +23,12 @@ type LocationService interface {
 	// CheckCountry checks if country exists
 	CheckCountry(countryCode string) bool
 
+	// UpdateLocations create airports in database
+	UpdateLocations(airportType string, filename string) error
+
+	// ExtractAirports returns airports
+	ExtractAirports(filename string) ([]Airport, error)
+
 	// FindAirport finds and returns airport
-	FindAirport(airportCode string) (Airport, error)
+	FindAirport(airportCode string, filename string) (Airport, error)
 }

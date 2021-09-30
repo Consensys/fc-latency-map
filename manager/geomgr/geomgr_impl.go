@@ -26,6 +26,7 @@ func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("ipgeolocation")
+
 		return 0, 0
 	}
 	defer response.Body.Close()
@@ -35,6 +36,7 @@ func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("ipgeolocation")
+
 		return 0, 0
 	}
 
@@ -44,6 +46,7 @@ func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("ipgeolocation")
+
 		return 0, 0
 	}
 

@@ -1,7 +1,6 @@
 package db
 
 import (
-	"github.com/spf13/viper"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -9,26 +8,24 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
-type DatabaseMgrImpl struct {
+type DatabaseMgrMock struct {
 	db *gorm.DB
 }
 
-func NewDatabaseMgrImpl(conf *viper.Viper) (DatabaseMgr, error) {
-	dbName := conf.GetString("DB_CONNECTION")
-	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{
+func NewMockDatabaseMgr() DatabaseMgr {
+	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
 	if err != nil {
 		panic("failed to connect database")
 	}
-	migrate(db)
-
-	return &DatabaseMgrImpl{
+	runMigrate(db)
+	return &DatabaseMgrMock{
 		db: db,
-	}, nil
+	}
 }
 
-func migrate(db *gorm.DB) {
+func runMigrate(db *gorm.DB) {
 	_ = db.AutoMigrate(&models.Miner{})
 	_ = db.AutoMigrate(&models.Location{})
 	_ = db.AutoMigrate(&models.Measurement{})
@@ -36,6 +33,6 @@ func migrate(db *gorm.DB) {
 	_ = db.AutoMigrate(&models.Probe{})
 }
 
-func (dbMgr *DatabaseMgrImpl) GetDB() *gorm.DB {
+func (dbMgr *DatabaseMgrMock) GetDB() *gorm.DB {
 	return dbMgr.db
 }

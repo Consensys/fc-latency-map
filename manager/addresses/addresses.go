@@ -14,6 +14,7 @@ func MultiAddrs(addr []abi.Multiaddrs) []ma.Multiaddr {
 			m = append(m, a)
 		}
 	}
+
 	return m
 }
 
@@ -26,6 +27,7 @@ func IPAddress(a []ma.Multiaddr) []string {
 			ips = append(ips, ip)
 		}
 	}
+
 	return ips
 }
 

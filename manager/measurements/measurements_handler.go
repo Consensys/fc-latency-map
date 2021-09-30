@@ -41,13 +41,14 @@ func NewHandler() *Handler {
 	}
 }
 
-func (h *Handler) GetMeasures() { //nolint:revive
+func (h *Handler) ImportMeasures() {
 	measures := h.Service.GetMeasuresLastResultTime()
 	results, err := h.ripeMgr.GetMeasurementResults(measures)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
 		}).Info("GetMeasurementResults")
+
 		return
 	}
 
@@ -61,6 +62,7 @@ func (h *Handler) CreateMeasurements() {
 		log.WithFields(log.Fields{
 			"err": err,
 		}).Error("Create Ping")
+
 		return
 	}
 

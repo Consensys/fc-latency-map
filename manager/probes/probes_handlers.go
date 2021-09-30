@@ -1,7 +1,7 @@
 package probes
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
@@ -27,6 +27,7 @@ func NewProbeHandler() *ProbeHandler {
 	if err != nil {
 		panic("failed to start probe service")
 	}
+
 	return &ProbeHandler{
 		PSer: &pSer,
 	}

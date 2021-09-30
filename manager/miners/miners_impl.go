@@ -1,8 +1,9 @@
 package miners
 
 import (
-	"log"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
@@ -38,21 +39,23 @@ func (srv *MinerServiceImpl) GetAllMiners() []*models.Miner {
 	for _, m := range miners {
 		log.Printf("Miner address: %s - ip: %s\n", m.Address, m.IP)
 	}
+
 	return miners
 }
 
-func (srv *MinerServiceImpl) ParseMiners(offset uint) []*models.Miner {
+func (srv *MinerServiceImpl) ParseMinersByBlockOffset(offset int) []*models.Miner {
 	blockHeight, err := (srv.FMgr).GetBlockHeight()
 	if err != nil {
-		log.Fatalf("get block failed: %s", err)
+		log.Printf("GetBlockHeight failed: %s", err)
 		return []*models.Miner{}
 	}
 	log.Printf("blockHeight: %+v\n", blockHeight)
 	deals, err := (srv.FMgr).GetVerifiedDealsByBlockRange(blockHeight, offset)
 	if err != nil {
-		log.Fatalf("get block failed: %s", err)
+		log.Printf("get Verified Deals By Block Range failed: %s", err)
 		return []*models.Miner{}
 	}
+
 	return srv.parseMinersFromDeals(deals)
 }
 
@@ -64,6 +67,7 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 		minerInfo, err := (srv.FMgr).GetMinerInfo(provider)
 		if err != nil {
 			log.Printf("unable to get miner info: %s. skip...", address)
+
 			continue
 		}
 		ip := getMinerIP(&minerInfo)
@@ -83,18 +87,22 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 	} else {
 		log.Printf("No miner parsed")
 	}
+
 	return miners
 }
 
 func (srv *MinerServiceImpl) getGeoLocation(ip string) (lat, long float64) {
 	if ip != "" {
 		split := strings.Split(ip, ",")
+
 		return srv.GMgr.IPGeolocation(split[0])
 	}
+
 	return 0, 0
 }
 
 func getMinerIP(minerInfo *miner.MinerInfo) string {
+	log.Printf("minerInfo.Multiaddrs: %s", minerInfo.Multiaddrs)
 	ips := addresses.IPAddress(addresses.MultiAddrs(minerInfo.Multiaddrs))
 	return strings.Join(ips, ",")
 }
@@ -109,7 +117,7 @@ func (srv *MinerServiceImpl) upsertMinersInDB(miners []*models.Miner) {
 func (srv *MinerServiceImpl) ParseMinersByBlockHeight(height int64) []*models.Miner {
 	deals, err := (srv.FMgr).GetVerifiedDealsByBlockHeight(abi.ChainEpoch(height))
 	if err != nil {
-		log.Fatalf("get block failed: %s", err)
+		log.Printf("get Verified Deals By Block Height failed: %s", err)
 		return []*models.Miner{}
 	}
 	return srv.parseMinersFromDeals(deals)

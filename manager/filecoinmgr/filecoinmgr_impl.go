@@ -3,17 +3,17 @@ package filecoinmgr
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"net/http"
 
-	"github.com/filecoin-project/go-address"
-	"github.com/filecoin-project/go-jsonrpc"
+	address "github.com/filecoin-project/go-address"
+	jsonrpc "github.com/filecoin-project/go-jsonrpc"
 	"github.com/filecoin-project/go-state-types/abi"
 	lotusapi "github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/filecoin-project/specs-actors/actors/builtin/market"
-	"github.com/ipfs/go-cid"
+	cid "github.com/ipfs/go-cid"
+	log "github.com/sirupsen/logrus"
 )
 
 type VerifiedDeal struct {
@@ -53,6 +53,7 @@ func (fMgr *FilecoinMgrImpl) GetChainHead() (*types.TipSet, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return tipset, nil
 }
 
@@ -61,6 +62,7 @@ func (fMgr *FilecoinMgrImpl) GetBlockHeight() (abi.ChainEpoch, error) {
 	if err != nil {
 		return 0, err
 	}
+
 	return tipset.Height(), err
 }
 
@@ -69,22 +71,24 @@ func (fMgr *FilecoinMgrImpl) GetMinerInfo(addr address.Address) (miner.MinerInfo
 	if err != nil {
 		return miner.MinerInfo{}, err
 	}
+
 	return minerInfo, err
 }
 
-func (fMgr *FilecoinMgrImpl) GetVerifiedDealsByBlockRange(height abi.ChainEpoch, offset uint) ([]VerifiedDeal, error) {
+func (fMgr *FilecoinMgrImpl) GetVerifiedDealsByBlockRange(height abi.ChainEpoch, offset int) ([]VerifiedDeal, error) {
 	verifiedDeals := []VerifiedDeal{}
 	for i := height - abi.ChainEpoch(offset); i <= height; i++ {
-		fmt.Printf("Block number: %v (%v / %v)\n", i, height-i, offset)
+		log.Printf("Block number: %v (%v / %v)\n", i, height-i, offset)
 
-		newVerifiedDeals, err := fMgr.getVerifiedDealsByBlock(height)
+		newVerifiedDeals, err := fMgr.getVerifiedDealsByBlock(i)
 		if err != nil {
 			return []VerifiedDeal{}, err
 		}
 		verifiedDeals = append(verifiedDeals, newVerifiedDeals...)
 	}
 
-	fmt.Printf("verifiedDeals: %+v\n", verifiedDeals)
+	log.Printf("verifiedDeals: %+v\n", verifiedDeals)
+
 	return verifiedDeals, nil
 }
 
@@ -94,23 +98,20 @@ func CheckIsVerifiedDeal(verifiedDeal VerifiedDeal, verifiedDeals []VerifiedDeal
 			return true
 		}
 	}
+
 	return false
 }
 
 func (fMgr *FilecoinMgrImpl) GetVerifiedDealsByBlockHeight(height abi.ChainEpoch) ([]VerifiedDeal, error) {
-	fmt.Printf("Block number: %v\n", height)
-	verifiedDeals, err := fMgr.getVerifiedDealsByBlock(height)
-	if err != nil {
-		return []VerifiedDeal{}, err
-	}
-	return verifiedDeals, nil
+	log.Printf("Block number: %v\n", height)
+	return fMgr.getVerifiedDealsByBlock(height)
 }
 
 func (fMgr *FilecoinMgrImpl) getVerifiedDealsByBlock(height abi.ChainEpoch) ([]VerifiedDeal, error) {
 	blockCids, _ := fMgr.api.ChainGetTipSetByHeight(context.Background(), height, types.TipSetKey{})
 	verifiedDeals := []VerifiedDeal{}
-	for _, cid := range blockCids.Cids() {
-		messages, err := fMgr.api.ChainGetBlockMessages(context.Background(), cid)
+	for _, cID := range blockCids.Cids() {
+		messages, err := fMgr.api.ChainGetBlockMessages(context.Background(), cID)
 		if err != nil {
 			return []VerifiedDeal{}, err
 		}
@@ -122,14 +123,15 @@ func (fMgr *FilecoinMgrImpl) getVerifiedDealsByBlock(height abi.ChainEpoch) ([]V
 			params := &market.PublishStorageDealsParams{}
 			err = params.UnmarshalCBOR(bytes.NewReader(message.Params))
 			if err != nil {
-				return []VerifiedDeal{}, err
+				continue
 			}
 
 			verifiedDeals = fMgr.getVerifiedDeals(params, message, verifiedDeals)
 		}
 	}
 
-	fmt.Printf("verifiedDeals: %+v\n", verifiedDeals)
+	log.Printf("verifiedDeals: %+v\n", verifiedDeals)
+
 	return verifiedDeals, nil
 }
 
@@ -143,10 +145,11 @@ func (fMgr *FilecoinMgrImpl) getVerifiedDeals(params *market.PublishStorageDeals
 				Provider:   proposal.Provider,
 			}
 			if !CheckIsVerifiedDeal(verifiedDeal, verifiedDeals) {
-				fmt.Println("Verified deal found")
+				log.Println("Verified deal found")
 				verifiedDeals = append(verifiedDeals, verifiedDeal)
 			}
 		}
 	}
+
 	return verifiedDeals
 }

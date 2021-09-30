@@ -1,7 +1,17 @@
 name: CI pipeline
 on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
   pull_request:
-    branches: [main]
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+env:
+  MIN_COVERAGE: 29
 jobs:
   lint:
     name: Run lint
@@ -30,7 +40,7 @@ jobs:
           cd manager/
           go build ./...
   test:
-    name: Run test
+    name: Run test and coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -41,4 +51,5 @@ jobs:
       - name: Run test and coverage
         run: |
           cd manager/
-          go test -v ./...
+          chmod +x scripts/coverage.sh
+          ./scripts/coverage.sh $MIN_COVERAGE

@@ -5,5 +5,5 @@ import (
 )
 
 func Parse(mSer miners.MinerService) {
-	mSer.ParseMiners(0)
+	mSer.ParseMinersByBlockOffset(0)
 }

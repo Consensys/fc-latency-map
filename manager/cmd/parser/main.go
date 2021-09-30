@@ -6,5 +6,5 @@ import (
 
 func main() {
 	mHdl := miners.NewMinerHandler()
-	mHdl.MinersUpdate("")
+	mHdl.MinersParseOffset("")
 }
