@@ -7,8 +7,6 @@ cat cover.out.tmp | grep -v "mocks.go" > coverage.txt
 rm cover.out.tmp
 curr_coverage=$(go tool cover -func coverage.txt | grep total | awk '{print $3}' | tr -d '%')
 
-bash <(curl -s https://codecov.io/bash)
-
 echo "Total: $curr_coverage%"
 
 if awk "BEGIN {exit !("$curr_coverage" >= "$trgt_coverage")}"; then

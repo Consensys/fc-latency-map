@@ -3,24 +3,26 @@ codecov:
   require_ci_to_pass: true
   notify:
     wait_for_ci: true
-
+github_checks:
+  annotations: true
 coverage:
   precision: 2
   round: down
   range: 30...90
-
+  status:
+    patch: false
 parsers:
   gcov:
     branch_detection:
       conditional: yes
       loop: yes
-      method: true
+      method: yes
       macro: no
-
 comment:
-  layout: "reach,diff,flags,files,footer"
+  layout: "reach, diff, flags, files, footer"
   behavior: default
   require_changes: false
-
+  require_base: true
+  require_head: true
 ignore:
   - "**/mocks.go"
