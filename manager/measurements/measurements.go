@@ -17,6 +17,6 @@ type MeasurementService interface {
 
 	CreateMeasurements([]*atlas.Measurement)
 
-	// getMeasuresLastResultTime load RIPE MeasurementResults
+	// GetMeasuresLastResultTime load RIPE MeasurementResults
 	GetMeasuresLastResultTime() map[int]int
 }

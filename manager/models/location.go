@@ -5,20 +5,9 @@ import (
 )
 
 type Location struct {
-	gorm.Model  `json:"-"`
-	Country     string      `json:"country"`
-	IataCode    string      `gorm:"index" json:"iata_code"`
-	GeoLocation GeoLocation `gorm:"embedded;"`
-}
-
-func (m *Location) BeforeCreate(_ *gorm.DB) (err error) {
-	m.GeoLocation.updateTrigonometryLatLong()
-
-	return nil
-}
-
-func (m *Location) BeforeUpdate(_ *gorm.DB) (err error) {
-	m.GeoLocation.updateTrigonometryLatLong()
-
-	return nil
+	gorm.Model `json:"-"`
+	Country    string  `json:"country"`
+	IataCode   string  `gorm:"index" json:"iata_code"`
+	Latitude   float64 `gorm:"column:latitude" json:"latitude,omitempty"`
+	Longitude  float64 `gorm:"column:longitude" json:"longitude,omitempty"`
 }

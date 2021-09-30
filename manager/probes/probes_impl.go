@@ -33,7 +33,7 @@ func (srv *ProbeServiceImpl) RequestProbes() ([]*atlas.Probe, error) {
 			"iata":    location.IataCode,
 		}).Info("Get probes for airport")
 
-		nearestProbe, err := srv.RipeMgr.GetNearestProbe(location.GeoLocation.Latitude, location.GeoLocation.Longitude)
+		nearestProbe, err := srv.RipeMgr.GetNearestProbe(location.Latitude, location.Longitude)
 		if err != nil {
 			return nil, err
 		}
@@ -71,10 +71,8 @@ func (srv *ProbeServiceImpl) Update() {
 			CountryCode: probe.CountryCode,
 		}
 		if probe.Geometry.Type == "Point" {
-			newProbe.GeoLocation = models.GeoLocation{
-				Latitude:  probe.Geometry.Coordinates[0],
-				Longitude: probe.Geometry.Coordinates[1],
-			}
+			newProbe.Latitude = probe.Geometry.Coordinates[0]
+			newProbe.Longitude = probe.Geometry.Coordinates[1]
 		}
 
 		probeExits := models.Probe{}

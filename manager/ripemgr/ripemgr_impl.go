@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
@@ -128,7 +127,16 @@ func (rMgr *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.Measurem
 
 func (rMgr *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs string) ([]*atlas.Measurement, error) {
 	if len(miners) == 0 {
-		return nil, errors.New("miners are missing")
+		log.WithFields(log.Fields{
+			"msg": "miners are missing",
+		}).Warn("Create Measurements")
+		return nil, nil
+	}
+	if probeIDs == "" {
+		log.WithFields(log.Fields{
+			"msg": "probeIDs are missing",
+		}).Warn("Create Measurements")
+		return nil, nil
 	}
 	probes := []atlas.ProbeSet{
 		{
@@ -153,14 +161,14 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 	var d []atlas.Definition
 
 	isOneOff := rMgr.conf.GetBool("RIPE_ONE_OFF")
-
 	pingInterval := rMgr.conf.GetInt("RIPE_PING_INTERVAL")
+	packets := rMgr.conf.GetInt("RIPE_PACKETS")
 
 	for _, miner := range miners {
 		if miner.IP == "" {
 			continue
 		}
-		d = rMgr.getDefinitions(miner, isOneOff, pingInterval, d)
+		d = rMgr.getDefinitions(miner, packets, pingInterval, d)
 	}
 
 	mr := rMgr.getMeasurementRequest(d, isOneOff, probes)
@@ -209,7 +217,8 @@ func (rMgr *RipeMgrImpl) getMeasurementRequest(d []atlas.Definition, isOneOff bo
 	}
 }
 
-func (rMgr *RipeMgrImpl) getDefinitions(miner *models.Miner, isOneOff bool, pingInterval int, d []atlas.Definition) []atlas.Definition {
+func (rMgr *RipeMgrImpl) getDefinitions(miner *models.Miner, packets, pingInterval int, d []atlas.Definition) []atlas.Definition {
+	isOneOff := rMgr.conf.GetBool("RIPE_ONE_OFF")
 	for _, ip := range strings.Split(miner.IP, ",") {
 		ipAdd := net.ParseIP(ip)
 		if ipAdd.IsPrivate() {
@@ -220,6 +229,7 @@ func (rMgr *RipeMgrImpl) getDefinitions(miner *models.Miner, isOneOff bool, ping
 			Description: fmt.Sprintf("%s ping to %s", miner.Address, ip),
 			AF:          addresses.GetIPVersion(ipAdd),
 			Target:      ip,
+			Packets:     packets,
 			Tags: []string{
 				miner.Address,
 			},

@@ -1,10 +1,9 @@
 package measurements
 
 import (
-	"math"
 	"time"
 
-	"github.com/ConsenSys/fc-latency-map/manager/radians"
+	"github.com/ConsenSys/fc-latency-map/manager/geolocation"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -136,29 +135,18 @@ func (m *MeasurementServiceImpl) getLastMeasurementResultTime(measurementID int)
 }
 
 func (m *MeasurementServiceImpl) GetProbIDs(lat, long float64) []string {
-	var probesIDs []string
-
-	err := (m.DBMgr).GetDB().Debug().
-		Model(models.Probe{}).
-		Select("probe_id").
-		Where("id in (SELECT id from (("+
-			"SELECT id, "+
-			"(? * cos_latitude * (cos_longitude * ? + sin_longitude * ?) + ? * sin_latitude) distance "+
-			" FROM probes "+
-			"ORDER BY distance desc LIMIT ? )))",
-			math.Cos(radians.Radians(lat)),
-			math.Cos(radians.Radians(long)),
-			math.Sin(radians.Radians(long)),
-			math.Sin(radians.Radians(lat)),
-			m.Conf.GetInt("NEAREST_PROBES")).
-		Find(&probesIDs).Error
-	if err != nil {
-		log.WithFields(log.Fields{
-			"err": err,
-		}).Info("Find db miners")
-
-		return nil
+	if lat == 0 && long == 0 {
+		return []string{}
 	}
+	p := geolocation.Place{Latitude: lat, Longitude: long}
+	nearestProbesAmount := m.Conf.GetInt("NEAREST_PROBES_AMOUNT")
+	nearestProbeIDs := geolocation.FindNearest(p, nearestProbesAmount, "probes", m.DBMgr.GetDB())
 
-	return probesIDs
+	var ripeIDs []string
+	m.DBMgr.GetDB().Debug().Model(&models.Probe{}).
+		Select("probe_id").
+		Where("id in ?", nearestProbeIDs).
+		First(&ripeIDs)
+
+	return ripeIDs
 }

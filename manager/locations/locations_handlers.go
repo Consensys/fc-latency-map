@@ -41,12 +41,10 @@ func (mHdl *LocationHandler) AddLocation(airportCode string) (*models.Location, 
 	lat, _ := strconv.ParseFloat(coords[1], 32)
 	long, _ := strconv.ParseFloat(coords[0], 32)
 	location := &models.Location{
-		Country:  airport.IsoCountry,
-		IataCode: airport.IataCode,
-		GeoLocation: models.GeoLocation{
-			Latitude:  lat,
-			Longitude: long,
-		},
+		Country:   airport.IsoCountry,
+		IataCode:  airport.IataCode,
+		Latitude:  lat,
+		Longitude: long,
 	}
 	location = (*mHdl.LSer).AddLocation(location)
 

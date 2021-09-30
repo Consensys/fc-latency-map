@@ -5,11 +5,11 @@ import (
 	"log"
 	"testing"
 
-	address "github.com/filecoin-project/go-address"
+	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
-	gomock "github.com/golang/mock/gomock"
-	cid "github.com/ipfs/go-cid"
+	"github.com/golang/mock/gomock"
+	"github.com/ipfs/go-cid"
 	ma "github.com/multiformats/go-multiaddr"
 	mh "github.com/multiformats/go-multihash"
 	"github.com/stretchr/testify/assert"
@@ -38,12 +38,11 @@ var dummyGeoLongitude = -122.08167
 var dummyOffset = int(42)
 var dummyBlockHeight = int64(42)
 var dummyMiner = models.Miner{
-	Address: dummyMinerAddress.String(),
-	IP:      dummyIpAddress,
-	GeoLocation: models.GeoLocation{
-		Latitude:  dummyGeoLatitude,
-		Longitude: dummyGeoLongitude,
-	}}
+	Address:   dummyMinerAddress.String(),
+	IP:        dummyIpAddress,
+	Latitude:  dummyGeoLatitude,
+	Longitude: dummyGeoLongitude,
+}
 
 // See https://github.com/filecoin-project/lotus/blob/15d90c24edd3722b71df0b3828667ffde1982d3b/cmd/lotus-health/main_test.go#L160
 func makeCID(s string) cid.Cid {
@@ -95,8 +94,8 @@ func Test_GetAllMiners_OK(t *testing.T) {
 	actual := *(miners[0])
 	assert.Equal(t, dummyMiner.Address, actual.Address)
 	assert.Equal(t, dummyMiner.IP, actual.IP)
-	assert.Equal(t, dummyMiner.GeoLocation.Latitude, actual.GeoLocation.Latitude)
-	assert.Equal(t, dummyMiner.GeoLocation.Longitude, actual.GeoLocation.Longitude)
+	assert.Equal(t, dummyMiner.Latitude, actual.Latitude)
+	assert.Equal(t, dummyMiner.Longitude, actual.Longitude)
 }
 
 func Test_ParseMiners_Error_GetBlockHeight(t *testing.T) {
@@ -208,8 +207,8 @@ func Test_ParseMiners_OK(t *testing.T) {
 	actual := *(miners[0])
 	assert.Equal(t, dummyMiner.Address, actual.Address)
 	assert.Equal(t, dummyMiner.IP, actual.IP)
-	assert.Equal(t, dummyMiner.GeoLocation.Latitude, actual.GeoLocation.Latitude)
-	assert.Equal(t, dummyMiner.GeoLocation.Longitude, actual.GeoLocation.Longitude)
+	assert.Equal(t, dummyMiner.Latitude, actual.Latitude)
+	assert.Equal(t, dummyMiner.Longitude, actual.Longitude)
 }
 
 func Test_ParseMinersByBlockHeight_Error_GetVerifiedDealsByBlockHeight(t *testing.T) {
@@ -297,6 +296,6 @@ func Test_ParseMinersByBlockHeight_OK(t *testing.T) {
 	actual := *(miners[0])
 	assert.Equal(t, dummyMiner.Address, actual.Address)
 	assert.Equal(t, dummyMiner.IP, actual.IP)
-	assert.Equal(t, dummyMiner.GeoLocation.Latitude, actual.GeoLocation.Latitude)
-	assert.Equal(t, dummyMiner.GeoLocation.Longitude, actual.GeoLocation.Longitude)
+	assert.Equal(t, dummyMiner.Latitude, actual.Latitude)
+	assert.Equal(t, dummyMiner.Longitude, actual.Longitude)
 }

@@ -72,7 +72,7 @@ func TestHandler_CreateMeasurements(t *testing.T) {
 	h.CreateMeasurements()
 }
 
-func TestHandler_GetMeasuresRipeError(t *testing.T) {
+func TestHandler_ImportMeasuresError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -93,7 +93,8 @@ func TestHandler_GetMeasuresRipeError(t *testing.T) {
 
 	h.ImportMeasures()
 }
-func TestHandler_GetMeasures(t *testing.T) {
+
+func TestHandler_ImportMeasures(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

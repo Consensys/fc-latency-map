@@ -1,4 +1,4 @@
-package radians
+package geolocation
 
 import (
 	"math"
@@ -20,8 +20,8 @@ func TestRadians(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Radians(tt.args.degree); got != tt.want {
-				t.Errorf("Radians() = %v, want %v", got, tt.want)
+			if got := radians(tt.args.degree); got != tt.want {
+				t.Errorf("radians() = %v, want %v", got, tt.want)
 			}
 		})
 	}

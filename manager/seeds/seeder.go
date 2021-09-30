@@ -32,10 +32,10 @@ func Execute(dbc *gorm.DB) error {
 			ID: "2021091516",
 			Migrate: func(tx *gorm.DB) error {
 				locs := []models.Location{
-					{Country: "FR", IataCode: "CDG", GeoLocation: models.GeoLocation{Latitude: 49.012798, Longitude: 2.55}},
-					{Country: "NL", IataCode: "AMS", GeoLocation: models.GeoLocation{Latitude: 52.308601, Longitude: 4.76389}},
-					{Country: "PT", IataCode: "LIS", GeoLocation: models.GeoLocation{Latitude: 38.7813, Longitude: -9.13592}},
-					{Country: "CN", IataCode: "PEK", GeoLocation: models.GeoLocation{Latitude: 40.080101013183594, Longitude: 116.58499908447266}},
+					{Country: "FR", IataCode: "CDG", Latitude: 49.012798, Longitude: 2.55},
+					{Country: "NL", IataCode: "AMS", Latitude: 52.308601, Longitude: 4.76389},
+					{Country: "PT", IataCode: "LIS", Latitude: 38.7813, Longitude: -9.13592},
+					{Country: "CN", IataCode: "PEK", Latitude: 40.080101013183594, Longitude: 116.58499908447266},
 				}
 				return tx.Create(locs).Error
 			},
@@ -44,10 +44,10 @@ func Execute(dbc *gorm.DB) error {
 			ID: "2021091517",
 			Migrate: func(tx *gorm.DB) error {
 				miners := []models.Miner{
-					{Address: "f0694396", IP: "185.37.217.6,2a04:7340:0:1002::16", GeoLocation: models.GeoLocation{Latitude: 52.48395, Longitude: -1.88980}},
-					{Address: "f022163", IP: "217.71.253.18,62.171.109.134", GeoLocation: models.GeoLocation{Latitude: 47.36329, Longitude: 8.55014}},
-					{Address: "f01231", IP: "47.252.15.25,172.17.32.101", GeoLocation: models.GeoLocation{Latitude: 37.55983, Longitude: -122.27148}},
-					{Address: "f01044351", IP: "221.144.2.39", GeoLocation: models.GeoLocation{Latitude: 37.41043, Longitude: 127.13716}},
+					{Address: "f0694396", IP: "185.37.217.6,2a04:7340:0:1002::16", Latitude: 52.48395, Longitude: -1.88980},
+					{Address: "f022163", IP: "217.71.253.18,62.171.109.134", Latitude: 47.36329, Longitude: 8.55014},
+					{Address: "f01231", IP: "47.252.15.25,172.17.32.101", Latitude: 37.55983, Longitude: -122.27148},
+					{Address: "f01044351", IP: "221.144.2.39", Latitude: 37.41043, Longitude: 127.13716},
 					{Address: "f01272", IP: "172.16.117.9"},
 					{Address: "f0106949", IP: "192.168.0.200"},
 					{Address: "f0149768", IP: ""},
@@ -74,9 +74,9 @@ func Execute(dbc *gorm.DB) error {
 			ID: "2021091519",
 			Migrate: func(tx *gorm.DB) error {
 				locs := []models.Probe{
-					{ProbeID: 39, CountryCode: "FR", GeoLocation: models.GeoLocation{Latitude: 43.2915, Longitude: 1.6185}},
-					{ProbeID: 1, CountryCode: "NL", GeoLocation: models.GeoLocation{Latitude: 52.3475, Longitude: 4.9275}},
-					{ProbeID: 24, CountryCode: "PT", GeoLocation: models.GeoLocation{Latitude: 38.7295, Longitude: -9.1515}},
+					{ProbeID: 39, CountryCode: "FR", Latitude: 43.2915, Longitude: 1.6185},
+					{ProbeID: 1, CountryCode: "NL", Latitude: 52.3475, Longitude: 4.9275},
+					{ProbeID: 24, CountryCode: "PT", Latitude: 38.7295, Longitude: -9.1515},
 				}
 				return tx.Create(locs).Error
 			},

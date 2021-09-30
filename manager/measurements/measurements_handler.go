@@ -60,14 +60,13 @@ func (h *Handler) ImportMeasures() {
 func (h *Handler) CreateMeasurements() {
 	miners := h.Service.GetMiners()
 	for _, v := range miners {
-		pIDs := strings.Join(h.Service.GetProbIDs(v.GeoLocation.Latitude, v.GeoLocation.Longitude), ",")
+		pIDs := strings.Join(h.Service.GetProbIDs(v.Latitude, v.Longitude), ",")
 		log.WithFields(log.Fields{
 			"miner":   v,
 			"probeId": pIDs,
 		}).Info("create Measurements")
 
-		measures, err := h.ripeMgr.CreateMeasurements(
-			[]*models.Miner{v}, pIDs)
+		measures, err := h.ripeMgr.CreateMeasurements([]*models.Miner{v}, pIDs)
 
 		if err != nil {
 			log.WithFields(log.Fields{

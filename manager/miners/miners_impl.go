@@ -73,12 +73,10 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 		ip := getMinerIP(&minerInfo)
 		lat, long := srv.getGeoLocation(ip)
 		miners = append(miners, &models.Miner{
-			Address: address,
-			IP:      ip,
-			GeoLocation: models.GeoLocation{
-				Latitude:  lat,
-				Longitude: long,
-			},
+			Address:   address,
+			IP:        ip,
+			Latitude:  lat,
+			Longitude: long,
 		})
 	}
 	if len(miners) > 0 {
