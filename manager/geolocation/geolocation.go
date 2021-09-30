@@ -9,7 +9,7 @@ import (
 func FindNearest(q Place, amount int, table string, dbi *gorm.DB) []int {
 	var places []Place
 
-	if err := dbi.Table(table).Find(&places).Error; err != nil {
+	if err := dbi.Table(table).Where("deleted_at IS null").Find(&places).Error; err != nil {
 		log.WithFields(log.Fields{
 			"table": table,
 			"error": err,
@@ -35,6 +35,14 @@ func FindNearest(q Place, amount int, table string, dbi *gorm.DB) []int {
 		p := c.Comparable.(Place)
 		ids = append(ids, p.ID)
 	}
+
+	log.WithFields(log.Fields{
+
+		"Probe IDs": ids,
+		"lat":       q.Latitude,
+		"lon":       q.Longitude,
+		"amount":    amount,
+	}).Info("FindNearest locations")
 
 	return ids
 }

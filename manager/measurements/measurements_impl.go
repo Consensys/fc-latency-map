@@ -146,7 +146,7 @@ func (m *MeasurementServiceImpl) GetProbIDs(lat, long float64) []string {
 	m.DBMgr.GetDB().Debug().Model(&models.Probe{}).
 		Select("probe_id").
 		Where("id in ?", nearestProbeIDs).
-		First(&ripeIDs)
+		Find(&ripeIDs)
 
 	return ripeIDs
 }
