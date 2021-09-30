@@ -91,11 +91,11 @@ func (srv *LocationServiceImpl) CheckCountry(countryCode string) bool {
 func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) error {
 	var airportTypeFormated string
 	switch airportType {
-	case "large":
+	case constants.AirportTypeLarge:
 		airportTypeFormated = "large_airport"
-	case "medium":
+	case constants.AirportTypeMedium:
 		airportTypeFormated = "medium_airport"
-	case "small":
+	case constants.AirportTypeSmall:
 		airportTypeFormated = "small_airport"
 	default:
 		return errors.New("airport type not found")

@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/cli"
+	"github.com/ConsenSys/fc-latency-map/manager/constants"
 )
 
 const (
@@ -62,7 +63,7 @@ func (cmd *LocationCommander) Execute(in string) {
 }
 
 func (cmd *LocationCommander) locationsUpdate(blocks []string) {
-	airportType := "large"
+	airportType := constants.AirportTypeLarge
 	if len(blocks) == 2 {
 		airportType = blocks[1]
 	}
