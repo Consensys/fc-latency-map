@@ -48,20 +48,6 @@ func (mr *MockMinerServiceMockRecorder) GetAllMiners() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllMiners", reflect.TypeOf((*MockMinerService)(nil).GetAllMiners))
 }
 
-// ParseMiners mocks base method.
-func (m *MockMinerService) ParseMiners(arg0 int) []*models.Miner {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ParseMiners", arg0)
-	ret0, _ := ret[0].([]*models.Miner)
-	return ret0
-}
-
-// ParseMiners indicates an expected call of ParseMiners.
-func (mr *MockMinerServiceMockRecorder) ParseMiners(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParseMiners", reflect.TypeOf((*MockMinerService)(nil).ParseMiners), arg0)
-}
-
 // ParseMinersByBlockHeight mocks base method.
 func (m *MockMinerService) ParseMinersByBlockHeight(arg0 int64) []*models.Miner {
 	m.ctrl.T.Helper()
@@ -74,4 +60,18 @@ func (m *MockMinerService) ParseMinersByBlockHeight(arg0 int64) []*models.Miner 
 func (mr *MockMinerServiceMockRecorder) ParseMinersByBlockHeight(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParseMinersByBlockHeight", reflect.TypeOf((*MockMinerService)(nil).ParseMinersByBlockHeight), arg0)
+}
+
+// ParseMinersByBlockOffset mocks base method.
+func (m *MockMinerService) ParseMinersByBlockOffset(arg0 int) []*models.Miner {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ParseMinersByBlockOffset", arg0)
+	ret0, _ := ret[0].([]*models.Miner)
+	return ret0
+}
+
+// ParseMinersByBlockOffset indicates an expected call of ParseMinersByBlockOffset.
+func (mr *MockMinerServiceMockRecorder) ParseMinersByBlockOffset(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParseMinersByBlockOffset", reflect.TypeOf((*MockMinerService)(nil).ParseMinersByBlockOffset), arg0)
 }

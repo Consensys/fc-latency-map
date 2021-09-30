@@ -45,10 +45,10 @@ func (mHdl *MinerHandler) GetAllMiners() []*models.Miner {
 	return (*mHdl.MSer).GetAllMiners()
 }
 
-func (mHdl *MinerHandler) MinersUpdate(offset string) {
+func (mHdl *MinerHandler) MinersParseOffset(offset string) {
 	if strings.TrimSpace(offset) == "" {
 		off := mHdl.Conf.GetInt("FILECOIN_BLOCKS_OFFSET")
-		(*mHdl.MSer).ParseMiners(off)
+		(*mHdl.MSer).ParseMinersByBlockOffset(off)
 
 		return
 	}
@@ -58,9 +58,9 @@ func (mHdl *MinerHandler) MinersUpdate(offset string) {
 
 		return
 	}
-	(*mHdl.MSer).ParseMiners(off)
+	(*mHdl.MSer).ParseMinersByBlockOffset(off)
 }
 
-func (mHdl *MinerHandler) MinersParse(height int64) {
+func (mHdl *MinerHandler) MinersParseBlock(height int64) {
 	(*mHdl.MSer).ParseMinersByBlockHeight(height)
 }
