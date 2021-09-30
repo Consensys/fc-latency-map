@@ -5,9 +5,10 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
+	"strconv"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
-
 	"github.com/spf13/viper"
 
 	"github.com/ConsenSys/fc-latency-map/manager/constants"
@@ -20,6 +21,7 @@ type Airport struct {
 	Coordinates string `json:"coordinates"`
 	IataCode    string `json:"iata_code"`
 	IsoCountry  string `json:"iso_country"`
+	Type        string `json:"type"`
 }
 
 type LocationServiceImpl struct {
@@ -34,11 +36,15 @@ func NewLocationServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) LocationSer
 	}
 }
 
-func (srv *LocationServiceImpl) DisplayLocations() []*models.Location {
+func (srv *LocationServiceImpl) GetAllLocations() []*models.Location {
 	locsList := []*models.Location{}
 	srv.DBMgr.GetDB().Find(&locsList)
 	for _, location := range locsList {
-		log.Printf("ID:%d - Country code: %s\n", location.ID, location.Country)
+		log.Printf("ID:%d - Iata code: %s - Country code: %s - Type: %s\n",
+			location.ID,
+			location.IataCode,
+			location.Country,
+			location.Type)
 	}
 	return locsList
 }
@@ -55,19 +61,19 @@ func (srv *LocationServiceImpl) AddLocation(newLocation *models.Location) *model
 	srv.DBMgr.GetDB().Where("iata_code = ?", newLocation.IataCode).First(&location)
 	if location == (models.Location{}) {
 		srv.DBMgr.GetDB().Create(&newLocation)
-		log.Printf("New location, ID:%d - Country code: %s\n", newLocation.ID, newLocation.Country)
+		log.Printf("new location, ID:%d - Country code: %s\n", newLocation.ID, newLocation.Country)
 	} else {
-		log.Printf("Location already exists, ID:%d\n", location.ID)
+		log.Printf("location already exists, ID:%d\n", location.ID)
 	}
 	return &location
 }
 
 func (srv *LocationServiceImpl) DeleteLocation(location *models.Location) bool {
 	if l := srv.GetLocation(location); l == nil {
-		log.Printf("Unable to find location %s\n", location.Country)
+		log.Printf("unable to find location %s\n", location.Country)
 	} else {
 		srv.DBMgr.GetDB().Delete(&location)
-		log.Printf("Location %d deleted\n", location.ID)
+		log.Printf("location %d deleted\n", location.ID)
 	}
 
 	return true
@@ -82,22 +88,73 @@ func (srv *LocationServiceImpl) CheckCountry(countryCode string) bool {
 	return false
 }
 
-func (srv *LocationServiceImpl) FindAirport(iataCode string) (Airport, error) {
-	filename := "constants/airport-codes.json"
+func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) error {
+	var airportTypeFormated string
+	switch airportType {
+	case "large":
+		airportTypeFormated = "large_airport"
+	case "medium":
+		airportTypeFormated = "medium_airport"
+	case "small":
+		airportTypeFormated = "small_airport"
+	default:
+		return errors.New("airport type not found")
+	}
+
+	airports, err := srv.ExtractAirports(filename)
+	if err != nil {
+		return err
+	}
+
+	cpt := 0
+	for _, airport := range airports {
+		if airport.Type == airportTypeFormated {
+			existsLocation := models.Location{}
+			srv.DBMgr.GetDB().Where("iata_code = ?", airport.IataCode).First(&existsLocation)
+			if existsLocation == (models.Location{}) {
+				coords := strings.Split(airport.Coordinates, ", ")
+				lat, _ := strconv.ParseFloat(coords[0], 64)
+				long, _ := strconv.ParseFloat(coords[1], 64)
+				srv.DBMgr.GetDB().Create(&models.Location{
+					Country:   airport.IsoCountry,
+					IataCode:  airport.IataCode,
+					Latitude:  lat,
+					Longitude: long,
+					Type:      airport.Type,
+				})
+				cpt++
+			}
+		}
+	}
+	log.Printf("%d airport imported, type: %s\n", cpt, airportTypeFormated)
+
+	return nil
+}
+
+func (srv *LocationServiceImpl) ExtractAirports(filename string) ([]Airport, error) {
 	jsonFile, err := os.Open(filename)
 	if err != nil {
-		return Airport{}, err
+		return []Airport{}, err
 	}
-	log.Printf("Successfully Opened: %s\n", filename)
+	log.Printf("successfully Opened: %s\n", filename)
 	defer jsonFile.Close()
 
 	jsonData, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
-		return Airport{}, err
+		return []Airport{}, err
 	}
 
 	airports := make([]Airport, 0)
 	if err := json.Unmarshal(jsonData, &airports); err != nil {
+		return []Airport{}, err
+	}
+
+	return airports, nil
+}
+
+func (srv *LocationServiceImpl) FindAirport(iataCode, filename string) (Airport, error) {
+	airports, err := srv.ExtractAirports(filename)
+	if err != nil {
 		return Airport{}, err
 	}
 

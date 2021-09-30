@@ -1,8 +1,15 @@
 name: CI pipeline
 on:
-  # push
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
   pull_request:
-    branches: [main]
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
 env:
   MIN_COVERAGE: 29
 jobs:
