@@ -13,7 +13,7 @@ func FindNearest(q Place, amount int, table string, dbi *gorm.DB) []int {
 		log.WithFields(log.Fields{
 			"table": table,
 			"error": err,
-		}).Error("find latitude/longitude from db")
+		}).Error("get places from db")
 		return nil
 	}
 	if len(places) == 0 {
@@ -47,10 +47,10 @@ func FindNearest(q Place, amount int, table string, dbi *gorm.DB) []int {
 	}
 
 	log.WithFields(log.Fields{
-		"Probe IDs": ids,
-		"lat":       q.Latitude,
-		"lon":       q.Longitude,
-		"amount":    amount,
+		"IDs":    ids,
+		"lat":    q.Latitude,
+		"lon":    q.Longitude,
+		"amount": amount,
 	}).Info("FindNearest locations")
 
 	return ids

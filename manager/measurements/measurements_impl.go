@@ -138,16 +138,21 @@ func (m *MeasurementServiceImpl) GetProbIDs(lat, long float64) []string {
 	}
 	p := Place{Latitude: lat, Longitude: long}
 	nearestProbesAmount := m.Conf.GetInt("NEAREST_PROBES_AMOUNT")
-	nearestProbeIDs := FindNearest(p, nearestProbesAmount, "probes", m.DBMgr.GetDB())
-	if len(nearestProbeIDs) == 0 {
+	nearestLocationsIDs := FindNearest(p, nearestProbesAmount, "locations", m.DBMgr.GetDB())
+	if len(nearestLocationsIDs) == 0 {
 		return []string{}
 	}
 
 	var ripeIDs []string
-	m.DBMgr.GetDB().Debug().Model(&models.Probe{}).
-		Select("probe_id").
-		Where("id in ?", nearestProbeIDs).
-		Find(&ripeIDs)
+	if err := m.DBMgr.GetDB().Debug().
+		Select("probes.probe_id").
+		Model(&Probes{}).
+		Preload("locations").
+		Joins("JOIN locations on locations.iata_code=probes.iata_code").
+		Where("locations.id in (?)", nearestLocationsIDs).
+		Scan(&ripeIDs).Error; err != nil {
+		log.Fatal(err)
+	}
 
 	return ripeIDs
 }

@@ -64,7 +64,7 @@ func (h *Handler) CreateMeasurements() {
 		log.WithFields(log.Fields{
 			"miner":   v,
 			"probeId": pIDs,
-		}).Info("create Measurements")
+		}).Info("locations Measurements")
 
 		measures, err := h.ripeMgr.CreateMeasurements([]*models.Miner{v}, pIDs)
 

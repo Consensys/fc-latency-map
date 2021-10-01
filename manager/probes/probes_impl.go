@@ -23,7 +23,7 @@ func NewProbeServiceImpl(dbMgr db.DatabaseMgr, ripeMgr ripemgr.RipeMgr) (ProbeSe
 
 func (srv *ProbeServiceImpl) RequestProbes() ([]*models.Probe, error) {
 	locsList := []*models.Location{}
-	srv.DBMgr.GetDB().Find(&locsList)
+	srv.DBMgr.GetDB().Order("country, iata_code").Find(&locsList)
 	var bestProbes []*models.Probe
 
 	for _, location := range locsList {
@@ -106,7 +106,7 @@ func (srv *ProbeServiceImpl) removeDeprecated() {
 	srv.DBMgr.GetDB().Find(&probesList)
 	for _, probe := range probesList {
 		location := models.Location{
-			Country: probe.CountryCode,
+			IataCode: probe.IataCode,
 		}
 		locationExists := models.Location{}
 		srv.DBMgr.GetDB().Where(&location).First(&locationExists)

@@ -16,8 +16,8 @@ import (
 
 var dummyCountry = "FR"
 var dummyIataCode = "CDG"
-var dummyGeoLatitude = 2.55
-var dummyGeoLongitude = 49.012798
+var dummyGeoLatitude = 49.012798
+var dummyGeoLongitude = 2.55
 var dummyType = "large_airport"
 
 var dummyLocation = models.Location{
