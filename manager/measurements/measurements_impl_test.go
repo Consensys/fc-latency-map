@@ -72,7 +72,7 @@ func TestMeasurementServiceImpl_CreateMeasurement(t *testing.T) {
 			}
 			m.CreateMeasurements(tt.args.mr)
 			var rows []*models.Measurement
-			err := tt.fields.DBMgr.GetDB().Debug().Find(&rows).Error
+			err := tt.fields.DBMgr.GetDB().Find(&rows).Error
 			assert.Nil(t, err)
 			assert.Equal(t, tt.want, len(rows))
 		})
@@ -187,7 +187,7 @@ func TestMeasurementServiceImpl_ImportMeasurement(t *testing.T) {
 			}
 			m.ImportMeasurement(tt.args.mr)
 			var rows []*models.MeasurementResult
-			err := tt.fields.DBMgr.GetDB().Debug().Find(&rows).Error
+			err := tt.fields.DBMgr.GetDB().Find(&rows).Error
 			assert.Nil(t, err)
 			assert.Equal(t, tt.want, len(rows))
 		})

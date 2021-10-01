@@ -83,7 +83,7 @@ func (m *MeasurementServiceImpl) GetMiners() []*models.Miner {
 }
 
 func (m *MeasurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult) {
-	dbc := (m.DBMgr).GetDB().Debug()
+	dbc := (m.DBMgr).GetDB()
 	var insert []*models.MeasurementResult
 	for _, result := range mr { //nolint:gocritic
 		t := time.Unix(int64(result.Timestamp), 0)
@@ -113,14 +113,14 @@ func (m *MeasurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult)
 
 func (m *MeasurementServiceImpl) getRipeMeasurementsID() []int {
 	var ripeIDs []int
-	dbc := (m.DBMgr).GetDB().Debug()
+	dbc := (m.DBMgr).GetDB()
 	dbc.Model(&models.Measurement{}).Pluck("measurement_id", &ripeIDs)
 
 	return ripeIDs
 }
 
 func (m *MeasurementServiceImpl) getLastMeasurementResultTime(measurementID int) int {
-	dbc := (m.DBMgr).GetDB().Debug()
+	dbc := (m.DBMgr).GetDB()
 
 	measurementResults := &models.MeasurementResult{}
 
@@ -144,7 +144,7 @@ func (m *MeasurementServiceImpl) GetProbIDs(lat, long float64) []string {
 	}
 
 	var ripeIDs []string
-	if err := m.DBMgr.GetDB().Debug().
+	if err := m.DBMgr.GetDB().
 		Select("probes.probe_id").
 		Model(&Probes{}).
 		Preload("locations").

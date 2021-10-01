@@ -109,7 +109,7 @@ func (m *ExportServiceImpl) createLatency(probes []*models.Probe, latency *Miner
 
 func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []*models.MeasurementResult {
 	var meas []*models.MeasurementResult
-	err := (m.DBMgr).GetDB().Debug().Select(
+	err := (m.DBMgr).GetDB().Select(
 		"ip," +
 			"date(measurement_timestamp, 'unixepoch') measurement_date," +
 			"avg(time_average) time_average," +

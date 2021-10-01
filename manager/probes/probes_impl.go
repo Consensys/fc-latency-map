@@ -79,7 +79,7 @@ func (srv *ProbeServiceImpl) Update() {
 		srv.DBMgr.GetDB().Where("probe_id = ?", probe.ID).First(&probeExits)
 
 		if (models.Probe{}) == probeExits {
-			err := srv.DBMgr.GetDB().Debug().Model(&models.Probe{}).
+			err := srv.DBMgr.GetDB().Model(&models.Probe{}).
 				Clauses(clause.OnConflict{
 					Columns:   []clause.Column{{Name: "probe_id"}},
 					DoUpdates: clause.AssignmentColumns([]string{"latitude", "longitude"}),

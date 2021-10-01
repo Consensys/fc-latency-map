@@ -8,7 +8,7 @@ import (
 
 func FindNearest(q Place, amount int, table string, dbi *gorm.DB) []int {
 	var places []Place
-	err := dbi.Debug().Table(table).Where("deleted_at IS null").Find(&places).Error
+	err := dbi.Table(table).Where("deleted_at IS null").Find(&places).Error
 	if err != nil {
 		log.WithFields(log.Fields{
 			"table": table,
