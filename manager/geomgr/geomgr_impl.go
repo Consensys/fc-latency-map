@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -22,6 +23,10 @@ func NewGeoMgrImpl(v *viper.Viper) GeoMgr {
 }
 
 func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
+	// to free use of api
+	// you can check you ip status https://www.geoplugin.com/ip_status.php?ip=xx.xx.xx.xx
+	const sleepTime = 100 * time.Millisecond
+	time.Sleep(sleepTime)
 	response, err := http.Get(g.ipgeoURL(ip)) //nolint:noctx
 	if err != nil {
 		log.WithFields(log.Fields{
