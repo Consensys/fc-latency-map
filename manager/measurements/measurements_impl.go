@@ -151,7 +151,11 @@ func (m *MeasurementServiceImpl) GetProbIDs(lat, long float64) []string {
 		Joins("JOIN locations on locations.iata_code=probes.iata_code").
 		Where("locations.id in (?)", nearestLocationsIDs).
 		Scan(&ripeIDs).Error; err != nil {
-		log.Fatal(err)
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("get probeId from locations")
+
+		return []string{}
 	}
 
 	return ripeIDs
