@@ -118,7 +118,7 @@ or with an offset of 10 (latest block heights)
 ## use case - from scratch
 rm data/database.db
 
-go run cmd/cli/main.go miners-parse 1109742
+go run cmd/cli/main.go miners-parse-block 1109742
 go run cmd/cli/main.go locations-add ORY
 go run cmd/cli/main.go locations-add JFK
 go run cmd/cli/main.go locations-add OPO

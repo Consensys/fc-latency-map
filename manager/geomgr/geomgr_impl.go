@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -55,14 +56,16 @@ func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 		"geo": geo,
 	}).Info("ipgeolocation")
 
-	return geo.Latitude, geo.Longitude
+	return toFloat(geo.GeopluginLatitude), toFloat(geo.GeopluginLongitude)
 }
 
 func (g *GeoMgrImpl) ipgeoURL(ip string) string {
-	key := g.conf.Get("IPGEOLOCATION_ABSTRACTAPI_KEY")
+	return fmt.Sprintf("http://www.geoplugin.net/json.gp?ip=%s", ip)
+}
 
-	return fmt.Sprintf("https://ipgeolocation.abstractapi.com/v1/?"+
-		"&fields=city,city_geoname_id,country_code,continent,latitude,longitude"+
-		"&api_key=%s"+
-		"&ip_address=%s", key, ip)
+func toFloat(s string) float64 {
+	if f, err := strconv.ParseFloat(s, 32); err == nil {
+		return f
+	}
+	return 0
 }
