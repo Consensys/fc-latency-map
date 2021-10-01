@@ -20,9 +20,6 @@ type LocationService interface {
 	// DeleteLocation deletes a location
 	DeleteLocation(location *models.Location) bool
 
-	// CheckCountry checks if country exists
-	CheckCountry(countryCode string) bool
-
 	// UpdateLocations create airports in database
 	UpdateLocations(airportType string, filename string) error
 

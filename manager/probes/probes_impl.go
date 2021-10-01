@@ -2,8 +2,7 @@ package probes
 
 import (
 	log "github.com/sirupsen/logrus"
-
-	atlas "github.com/keltia/ripe-atlas"
+	"gorm.io/gorm/clause"
 
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
@@ -22,10 +21,10 @@ func NewProbeServiceImpl(dbMgr db.DatabaseMgr, ripeMgr ripemgr.RipeMgr) (ProbeSe
 	}, nil
 }
 
-func (srv *ProbeServiceImpl) RequestProbes() ([]*atlas.Probe, error) {
+func (srv *ProbeServiceImpl) RequestProbes() ([]*models.Probe, error) {
 	locsList := []*models.Location{}
 	srv.DBMgr.GetDB().Find(&locsList)
-	var bestProbes []*atlas.Probe
+	var bestProbes []*models.Probe
 
 	for _, location := range locsList {
 		log.WithFields(log.Fields{
@@ -38,7 +37,17 @@ func (srv *ProbeServiceImpl) RequestProbes() ([]*atlas.Probe, error) {
 			return nil, err
 		}
 
-		bestProbes = append(bestProbes, nearestProbe)
+		newProbe := &models.Probe{
+			ProbeID:     nearestProbe.ID,
+			CountryCode: nearestProbe.CountryCode,
+			Location:    *location,
+		}
+		if nearestProbe.Geometry.Type == "Point" {
+			newProbe.Latitude = nearestProbe.Geometry.Coordinates[0]
+			newProbe.Longitude = nearestProbe.Geometry.Coordinates[1]
+		}
+
+		bestProbes = append(bestProbes, newProbe)
 	}
 
 	return bestProbes, nil
@@ -66,26 +75,21 @@ func (srv *ProbeServiceImpl) Update() {
 
 	// update with new probes
 	for _, probe := range probes {
-		newProbe := models.Probe{
-			ProbeID:     probe.ID,
-			CountryCode: probe.CountryCode,
-		}
-		if probe.Geometry.Type == "Point" {
-			newProbe.Latitude = probe.Geometry.Coordinates[0]
-			newProbe.Longitude = probe.Geometry.Coordinates[1]
-		}
-
 		probeExits := models.Probe{}
 		srv.DBMgr.GetDB().Where("probe_id = ?", probe.ID).First(&probeExits)
 
 		if (models.Probe{}) == probeExits {
-			err := srv.DBMgr.GetDB().Debug().Model(&models.Probe{}).Create(&newProbe).Error
+			err := srv.DBMgr.GetDB().Debug().Model(&models.Probe{}).
+				Clauses(clause.OnConflict{
+					Columns:   []clause.Column{{Name: "probe_id"}},
+					DoUpdates: clause.AssignmentColumns([]string{"latitude", "longitude"}),
+				}).Create(probe).Error
 			if err != nil {
 				log.WithFields(log.Fields{
 					"error": err,
 				}).Error("unable to insert probes")
 			}
-			log.Printf("Add new location, ID: %v", newProbe.ProbeID)
+			log.Printf("Add new location, ID: %v", probe.ProbeID)
 		} else {
 			log.Printf("Probe already exists, Probe ID: %v", probeExits.ProbeID)
 		}

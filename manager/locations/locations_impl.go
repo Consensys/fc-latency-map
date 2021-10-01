@@ -11,7 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
-	"github.com/ConsenSys/fc-latency-map/manager/constants"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
@@ -77,15 +76,6 @@ func (srv *LocationServiceImpl) DeleteLocation(location *models.Location) bool {
 	}
 
 	return true
-}
-
-func (srv *LocationServiceImpl) CheckCountry(countryCode string) bool {
-	for _, country := range constants.Countries {
-		if countryCode == country.Code {
-			return true
-		}
-	}
-	return false
 }
 
 func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) error {

@@ -74,9 +74,9 @@ func Execute(dbc *gorm.DB) error {
 			ID: "2021091519",
 			Migrate: func(tx *gorm.DB) error {
 				locs := []models.Probe{
-					{ProbeID: 39, CountryCode: "FR", Latitude: 43.2915, Longitude: 1.6185},
-					{ProbeID: 1, CountryCode: "NL", Latitude: 52.3475, Longitude: 4.9275},
-					{ProbeID: 24, CountryCode: "PT", Latitude: 38.7295, Longitude: -9.1515},
+					{ProbeID: 39, CountryCode: "FR", IataCode: "CDG", Latitude: 43.2915, Longitude: 1.6185},
+					{ProbeID: 1, CountryCode: "NL", IataCode: "AMS", Latitude: 52.3475, Longitude: 4.9275},
+					{ProbeID: 24, CountryCode: "PT", IataCode: "LIS", Latitude: 38.7295, Longitude: -9.1515},
 				}
 				return tx.Create(locs).Error
 			},
