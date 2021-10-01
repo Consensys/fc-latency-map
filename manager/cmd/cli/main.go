@@ -28,13 +28,13 @@ type LatencyMapCLI struct {
 // Start Client CLI
 func main() {
 	c := &LatencyMapCLI{
-		Commands: []string{"locations", "measurements", "miners", "probes", "seed"},
+		Commands: []string{"locations", "measures", "miners", "probes", "seed"},
 		Commanders: map[string]cli.Commander{
-			"locations":    locations.NewLocationCommander(),
-			"measurements": measurements.NewMesuresCommander(),
-			"miners":       miners.NewMinerCommander(),
-			"probes":       probes.NewProbeCommander(),
-			"seed":         seeds.NewSeederCommander(),
+			"locations": locations.NewLocationCommander(),
+			"measures":  measurements.NewMesuresCommander(),
+			"miners":    miners.NewMinerCommander(),
+			"probes":    probes.NewProbeCommander(),
+			"seed":      seeds.NewSeederCommander(),
 		},
 	}
 
