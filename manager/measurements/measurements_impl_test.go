@@ -343,24 +343,6 @@ func TestMeasurementServiceImpl_GetProbIDs(t *testing.T) {
 			probes:    []models.Probe{{ProbeID: 1, IataCode: "iata", Latitude: 1, Longitude: 11}},
 			want:      []string{},
 		},
-		//{name: "found probe", fields: struct {
-		//	Conf  *viper.Viper
-		//	DBMgr db.DatabaseMgr
-		//	FMgr  filecoinmgr.FilecoinMgr
-		//}{
-		//	Conf:  config.NewMockConfig(),
-		//	DBMgr: db.NewMockDatabaseMgr(),
-		//	FMgr:  filecoinmgr.NewMockFilecoinMgr(ctrl),
-		//},
-		//	args: struct {
-		//		lat    float64
-		//		long   float64
-		//		amount int
-		//	}{lat: 1, long: 1, amount: 2},
-		//	locations: []models.Location{{Model: gorm.Model{ID: 1}, IataCode: "iata", Latitude: 1, Longitude: 11}},
-		//	probes:    []models.Probe{{ProbeID: 1, IataCode: "iata", Latitude: 1, Longitude: 11}},
-		//	want:      []string{"1"},
-		//},
 		{name: "no found probe", fields: struct {
 			Conf  *viper.Viper
 			DBMgr db.DatabaseMgr

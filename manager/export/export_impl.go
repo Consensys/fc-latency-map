@@ -69,7 +69,7 @@ func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
 			results.Measurements[l.Country][l.IataCode] = append(results.Measurements[l.Country][l.IataCode], latency)
 		}
 	}
-	results.Location = loc
+	results.Locations = loc
 	results.Miners = miners
 	results.Probes = m.GetAllProbes()
 
