@@ -13,10 +13,12 @@ type MeasurementService interface {
 
 	GetMiners() []*models.Miner
 
-	GetProbIDs(latitude, longitude float64) []string
+	GetProbIDs(places []Place, latitude, longitude float64) []string
 
 	CreateMeasurements([]*atlas.Measurement)
 
 	// GetMeasuresLastResultTime load RIPE MeasurementResults
 	GetMeasuresLastResultTime() map[int]int
+
+	PlacesDataSet() ([]Place, error)
 }

@@ -3,19 +3,9 @@ package measurements
 import (
 	log "github.com/sirupsen/logrus"
 	"gonum.org/v1/gonum/spatial/vptree"
-	"gorm.io/gorm"
 )
 
-func FindNearest(q Place, amount int, table string, dbi *gorm.DB) []int {
-	var places []Place
-	err := dbi.Table(table).Where("deleted_at IS null").Find(&places).Error
-	if err != nil {
-		log.WithFields(log.Fields{
-			"table": table,
-			"error": err,
-		}).Error("get places from db")
-		return nil
-	}
+func FindNearest(places []Place, q Place, amount int) []int {
 	if len(places) == 0 {
 		return []int{}
 	}

@@ -21,7 +21,7 @@ type RipeMgrImpl struct {
 	c    *atlas.Client
 }
 
-const StartTimeDelay = 100
+const StartTimeDelay = 1000
 
 func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
 	cfgs := []atlas.Config{}
@@ -125,7 +125,7 @@ func (rMgr *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.Measurem
 	return results, nil
 }
 
-func (rMgr *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs string) ([]*atlas.Measurement, error) {
+func (rMgr *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs string, t int) ([]*atlas.Measurement, error) {
 	if len(miners) == 0 {
 		log.WithFields(log.Fields{
 			"msg": "miners are missing",
@@ -146,7 +146,7 @@ func (rMgr *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs str
 		},
 	}
 
-	return rMgr.createPing(miners, probes)
+	return rMgr.createPing(miners, probes, t)
 }
 
 func (rMgr *RipeMgrImpl) getRequestedProbes(probeIDs string) int {
@@ -157,7 +157,7 @@ func (rMgr *RipeMgrImpl) getRequestedProbes(probeIDs string) int {
 	return requestedProbes
 }
 
-func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet) ([]*atlas.Measurement, error) {
+func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet, t int) ([]*atlas.Measurement, error) {
 	var d []atlas.Definition
 
 	isOneOff := rMgr.conf.GetBool("RIPE_ONE_OFF")
@@ -171,7 +171,7 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 		d = rMgr.getDefinitions(miner, packets, pingInterval, d)
 	}
 
-	mr := rMgr.getMeasurementRequest(d, isOneOff, probes)
+	mr := rMgr.getMeasurementRequest(d, isOneOff, probes, t)
 
 	if !isOneOff {
 		runningTime := rMgr.conf.GetInt("RIPE_PING_RUNNING_TIME")
@@ -208,10 +208,10 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 	return measurement, err
 }
 
-func (rMgr *RipeMgrImpl) getMeasurementRequest(d []atlas.Definition, isOneOff bool, probes []atlas.ProbeSet) *atlas.MeasurementRequest {
+func (rMgr *RipeMgrImpl) getMeasurementRequest(d []atlas.Definition, isOneOff bool, probes []atlas.ProbeSet, t int) *atlas.MeasurementRequest {
 	return &atlas.MeasurementRequest{
 		Definitions: d,
-		StartTime:   int(time.Now().Unix() + StartTimeDelay),
+		StartTime:   int(time.Now().Unix()) + StartTimeDelay*t,
 		IsOneoff:    isOneOff,
 		Probes:      probes,
 	}

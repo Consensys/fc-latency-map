@@ -9,7 +9,7 @@ import (
 
 	models "github.com/ConsenSys/fc-latency-map/manager/models"
 	gomock "github.com/golang/mock/gomock"
-	atlas "github.com/keltia/ripe-atlas"
+	ripe_atlas "github.com/keltia/ripe-atlas"
 )
 
 // MockMeasurementService is a mock of MeasurementService interface.
@@ -36,7 +36,7 @@ func (m *MockMeasurementService) EXPECT() *MockMeasurementServiceMockRecorder {
 }
 
 // CreateMeasurements mocks base method.
-func (m *MockMeasurementService) CreateMeasurements(arg0 []*atlas.Measurement) {
+func (m *MockMeasurementService) CreateMeasurements(arg0 []*ripe_atlas.Measurement) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "CreateMeasurements", arg0)
 }
@@ -76,21 +76,21 @@ func (mr *MockMeasurementServiceMockRecorder) GetMiners() *gomock.Call {
 }
 
 // GetProbIDs mocks base method.
-func (m *MockMeasurementService) GetProbIDs(float64, float64) []string {
+func (m *MockMeasurementService) GetProbIDs(arg0 []Place, arg1, arg2 float64) []string {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetProbIDs")
+	ret := m.ctrl.Call(m, "GetProbIDs", arg0, arg1, arg2)
 	ret0, _ := ret[0].([]string)
 	return ret0
 }
 
 // GetProbIDs indicates an expected call of GetProbIDs.
-func (mr *MockMeasurementServiceMockRecorder) GetProbIDs() *gomock.Call {
+func (mr *MockMeasurementServiceMockRecorder) GetProbIDs(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProbIDs", reflect.TypeOf((*MockMeasurementService)(nil).GetProbIDs))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProbIDs", reflect.TypeOf((*MockMeasurementService)(nil).GetProbIDs), arg0, arg1, arg2)
 }
 
 // ImportMeasurement mocks base method.
-func (m *MockMeasurementService) ImportMeasurement(arg0 []atlas.MeasurementResult) {
+func (m *MockMeasurementService) ImportMeasurement(arg0 []ripe_atlas.MeasurementResult) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "ImportMeasurement", arg0)
 }
@@ -99,4 +99,19 @@ func (m *MockMeasurementService) ImportMeasurement(arg0 []atlas.MeasurementResul
 func (mr *MockMeasurementServiceMockRecorder) ImportMeasurement(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ImportMeasurement", reflect.TypeOf((*MockMeasurementService)(nil).ImportMeasurement), arg0)
+}
+
+// PlacesDataSet mocks base method.
+func (m *MockMeasurementService) PlacesDataSet() ([]Place, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PlacesDataSet")
+	ret0, _ := ret[0].([]Place)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// PlacesDataSet indicates an expected call of PlacesDataSet.
+func (mr *MockMeasurementServiceMockRecorder) PlacesDataSet() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlacesDataSet", reflect.TypeOf((*MockMeasurementService)(nil).PlacesDataSet))
 }

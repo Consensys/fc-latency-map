@@ -20,7 +20,7 @@ type RipeMgr interface {
 	GetNearestProbe(latitude, longitude float64) (*atlas.Probe, error)
 
 	// CreateMeasurements create ripe measurements
-	CreateMeasurements(miners []*models.Miner, probeIDs string) ([]*atlas.Measurement, error)
+	CreateMeasurements(miners []*models.Miner, probeIDs string, t int) ([]*atlas.Measurement, error)
 
 	// GetMeasurementResults get ripe measurements results from last
 	GetMeasurementResults(measures map[int]int) ([]atlas.MeasurementResult, error)

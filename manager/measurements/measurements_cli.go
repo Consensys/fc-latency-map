@@ -27,6 +27,7 @@ type MesuresCommander struct {
 func NewMesuresCommander() cli.Commander {
 	return &MesuresCommander{
 		Handler: NewHandler(),
+		Export:  export.NewExportHandler(),
 	}
 }
 

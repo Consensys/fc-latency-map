@@ -373,7 +373,7 @@ func TestMeasurementServiceImpl_GetProbIDs(t *testing.T) {
 				tt.fields.DBMgr,
 				tt.fields.FMgr,
 			)
-			if got := m.GetProbIDs(tt.args.lat, tt.args.long); !reflect.DeepEqual(got, tt.want) {
+			if got := m.GetProbIDs([]Place{}, tt.args.lat, tt.args.long); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetProbIDs() = %v, want %v", got, tt.want)
 			}
 		})

@@ -58,15 +58,24 @@ func (h *Handler) ImportMeasures() {
 }
 
 func (h *Handler) CreateMeasurements() {
+	places, err := h.Service.PlacesDataSet()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("placesDataSet")
+
+		return
+	}
+
 	miners := h.Service.GetMiners()
-	for _, v := range miners {
-		pIDs := strings.Join(h.Service.GetProbIDs(v.Latitude, v.Longitude), ",")
+	for i, v := range miners {
+		pIDs := strings.Join(h.Service.GetProbIDs(places, v.Latitude, v.Longitude), ",")
 		log.WithFields(log.Fields{
 			"miner":   v,
 			"probeId": pIDs,
 		}).Info("locations Measurements")
 
-		measures, err := h.ripeMgr.CreateMeasurements([]*models.Miner{v}, pIDs)
+		measures, err := h.ripeMgr.CreateMeasurements([]*models.Miner{v}, pIDs, i)
 
 		if err != nil {
 			log.WithFields(log.Fields{

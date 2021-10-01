@@ -66,7 +66,9 @@ func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
 			}
 			probes := m.getProbes(l)
 			latency = m.createLatency(probes, latency, miner.IP)
-			results.Measurements[l.Country][l.IataCode] = append(results.Measurements[l.Country][l.IataCode], latency)
+			if len(latency.Measures) > 0 {
+				results.Measurements[l.Country][l.IataCode] = append(results.Measurements[l.Country][l.IataCode], latency)
+			}
 		}
 	}
 	results.Locations = loc
@@ -135,7 +137,7 @@ func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []
 func (m *ExportServiceImpl) getProbes(l *models.Location) []*models.Probe {
 	var probes []*models.Probe
 	err := (m.DBMgr).GetDB().Where(&models.Probe{
-		CountryCode: l.Country,
+		IataCode: l.IataCode,
 	}).Find(&probes).Error
 	if err != nil {
 		jg.WithFields(jg.Fields{

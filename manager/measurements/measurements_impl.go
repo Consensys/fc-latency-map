@@ -132,13 +132,13 @@ func (m *MeasurementServiceImpl) getLastMeasurementResultTime(measurementID int)
 	return measurementResults.MeasurementTimestamp
 }
 
-func (m *MeasurementServiceImpl) GetProbIDs(lat, long float64) []string {
+func (m *MeasurementServiceImpl) GetProbIDs(places []Place, lat, long float64) []string {
 	if lat == 0 && long == 0 {
 		return []string{}
 	}
 	p := Place{Latitude: lat, Longitude: long}
 	nearestProbesAmount := m.Conf.GetInt("NEAREST_PROBES_AMOUNT")
-	nearestLocationsIDs := FindNearest(p, nearestProbesAmount, "locations", m.DBMgr.GetDB())
+	nearestLocationsIDs := FindNearest(places, p, nearestProbesAmount)
 	if len(nearestLocationsIDs) == 0 {
 		return []string{}
 	}
@@ -159,4 +159,17 @@ func (m *MeasurementServiceImpl) GetProbIDs(lat, long float64) []string {
 	}
 
 	return ripeIDs
+}
+
+func (m *MeasurementServiceImpl) PlacesDataSet() ([]Place, error) {
+	var places []Place
+	err := m.DBMgr.GetDB().Model(&models.Location{}).Find(&places).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("get places from db")
+
+		return places, err
+	}
+	return places, nil
 }
