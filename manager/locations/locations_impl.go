@@ -28,6 +28,10 @@ type LocationServiceImpl struct {
 	DBMgr db.DatabaseMgr
 }
 
+const large = "large"
+const medium = "medium"
+const small = "small"
+
 func NewLocationServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) LocationService {
 	return &LocationServiceImpl{
 		Conf:  conf,
@@ -81,11 +85,11 @@ func (srv *LocationServiceImpl) DeleteLocation(location *models.Location) bool {
 func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) error {
 	var airportTypeFormated string
 	switch airportType {
-	case "large":
+	case large:
 		airportTypeFormated = "large_airport"
-	case "medium":
+	case medium:
 		airportTypeFormated = "medium_airport"
-	case "small":
+	case small:
 		airportTypeFormated = "small_airport"
 	default:
 		return errors.New("airport type not found")
