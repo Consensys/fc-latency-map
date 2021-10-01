@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ConsenSys/fc-latency-map/manager/constants"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
@@ -27,10 +29,6 @@ type LocationServiceImpl struct {
 	Conf  *viper.Viper
 	DBMgr db.DatabaseMgr
 }
-
-const large = "large"
-const medium = "medium"
-const small = "small"
 
 func NewLocationServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) LocationService {
 	return &LocationServiceImpl{
@@ -85,11 +83,11 @@ func (srv *LocationServiceImpl) DeleteLocation(location *models.Location) bool {
 func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) error {
 	var airportTypeFormated string
 	switch airportType {
-	case large:
+	case constants.AirportTypeLarge:
 		airportTypeFormated = "large_airport"
-	case medium:
+	case constants.AirportTypeMedium:
 		airportTypeFormated = "medium_airport"
-	case small:
+	case constants.AirportTypeSmall:
 		airportTypeFormated = "small_airport"
 	default:
 		return errors.New("airport type not found")
