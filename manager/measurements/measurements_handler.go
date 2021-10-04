@@ -2,6 +2,7 @@ package measurements
 
 import (
 	"strings"
+	"time"
 
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 
@@ -42,19 +43,20 @@ func NewHandler() *Handler {
 		ripeMgr: ripeMgr,
 	}
 }
-
 func (h *Handler) ImportMeasures() {
 	measures := h.Service.GetMeasuresLastResultTime()
-	results, err := h.ripeMgr.GetMeasurementResults(measures)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"err": err,
-		}).Info("GetMeasurementResults")
+	for k, v := range measures {
+		results, err := h.ripeMgr.GetMeasurementResults(k, v)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"err": err,
+			}).Info("GetMeasurementResults")
 
-		return
+			continue
+		}
+
+		h.Service.ImportMeasurement(results)
 	}
-
-	h.Service.ImportMeasurement(results)
 }
 
 func (h *Handler) CreateMeasurements() {
@@ -86,5 +88,7 @@ func (h *Handler) CreateMeasurements() {
 		}
 
 		h.Service.CreateMeasurements(measures)
+		const waitTime = 5 * time.Second
+		time.Sleep(waitTime)
 	}
 }

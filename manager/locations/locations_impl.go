@@ -112,7 +112,7 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) er
 				srv.DBMgr.GetDB().Create(&models.Location{
 					Name:      airport.Name,
 					Country:   airport.IsoCountry,
-					IataCode:  airport.IataCode,
+					IataCode:  getIataCode(airport.IataCode, airport.Name),
 					Latitude:  lat,
 					Longitude: long,
 					Type:      airport.Type,
@@ -124,6 +124,13 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) er
 	log.Printf("%d airport imported, type: %s\n", cpt, airportTypeFormated)
 
 	return nil
+}
+
+func getIataCode(iata, name string) string {
+	if iata == "" {
+		return name
+	}
+	return iata
 }
 
 func (srv *LocationServiceImpl) ExtractAirports(filename string) ([]Airport, error) {

@@ -51,18 +51,18 @@ func (mr *MockRipeMgrMockRecorder) CreateMeasurements(arg0, arg1, arg2 interface
 }
 
 // GetMeasurementResults mocks base method.
-func (m *MockRipeMgr) GetMeasurementResults(arg0 map[int]int) ([]atlas.MeasurementResult, error) {
+func (m *MockRipeMgr) GetMeasurementResults(arg0, arg1 int) ([]atlas.MeasurementResult, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMeasurementResults", arg0)
+	ret := m.ctrl.Call(m, "GetMeasurementResults", arg0, arg1)
 	ret0, _ := ret[0].([]atlas.MeasurementResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetMeasurementResults indicates an expected call of GetMeasurementResults.
-func (mr *MockRipeMgrMockRecorder) GetMeasurementResults(arg0 interface{}) *gomock.Call {
+func (mr *MockRipeMgrMockRecorder) GetMeasurementResults(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMeasurementResults", reflect.TypeOf((*MockRipeMgr)(nil).GetMeasurementResults), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMeasurementResults", reflect.TypeOf((*MockRipeMgr)(nil).GetMeasurementResults), arg0, arg1)
 }
 
 // GetNearestProbe mocks base method.

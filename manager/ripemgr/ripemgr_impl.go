@@ -22,7 +22,7 @@ type RipeMgrImpl struct {
 }
 
 const StartTimeDelay = 50
-const DelayBetweenMeasurements = 1
+const DelayBetweenMeasurements = 0
 
 func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
 	cfgs := []atlas.Config{}
@@ -111,28 +111,23 @@ func (rMgr *RipeMgrImpl) getLatLongRange(lat, long, coordRange float64) map[stri
 	return opts
 }
 
-func (rMgr *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.MeasurementResult, error) {
-	var results []atlas.MeasurementResult
-	for k, v := range ms {
-		rMgr.c.SetOption("start", strconv.Itoa(v))
+func (rMgr *RipeMgrImpl) GetMeasurementResults(measurementID, startTime int) ([]atlas.MeasurementResult, error) {
+	rMgr.c.SetOption("start", strconv.Itoa(startTime))
+	log.WithFields(log.Fields{
+		"measurement": measurementID,
+		"start time":  startTime,
+	}).Warn("get measurements results")
+	measurementResult, err := rMgr.c.GetResults(measurementID)
+	if err != nil {
 		log.WithFields(log.Fields{
-			"measurement": k,
-			"start time":  v,
-		}).Warn("get measurements results")
-		measurementResult, err := rMgr.c.GetResults(k)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"err":         err,
-				"measurement": k,
-				"start time":  v,
-			}).Error("get measurements results")
-			continue
-		}
-
-		results = append(results, measurementResult.Results...)
+			"err":         err,
+			"measurement": measurementID,
+			"start time":  startTime,
+		}).Error("get measurements results")
+		return nil, err
 	}
 
-	return results, nil
+	return measurementResult.Results, nil
 }
 
 func (rMgr *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs string, t int) ([]*atlas.Measurement, error) {
@@ -175,7 +170,7 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 	packets := rMgr.conf.GetInt("RIPE_PACKETS")
 
 	for _, miner := range miners {
-		if miner.IP == "" {
+		if miner.IP == "" || (miner.Latitude == 0 && miner.Longitude == 0) {
 			continue
 		}
 		d = rMgr.getDefinitions(miner, packets, pingInterval, d)
@@ -191,8 +186,8 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 	p, err := rMgr.c.Ping(mr)
 	if err != nil {
 		log.WithFields(log.Fields{
-			"err": err.Error(),
 			"msg": mr,
+			"err": err.Error(),
 		}).Error("Create ping")
 
 		return nil, err
