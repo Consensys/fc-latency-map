@@ -114,9 +114,18 @@ func (rMgr *RipeMgrImpl) GetMeasurementResults(ms map[int]int) ([]atlas.Measurem
 	var results []atlas.MeasurementResult
 	for k, v := range ms {
 		rMgr.c.SetOption("start", strconv.Itoa(v))
+		log.WithFields(log.Fields{
+			"measurement": k,
+			"start time":  v,
+		}).Warn("get measurements results")
 		measurementResult, err := rMgr.c.GetResults(k)
 		if err != nil {
-			return nil, err
+			log.WithFields(log.Fields{
+				"err":         err,
+				"measurement": k,
+				"start time":  v,
+			}).Error("get measurements results")
+			continue
 		}
 
 		results = append(results, measurementResult.Results...)
