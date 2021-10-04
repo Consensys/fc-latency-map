@@ -71,8 +71,8 @@ func (h *Handler) CreateMeasurements() {
 	for i, v := range miners {
 		pIDs := strings.Join(h.Service.GetProbIDs(places, v.Latitude, v.Longitude), ",")
 		log.WithFields(log.Fields{
-			"miner":   v,
-			"probeId": pIDs,
+			"miner.address": v.Address,
+			"probeId":       pIDs,
 		}).Info("locations Measurements")
 
 		measures, err := h.ripeMgr.CreateMeasurements([]*models.Miner{v}, pIDs, i)
