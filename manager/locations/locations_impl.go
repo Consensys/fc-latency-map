@@ -18,6 +18,7 @@ import (
 )
 
 type Airport struct {
+	Name        string `json:"name"`
 	Continent   string `json:"continent"`
 	Coordinates string `json:"coordinates"`
 	IataCode    string `json:"iata_code"`
@@ -41,10 +42,11 @@ func (srv *LocationServiceImpl) GetAllLocations() []*models.Location {
 	locsList := []*models.Location{}
 	srv.DBMgr.GetDB().Find(&locsList)
 	for _, location := range locsList {
-		log.Printf("ID:%d - Iata code: %s - Country code: %s - Type: %s\n",
+		log.Printf("ID:%d - Iata code: %s - Country code: %s - Name: %s - Type: %s\n",
 			location.ID,
 			location.IataCode,
 			location.Country,
+			location.Name,
 			location.Type)
 	}
 	return locsList
@@ -108,6 +110,7 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) er
 				lat, _ := strconv.ParseFloat(coords[1], 64)
 				long, _ := strconv.ParseFloat(coords[0], 64)
 				srv.DBMgr.GetDB().Create(&models.Location{
+					Name:      airport.Name,
 					Country:   airport.IsoCountry,
 					IataCode:  airport.IataCode,
 					Latitude:  lat,

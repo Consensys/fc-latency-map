@@ -6,6 +6,7 @@ import (
 
 type Location struct {
 	gorm.Model `json:"-"`
+	Name       string
 	Country    string
 	IataCode   string  `gorm:"uniqueIndex"`
 	Latitude   float64 `gorm:"column:latitude" json:"latitude,omitempty"`
