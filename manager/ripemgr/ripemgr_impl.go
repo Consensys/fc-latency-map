@@ -21,7 +21,8 @@ type RipeMgrImpl struct {
 	c    *atlas.Client
 }
 
-const StartTimeDelay = 1000
+const StartTimeDelay = 50
+const DelayBetweenMeasurements = 1
 
 func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
 	cfgs := []atlas.Config{}
@@ -220,7 +221,7 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 func (rMgr *RipeMgrImpl) getMeasurementRequest(d []atlas.Definition, isOneOff bool, probes []atlas.ProbeSet, t int) *atlas.MeasurementRequest {
 	return &atlas.MeasurementRequest{
 		Definitions: d,
-		StartTime:   int(time.Now().Unix()) + StartTimeDelay*t,
+		StartTime:   int(time.Now().Unix()) + StartTimeDelay + DelayBetweenMeasurements*t,
 		IsOneoff:    isOneOff,
 		Probes:      probes,
 	}
