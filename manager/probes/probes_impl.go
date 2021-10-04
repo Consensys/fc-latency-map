@@ -89,7 +89,7 @@ func (srv *ProbeServiceImpl) Update() {
 					"error": err,
 				}).Error("unable to insert probes")
 			}
-			log.Printf("Add new location, ID: %v", probe.ProbeID)
+			log.Printf("Add new probr, ID: %v", probe.ProbeID)
 		} else {
 			log.Printf("Probe already exists, Probe ID: %v", probeExits.ProbeID)
 		}
