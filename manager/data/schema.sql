@@ -1,6 +1,3 @@
-CREATE TABLE `miners` (`id` integer,`created_at` datetime,`updated_at` datetime,`deleted_at` datetime,`address` text,`ip` text,`latitude` real,`longitude` real,PRIMARY KEY (`id`));
-CREATE UNIQUE INDEX `idx_miners_address` ON `miners`(`address`);
-CREATE INDEX `idx_miners_deleted_at` ON `miners`(`deleted_at`);
 CREATE TABLE `locations` (`id` integer,`created_at` datetime,`updated_at` datetime,`deleted_at` datetime,`country` text,`iata_code` text,`latitude` real,`longitude` real,`type` text,PRIMARY KEY (`id`));
 CREATE UNIQUE INDEX `idx_locations_iata_code` ON `locations`(`iata_code`);
 CREATE INDEX `idx_locations_deleted_at` ON `locations`(`deleted_at`);
@@ -15,3 +12,4 @@ CREATE INDEX `idx_measurement_results_measurement_timestamp` ON `measurement_res
 CREATE INDEX `idx_measurement_results_measurement_id` ON `measurement_results`(`measurement_id`);
 CREATE INDEX `idx_measurement_results_deleted_at` ON `measurement_results`(`deleted_at`);
 CREATE TABLE migrations (id VARCHAR(255) PRIMARY KEY);
+CREATE TABLE `miners` (`id` integer,`created_at` datetime,`updated_at` datetime,`deleted_at` datetime,`address` text,`ip` text,`latitude` real,`longitude` real,PRIMARY KEY (`id`));
