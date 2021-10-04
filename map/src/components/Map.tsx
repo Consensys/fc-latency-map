@@ -60,6 +60,10 @@ const Map = (props: Props) => {
         name: "High Latency Miners",
         fill: "#FF0000",
       },
+      {
+        name: "Timeout Miners",
+        fill: "#000000",
+      },
     ];
     legend.itemContainers.template.clickable = false;
     legend.itemContainers.template.focusable = false;
@@ -121,7 +125,9 @@ const Map = (props: Props) => {
     imageSeries.data = minersList.map((miner) => {
       let color = "#ff0000";
 
-      if (miner.latency.avg < 80) {
+      if (miner.latency.avg == -1) {
+        color = "#000000";
+      } else if (miner.latency.avg < 80) {
         color = "#00ff00";
       } else if (miner.latency.avg < 100) {
         color = "#00ffff";
@@ -216,7 +222,6 @@ const Map = (props: Props) => {
             latency: latency.measures[0].latency[0],
           };
           minersLatency.push(minerLatency);
-          console.log("-->>:", minerLatency);
         } else if (
           !latency.measures &&
           !minersNoLatency.find((miner) => miner.address == latency.address)
@@ -225,9 +230,6 @@ const Map = (props: Props) => {
         }
       });
 
-      // if (chart.series.length >= 3) {
-      //   chart.series.removeIndex(chart.series.length - 1);
-      // }
       while (chart.series.length >= 3) {
         chart.series.removeIndex(chart.series.length - 1);
       }
@@ -265,9 +267,6 @@ const Map = (props: Props) => {
     // Legend
     addLegend(chart);
 
-    // Miners
-    // addMiners3(chart, dataJson["CN"]["PEK"]);
-
     // Probes
     addProbes(chart, "#C0C0C0");
     addMiners(chart, miners);
@@ -276,13 +275,6 @@ const Map = (props: Props) => {
       chart.dispose();
     };
   }, []);
-
-  // function minerClickHandler(ev) {
-  //   console.log("clicked on ", ev.target);
-
-  //   ev.target.series.chart.zoomToMapObject(ev.target);
-  //   lineSeries.mapLines.clear();
-  // }
 
   return (
     <div>
