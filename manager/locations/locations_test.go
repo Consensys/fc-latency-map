@@ -16,6 +16,7 @@ import (
 
 var dummyCountryError = "FRX"
 
+var dummyName = "Charles de Gaulle International Airport"
 var dummyCountry = "FR"
 var dummyIataCode = "CDG"
 var dummyGeoLatitude = 2.55
@@ -24,6 +25,7 @@ var dummyType = "large_airport"
 
 var dummyBlockHeight = int64(42)
 var dummyLocation = models.Location{
+	Name:   		dummyName,
 	Country:   	dummyCountry,
 	IataCode:   dummyIataCode,
 	Latitude:  	dummyGeoLatitude,
@@ -72,6 +74,7 @@ func Test_GetAllLocations_OK(t *testing.T) {
 	assert.NotEmpty(t, locations)
 
 	actual := *(locations[0])
+	assert.Equal(t, dummyLocation.Name, actual.Name)
 	assert.Equal(t, dummyLocation.Country, actual.Country)
 	assert.Equal(t, dummyLocation.IataCode, actual.IataCode)
 	assert.Equal(t, dummyLocation.Latitude, actual.Latitude)
@@ -114,6 +117,7 @@ func Test_GetLocation_OK(t *testing.T) {
 	assert.NotNil(t, location)
 	assert.NotEmpty(t, location)
 
+	assert.Equal(t, dummyLocation.Name, location.Name)
 	assert.Equal(t, dummyLocation.Country, location.Country)
 	assert.Equal(t, dummyLocation.IataCode, location.IataCode)
 	assert.Equal(t, dummyLocation.Latitude, location.Latitude)
@@ -144,6 +148,7 @@ func Test_AddLocation_OK(t *testing.T) {
 	assert.NotNil(t, newLocation)
 	assert.NotEmpty(t, newLocation)
 
+	assert.Equal(t, dummyLocation.Name, newLocation.Name)
 	assert.Equal(t, dummyLocation.Country, newLocation.Country)
 	assert.Equal(t, dummyLocation.IataCode, newLocation.IataCode)
 	assert.Equal(t, dummyLocation.Latitude, newLocation.Latitude)
@@ -233,6 +238,7 @@ func Test_UpdateLocations(t *testing.T) {
 	newLocation := srv.GetLocation(location)
 	
 	assert.Nil(t, err)
+	assert.Equal(t, dummyLocation.Name, newLocation.Name)
 	assert.Equal(t, dummyLocation.Country, newLocation.Country)
 	assert.Equal(t, dummyLocation.IataCode, newLocation.IataCode)
 	assert.Equal(t, dummyLocation.Latitude, newLocation.Latitude)
