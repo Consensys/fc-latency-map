@@ -110,11 +110,8 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) er
 				lat, _ := strconv.ParseFloat(coords[1], 64)
 				long, _ := strconv.ParseFloat(coords[0], 64)
 
-
-				
-
 				srv.DBMgr.GetDB().Create(&models.Location{
-					Name:      airport.Name,
+					Name:      formatName(airport.Name),
 					Country:   airport.IsoCountry,
 					IataCode:  getIataCode(airport.IataCode, airport.Name),
 					Latitude:  lat,
