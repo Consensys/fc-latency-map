@@ -20,6 +20,42 @@ interface Props {
   width: any;
 }
 
+interface Miner {
+  address: string;
+  ip: string;
+  latitude: number;
+  longitude: number;
+}
+
+interface Location {
+  name: string;
+  country: string;
+  iata_code: string;
+  latitude: number;
+  longitude: number;
+  type: string;
+}
+
+interface MinerLatency {
+  address: string;
+  ip: string;
+  latitude: number;
+  longitude: number;
+  latency: {
+    avg: number;
+  };
+}
+
+interface MinerLatencyData {
+  address: string;
+  measures: LatencyMeasureData[];
+}
+
+interface LatencyMeasureData {
+  ip: string;
+  latency: [];
+}
+
 const Map = (props: Props) => {
   const { data, height, width } = props;
   const dataJson = JSON.parse(data);
@@ -48,7 +84,7 @@ const Map = (props: Props) => {
       },
       {
         name: "Miners",
-        fill: "#6F00FF",
+        fill: "#4169E1",
       },
       {
         name: "Low Latency Miners",
@@ -87,17 +123,17 @@ const Map = (props: Props) => {
     circle.propertyFields.fill = "color";
     circle.nonScaling = true;
 
-    imageSeries.data = minersList.map((miner) => {
+    imageSeries.data = minersList.map((miner: Miner) => {
       return {
         latitude: miner.latitude,
         longitude: miner.longitude,
         title: miner.address,
-        color: "#6F00FF",
+        color: "#4169E1",
       };
     });
 
-    imageSeries.mapImages.template.events.on(`hit`, (ev) => {
-      const miner = ev.target.dataItem.dataContext;
+    imageSeries.mapImages.template.events.on(`hit`, (e: any) => {
+      const miner = e.target.dataItem.dataContext;
       setMiner(miner);
     });
   }
@@ -119,12 +155,12 @@ const Map = (props: Props) => {
     circle2.radius = 3;
     circle2.propertyFields.fill = "color";
 
-    circle2.events.on("inited", function (event) {
+    circle2.events.on("inited", function (event: any) {
       animateBullet(chart, event.target);
     });
 
     // imageSeries.data = minersList;
-    imageSeries.data = minersList.map((miner) => {
+    imageSeries.data = minersList.map((miner: MinerLatency) => {
       let color = "#ff0000";
 
       if (miner.latency.avg == -1) {
@@ -146,13 +182,13 @@ const Map = (props: Props) => {
       };
     });
 
-    imageSeries.mapImages.template.events.on(`hit`, (ev) => {
-      const miner = ev.target.dataItem.dataContext;
+    imageSeries.mapImages.template.events.on(`hit`, (event: any) => {
+      const miner = event.target.dataItem.dataContext;
       setMiner(miner);
     });
   }
 
-  function animateBullet(chart, circle) {
+  function animateBullet(chart: am4maps.MapChart, circle: any) {
     var animation = circle.animate(
       [
         {
@@ -165,7 +201,7 @@ const Map = (props: Props) => {
       1000,
       am4core.ease.circleOut
     );
-    animation.events.on("animationended", (event) => {
+    animation.events.on("animationended", (event: any) => {
       animateBullet(chart, event.target.object);
     });
   }
@@ -190,7 +226,7 @@ const Map = (props: Props) => {
     circle.nonScaling = true;
     circle.tooltipText = "{title}";
 
-    series.data = locations.map((location) => {
+    series.data = locations.map((location: Location) => {
       return {
         title: `${location.iata_code} - ${location.name}`,
         name: location.name,
@@ -211,12 +247,12 @@ const Map = (props: Props) => {
         ? dataJson.measurements[location.country][location.iataCode]
         : [];
 
-      let minersLatency = [];
-      let minersNoLatency = [];
+      let minersLatency: MinerLatency[] = [];
+      let minersNoLatency: MinerLatency[] = [];
 
-      miners.forEach((miner, index) => {
+      miners.forEach((miner: Miner, index: number) => {
         const existsLatency = latenciesList.find(
-          (latency) => latency.address == miner.address
+          (latency: MinerLatencyData) => latency.address == miner.address
         );
         if (existsLatency) {
           const minerLatency = {
@@ -297,6 +333,7 @@ const Map = (props: Props) => {
           type="link"
           icon={<LeftOutlined />}
           onClick={previousDateHandler}
+          className={styles.dateButton}
         />
         <div className={styles.date}>2021/12/10</div>
         <Button
@@ -304,6 +341,7 @@ const Map = (props: Props) => {
           type="link"
           icon={<RightOutlined />}
           onClick={nextDateHandler}
+          className={styles.dateButton}
         />
       </div>
 

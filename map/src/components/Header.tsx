@@ -21,9 +21,9 @@ const TopHeader = () => {
   return (
     <Header className={styles.header}>
       <div className={styles.headerLogo}>
-        <Link href="/">
-          <Title level={5}>{publicRuntimeConfig.app.name}</Title>
-        </Link>
+        <Title level={5}>
+          <Link href="/">{publicRuntimeConfig.app.name}</Link>
+        </Title>
       </div>
     </Header>
   );
