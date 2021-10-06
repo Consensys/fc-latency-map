@@ -5,7 +5,7 @@ import (
 )
 
 type Result struct {
-	Location     []*models.Location             `json:"location,omitempty"`
+	Locations    []*models.Location             `json:"locations,omitempty"`
 	Miners       []*models.Miner                `json:"miners,omitempty"`
 	Probes       []*models.Probe                `json:"probes,omitempty"`
 	Measurements map[string]map[string][]*Miner `json:"measurements,omitempty"`

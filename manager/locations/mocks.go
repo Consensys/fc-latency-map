@@ -48,20 +48,6 @@ func (mr *MockLocationServiceMockRecorder) AddLocation(arg0 interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddLocation", reflect.TypeOf((*MockLocationService)(nil).AddLocation), arg0)
 }
 
-// CheckCountry mocks base method.
-func (m *MockLocationService) CheckCountry(arg0 string) bool {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CheckCountry", arg0)
-	ret0, _ := ret[0].(bool)
-	return ret0
-}
-
-// CheckCountry indicates an expected call of CheckCountry.
-func (mr *MockLocationServiceMockRecorder) CheckCountry(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckCountry", reflect.TypeOf((*MockLocationService)(nil).CheckCountry), arg0)
-}
-
 // DeleteLocation mocks base method.
 func (m *MockLocationService) DeleteLocation(arg0 *models.Location) bool {
 	m.ctrl.T.Helper()
@@ -74,6 +60,36 @@ func (m *MockLocationService) DeleteLocation(arg0 *models.Location) bool {
 func (mr *MockLocationServiceMockRecorder) DeleteLocation(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLocation", reflect.TypeOf((*MockLocationService)(nil).DeleteLocation), arg0)
+}
+
+// ExtractAirports mocks base method.
+func (m *MockLocationService) ExtractAirports(arg0 string) ([]Airport, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExtractAirports", arg0)
+	ret0, _ := ret[0].([]Airport)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExtractAirports indicates an expected call of ExtractAirports.
+func (mr *MockLocationServiceMockRecorder) ExtractAirports(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractAirports", reflect.TypeOf((*MockLocationService)(nil).ExtractAirports), arg0)
+}
+
+// FindAirport mocks base method.
+func (m *MockLocationService) FindAirport(arg0, arg1 string) (Airport, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindAirport", arg0, arg1)
+	ret0, _ := ret[0].(Airport)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindAirport indicates an expected call of FindAirport.
+func (mr *MockLocationServiceMockRecorder) FindAirport(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAirport", reflect.TypeOf((*MockLocationService)(nil).FindAirport), arg0, arg1)
 }
 
 // GetAllLocations mocks base method.
@@ -90,21 +106,6 @@ func (mr *MockLocationServiceMockRecorder) GetAllLocations() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllLocations", reflect.TypeOf((*MockLocationService)(nil).GetAllLocations))
 }
 
-// FindAirport mocks base method.
-func (m *MockLocationService) FindAirport(arg0 string) (Airport, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAirport", arg0)
-	ret0, _ := ret[0].(Airport)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindAirport indicates an expected call of FindAirport.
-func (mr *MockLocationServiceMockRecorder) FindAirport(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAirport", reflect.TypeOf((*MockLocationService)(nil).FindAirport), arg0)
-}
-
 // GetLocation mocks base method.
 func (m *MockLocationService) GetLocation(arg0 *models.Location) *models.Location {
 	m.ctrl.T.Helper()
@@ -117,4 +118,18 @@ func (m *MockLocationService) GetLocation(arg0 *models.Location) *models.Locatio
 func (mr *MockLocationServiceMockRecorder) GetLocation(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLocation", reflect.TypeOf((*MockLocationService)(nil).GetLocation), arg0)
+}
+
+// UpdateLocations mocks base method.
+func (m *MockLocationService) UpdateLocations(arg0, arg1 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateLocations", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateLocations indicates an expected call of UpdateLocations.
+func (mr *MockLocationServiceMockRecorder) UpdateLocations(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLocations", reflect.TypeOf((*MockLocationService)(nil).UpdateLocations), arg0, arg1)
 }

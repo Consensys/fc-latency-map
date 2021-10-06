@@ -8,10 +8,11 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ConsenSys/fc-latency-map/manager/constants"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
-	"github.com/ConsenSys/fc-latency-map/manager/constants"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
@@ -81,15 +82,6 @@ func (srv *LocationServiceImpl) DeleteLocation(location *models.Location) bool {
 	return true
 }
 
-func (srv *LocationServiceImpl) CheckCountry(countryCode string) bool {
-	for _, country := range constants.Countries {
-		if countryCode == country.Code {
-			return true
-		}
-	}
-	return false
-}
-
 func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) error {
 	var airportTypeFormated string
 	switch airportType {
@@ -115,12 +107,12 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) er
 			srv.DBMgr.GetDB().Where("iata_code = ?", airport.IataCode).First(&existsLocation)
 			if existsLocation == (models.Location{}) {
 				coords := strings.Split(airport.Coordinates, ", ")
-				lat, _ := strconv.ParseFloat(coords[0], 64)
-				long, _ := strconv.ParseFloat(coords[1], 64)
+				lat, _ := strconv.ParseFloat(coords[1], 64)
+				long, _ := strconv.ParseFloat(coords[0], 64)
 				srv.DBMgr.GetDB().Create(&models.Location{
 					Name:      airport.Name,
 					Country:   airport.IsoCountry,
-					IataCode:  airport.IataCode,
+					IataCode:  getIataCode(airport.IataCode, airport.Name),
 					Latitude:  lat,
 					Longitude: long,
 					Type:      airport.Type,
@@ -132,6 +124,13 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) er
 	log.Printf("%d airport imported, type: %s\n", cpt, airportTypeFormated)
 
 	return nil
+}
+
+func getIataCode(iata, name string) string {
+	if iata == "" {
+		return name
+	}
+	return iata
 }
 
 func (srv *LocationServiceImpl) ExtractAirports(filename string) ([]Airport, error) {

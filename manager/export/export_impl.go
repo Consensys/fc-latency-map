@@ -44,6 +44,8 @@ func (m *ExportServiceImpl) export(fn string) {
 }
 
 func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
+	iataCodes := []string{}
+
 	results := &Result{
 		Measurements: map[string]map[string][]*Miner{},
 	}
@@ -52,9 +54,7 @@ func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
 	miners := m.getMiners()
 
 	for _, l := range loc {
-		if _, found := results.Measurements[l.Country]; !found {
-			results.Measurements[l.Country] = make(map[string][]*Miner)
-		}
+		probes := m.getProbes(l)
 
 		for _, miner := range miners {
 			latency := &Miner{
@@ -64,14 +64,20 @@ func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
 			if miner.IP == "" {
 				continue
 			}
-			probes := m.getProbes(l)
-			latency = m.createLatency(probes, latency, miner.IP)
-			results.Measurements[l.Country][l.IataCode] = append(results.Measurements[l.Country][l.IataCode], latency)
+
+			latency = m.getLatency(probes, latency, miner.IP)
+			if len(latency.Measures) > 0 {
+				iataCodes = add(iataCodes, l.IataCode)
+				if _, found := results.Measurements[l.Country]; !found {
+					results.Measurements[l.Country] = make(map[string][]*Miner)
+				}
+				results.Measurements[l.Country][l.IataCode] = append(results.Measurements[l.Country][l.IataCode], latency)
+			}
 		}
 	}
-	results.Location = loc
 	results.Miners = miners
-	results.Probes = m.GetAllProbes()
+	results.Locations = m.getLocationsFromIata(iataCodes)
+	results.Probes = m.GetProbesFromIata(iataCodes)
 
 	return results
 }
@@ -83,7 +89,7 @@ func (m *ExportServiceImpl) GetAllProbes() []*models.Probe {
 	return probesList
 }
 
-func (m *ExportServiceImpl) createLatency(probes []*models.Probe, latency *Miner, ip string) *Miner {
+func (m *ExportServiceImpl) getLatency(probes []*models.Probe, latency *Miner, ip string) *Miner {
 	for _, probe := range probes {
 		for _, ip := range strings.Split(ip, ",") {
 			measure := &MeasureIP{IP: ip}
@@ -109,13 +115,14 @@ func (m *ExportServiceImpl) createLatency(probes []*models.Probe, latency *Miner
 
 func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []*models.MeasurementResult {
 	var meas []*models.MeasurementResult
-	err := (m.DBMgr).GetDB().Debug().Select(
+	err := (m.DBMgr).GetDB().Select(
 		"ip," +
 			"date(measurement_timestamp, 'unixepoch') measurement_date," +
 			"avg(time_average) time_average," +
 			"max(time_max) time_max," +
 			"min(time_min) time_min").
 		Group("ip, measurement_date").
+		Order("measurement_date desc").
 		Where(&models.MeasurementResult{
 			ProbeID: probe.ProbeID,
 			IP:      ip,
@@ -135,7 +142,7 @@ func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []
 func (m *ExportServiceImpl) getProbes(l *models.Location) []*models.Probe {
 	var probes []*models.Probe
 	err := (m.DBMgr).GetDB().Where(&models.Probe{
-		CountryCode: l.Country,
+		IataCode: l.IataCode,
 	}).Find(&probes).Error
 	if err != nil {
 		jg.WithFields(jg.Fields{
@@ -177,4 +184,47 @@ func (m *ExportServiceImpl) getLocations() []*models.Location {
 	}
 
 	return loc
+}
+
+func (m *ExportServiceImpl) getLocationsFromIata(codes []string) []*models.Location {
+	var loc []*models.Location
+	err := (m.DBMgr).GetDB().
+		Where("iata_code in ?", codes).
+		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: false}).
+		Find(&loc).Error
+	if err != nil {
+		jg.WithFields(jg.Fields{
+			"error": err,
+		}).Error("GetAllLocations")
+
+		return nil
+	}
+
+	return loc
+}
+
+func (m *ExportServiceImpl) GetProbesFromIata(codes []string) []*models.Probe {
+	var probes []*models.Probe
+	err := (m.DBMgr).GetDB().
+		Where("iata_code in ?", codes).
+		Find(&probes).Error
+	if err != nil {
+		jg.WithFields(jg.Fields{
+			"error": err,
+		}).Error("GetProbes")
+
+		return nil
+	}
+
+	return probes
+}
+
+func add(s []string, str string) []string {
+	for _, v := range s {
+		if v == str {
+			return s
+		}
+	}
+
+	return append(s, str)
 }

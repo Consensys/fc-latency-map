@@ -9,7 +9,6 @@ import (
 
 	models "github.com/ConsenSys/fc-latency-map/manager/models"
 	gomock "github.com/golang/mock/gomock"
-	atlas "github.com/keltia/ripe-atlas"
 )
 
 // MockProbeService is a mock of ProbeService interface.
@@ -50,10 +49,10 @@ func (mr *MockProbeServiceMockRecorder) GetAllProbes() *gomock.Call {
 }
 
 // RequestProbes mocks base method.
-func (m *MockProbeService) RequestProbes() ([]*atlas.Probe, error) {
+func (m *MockProbeService) RequestProbes() ([]*models.Probe, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RequestProbes")
-	ret0, _ := ret[0].([]*atlas.Probe)
+	ret0, _ := ret[0].([]*models.Probe)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
