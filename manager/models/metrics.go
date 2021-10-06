@@ -21,15 +21,15 @@ type Metrics struct {
 
 	// locations
 	// Required: true
-	Locations *int32 `json:"locations"`
+	Locations *int64 `json:"locations"`
 
 	// miners
 	// Required: true
-	Miners *int32 `json:"miners"`
+	Miners *int64 `json:"miners"`
 
 	// probes
 	// Required: true
-	Probes *int32 `json:"probes"`
+	Probes *int64 `json:"probes"`
 }
 
 // Validate validates this metrics

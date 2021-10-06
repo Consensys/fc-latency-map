@@ -22,7 +22,6 @@ func GetHealthCheckHandler() models.HealthCheck {
 
 // GetMetricsHandler returns system metrics
 func GetMetricsHandler() models.Metrics {
-
 	// Locations
 	conf := config.NewConfig()
 	dbMgr, err := db.NewDatabaseMgrImpl(conf)
@@ -30,7 +29,7 @@ func GetMetricsHandler() models.Metrics {
 		panic("failed to connect database")
 	}
 	lSer := locations.NewLocationServiceImpl(conf, dbMgr)
-	locations := int32(lSer.GetTotalLocations())
+	tLocations := lSer.GetTotalLocations()
 
 	// Miners
 	nodeURL := conf.GetString("FILECOIN_NODE_URL")
@@ -41,7 +40,7 @@ func GetMetricsHandler() models.Metrics {
 
 	g := geomgr.NewGeoMgrImpl(conf)
 	mSer := miners.NewMinerServiceImpl(conf, dbMgr, fMgr, g)
-	miners := int32(mSer.GetTotalMiners())
+	tMiners := mSer.GetTotalMiners()
 
 	// Probes
 	ripeMgr, err := ripemgr.NewRipeImpl(conf)
@@ -52,12 +51,12 @@ func GetMetricsHandler() models.Metrics {
 	if err != nil {
 		panic("failed to start probe service")
 	}
-	probes := int32(pSer.GetTotalProbes())
+	tProbes := pSer.GetTotalProbes()
 
 	payload := models.Metrics{
-		Locations: &locations,
-		Miners: &miners,
-		Probes: &probes,
+		Locations: &tLocations,
+		Miners:    &tMiners,
+		Probes:    &tProbes,
 	}
 	return payload
 }

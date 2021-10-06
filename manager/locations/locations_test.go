@@ -79,7 +79,6 @@ func Test_GetAllLocations_OK(t *testing.T) {
 	assert.Equal(t, dummyLocation.Latitude, actual.Latitude)
 	assert.Equal(t, dummyLocation.Longitude, actual.Longitude)
 	assert.Equal(t, dummyLocation.Type, actual.Type)
-
 }
 
 func Test_GetTotalLocations_OK(t *testing.T) {

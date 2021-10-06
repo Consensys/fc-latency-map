@@ -122,15 +122,15 @@ func init() {
       "properties": {
         "locations": {
           "type": "integer",
-          "format": "int32"
+          "format": "int64"
         },
         "miners": {
           "type": "integer",
-          "format": "int32"
+          "format": "int64"
         },
         "probes": {
           "type": "integer",
-          "format": "int32"
+          "format": "int64"
         }
       }
     }
@@ -241,15 +241,15 @@ func init() {
       "properties": {
         "locations": {
           "type": "integer",
-          "format": "int32"
+          "format": "int64"
         },
         "miners": {
           "type": "integer",
-          "format": "int32"
+          "format": "int64"
         },
         "probes": {
           "type": "integer",
-          "format": "int32"
+          "format": "int64"
         }
       }
     }
