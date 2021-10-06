@@ -127,7 +127,7 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) er
 	return nil
 }
 
-
+// nolint
 func formatName(name string) string {
 	name = strings.Replace(name, "\u00e2\u0080\u0093", "-", -1)
 
