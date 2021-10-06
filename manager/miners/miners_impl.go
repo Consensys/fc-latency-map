@@ -110,12 +110,21 @@ func getMinerIP(minerInfo *miner.MinerInfo) string {
 func (srv *MinerServiceImpl) upsertMinersInDB(miners []*models.Miner) {
 	srv.DBMgr.GetDB().Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "address"}},
-		DoUpdates: clause.AssignmentColumns([]string{"ip"}),
+		DoUpdates: clause.AssignmentColumns([]string{"ip", "latitude", "longitude"}),
 	}).Create(&miners)
 }
 
 func (srv *MinerServiceImpl) ParseMinersByBlockHeight(height int64) []*models.Miner {
 	deals, err := (srv.FMgr).GetVerifiedDealsByBlockHeight(abi.ChainEpoch(height))
+	if err != nil {
+		log.Printf("get Verified Deals By Block Height failed: %s", err)
+		return []*models.Miner{}
+	}
+	return srv.parseMinersFromDeals(deals)
+}
+
+func (srv *MinerServiceImpl) ParseMinersByStateMarket() []*models.Miner {
+	deals, err := (srv.FMgr).GetVerifiedDealsByStateMarket()
 	if err != nil {
 		log.Printf("get Verified Deals By Block Height failed: %s", err)
 		return []*models.Miner{}

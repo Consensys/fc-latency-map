@@ -16,4 +16,7 @@ type MinerService interface {
 
 	// ParseMinersByBlockHeight parse miners from Filecoin for a specific block height
 	ParseMinersByBlockHeight(height int64) []*models.Miner
+
+	// ParseMinersByStateMarket parse all miners with active deal from GetStateMarket
+	ParseMinersByStateMarket() []*models.Miner
 }
