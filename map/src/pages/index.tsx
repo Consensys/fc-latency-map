@@ -1,12 +1,10 @@
-import type { NextPage } from "next";
+import React, { useState, useEffect } from "react";
 import Head from "next/head";
-import Image from "next/image";
-import styles from "@src/styles/Home.module.css";
 import dynamic from "next/dynamic";
-import Map from "@src/components/Map";
 import getConfig from "next/config";
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import styles from "@src/styles/Global.module.css";
+import Header from "@src/components/Header";
 
 const { publicRuntimeConfig, serverRuntimeConfig } = getConfig();
 
@@ -16,9 +14,32 @@ interface Props {
 
 const Home = (props: Props) => {
   const { data } = props;
-  const MapWithNoSSR = dynamic(() => import("../components/Map"), {
+  const MapWithNoSSR = dynamic(() => import("@src/components/map/Map"), {
     ssr: false,
   });
+
+  const [size, setSize] = useState({
+    x: 0,
+    y: 0,
+  });
+
+  const updateSize = () => {
+    if (size.x != window.innerWidth || size.y != window.innerHeight) {
+      setSize({
+        x: window.innerWidth,
+        y: window.innerHeight,
+      });
+    }
+  };
+
+  useEffect(() => {
+    setSize({
+      x: window.innerWidth,
+      y: window.innerHeight,
+    });
+  }, []);
+
+  useEffect(() => (window.onresize = updateSize), []);
 
   return (
     <div className={styles.container}>
@@ -27,18 +48,16 @@ const Home = (props: Props) => {
         <meta name="description" content={publicRuntimeConfig.app.name} />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <main className={styles.main} style={{ width: "100%", height: "100%" }}>
-        <div id="map" style={{ width: "100%", height: "100%" }}>
-          <MapWithNoSSR data={data} />
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a href="/" target="_blank" rel="noopener noreferrer">
-          {publicRuntimeConfig.app.name}
-        </a>
-      </footer>
+      <Header />
+      <div
+        id="map"
+        style={{
+          width: "100%",
+          minHeight: "600px",
+        }}
+      >
+        <MapWithNoSSR data={data} height={size.x} width={size.y} />
+      </div>
     </div>
   );
 };
@@ -47,7 +66,7 @@ export async function getServerSideProps() {
   // const data = await import(
   //   serverRuntimeConfig.path.exportsMeasures + "export.json"
   // );
-  const data = await import("../../data/data_1633076926.json");
+  const data = await import("../../data/data01.json");
 
   return {
     props: {
