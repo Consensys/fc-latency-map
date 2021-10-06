@@ -52,6 +52,12 @@ func (srv *LocationServiceImpl) GetAllLocations() []*models.Location {
 	return locsList
 }
 
+func (srv *LocationServiceImpl) GetTotalLocations() int64 {
+	var count int64
+	srv.DBMgr.GetDB().Model(&models.Location{}).Count(&count)
+	return count
+}
+
 func (srv *LocationServiceImpl) GetLocation(location *models.Location) *models.Location {
 	if err := srv.DBMgr.GetDB().Where(location).First(&location).Error; err != nil {
 		return nil

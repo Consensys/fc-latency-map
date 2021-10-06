@@ -11,6 +11,9 @@ type MinerService interface {
 	// GetMiners retrieve miners from db
 	GetAllMiners() []*models.Miner
 
+	// GetTotalMiners returns miners count
+	GetTotalMiners() int64
+
 	// ParseMinersByBlockOffset parse miners from Filecoin
 	ParseMinersByBlockOffset(offset int) []*models.Miner
 

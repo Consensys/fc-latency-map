@@ -98,6 +98,25 @@ func Test_GetAllMiners_OK(t *testing.T) {
 	assert.Equal(t, dummyMiner.Longitude, actual.Longitude)
 }
 
+func Test_GetTotalMiners_OK(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
+	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
+	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
+
+	// Act
+	mockDbMgr.GetDB().Create(&([]*models.Miner{&dummyMiner}))
+	count := srv.GetTotalMiners()
+
+	// Assert
+	assert.Equal(t, int64(1), count)
+}
+
 func Test_ParseMiners_Error_GetBlockHeight(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

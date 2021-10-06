@@ -43,6 +43,12 @@ func (srv *MinerServiceImpl) GetAllMiners() []*models.Miner {
 	return miners
 }
 
+func (srv *MinerServiceImpl) GetTotalMiners() int64 {
+	var count int64
+	srv.DBMgr.GetDB().Model(&models.Miner{}).Count(&count)
+	return count
+}
+
 func (srv *MinerServiceImpl) ParseMinersByBlockOffset(offset int) []*models.Miner {
 	blockHeight, err := (srv.FMgr).GetBlockHeight()
 	if err != nil {

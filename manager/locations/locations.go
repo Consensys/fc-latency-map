@@ -11,6 +11,9 @@ type LocationService interface {
 	// GetAllLocations returns locations list
 	GetAllLocations() []*models.Location
 
+	// GetTotalLocations returns locations count
+	GetTotalLocations() int64
+
 	// GetLocation returns a location
 	GetLocation(location *models.Location) *models.Location
 
