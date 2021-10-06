@@ -37,17 +37,19 @@ func (srv *ProbeServiceImpl) RequestProbes() ([]*models.Probe, error) {
 			return nil, err
 		}
 
-		newProbe := &models.Probe{
-			ProbeID:     nearestProbe.ID,
-			CountryCode: nearestProbe.CountryCode,
-			Location:    *location,
-		}
-		if nearestProbe.Geometry.Type == "Point" {
-			newProbe.Latitude = nearestProbe.Geometry.Coordinates[0]
-			newProbe.Longitude = nearestProbe.Geometry.Coordinates[1]
-		}
+		for _, v := range *nearestProbe { // nolint:gocritic
+			newProbe := &models.Probe{
+				ProbeID:     v.ID,
+				CountryCode: v.CountryCode,
+				Location:    *location,
+			}
+			if v.Geometry.Type == "Point" {
+				newProbe.Latitude = v.Geometry.Coordinates[0]
+				newProbe.Longitude = v.Geometry.Coordinates[1]
+			}
 
-		bestProbes = append(bestProbes, newProbe)
+			bestProbes = append(bestProbes, newProbe)
+		}
 	}
 
 	return bestProbes, nil

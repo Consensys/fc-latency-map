@@ -81,10 +81,10 @@ func (mr *MockRipeMgrMockRecorder) GetMeasurementResults(arg0, arg1 interface{})
 }
 
 // GetNearestProbe mocks base method.
-func (m *MockRipeMgr) GetNearestProbe(arg0, arg1 float64) (*atlas.Probe, error) {
+func (m *MockRipeMgr) GetNearestProbe(arg0, arg1 float64) (*[]atlas.Probe, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetNearestProbe", arg0, arg1)
-	ret0, _ := ret[0].(*atlas.Probe)
+	ret0, _ := ret[0].(*[]atlas.Probe)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

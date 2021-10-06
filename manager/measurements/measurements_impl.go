@@ -162,7 +162,7 @@ func (m *MeasurementServiceImpl) GetProbIDs(places []Place, lat, long float64) [
 		return []string{}
 	}
 	p := Place{Latitude: lat, Longitude: long}
-	nearestProbesAmount := m.Conf.GetInt("NEAREST_PROBES_AMOUNT")
+	nearestProbesAmount := m.Conf.GetInt("NEAREST_AIRPORTS")
 	nearestLocationsIDs := FindNearest(places, p, nearestProbesAmount)
 	if len(nearestLocationsIDs) == 0 {
 		return []string{}

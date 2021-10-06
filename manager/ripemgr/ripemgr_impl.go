@@ -57,33 +57,30 @@ func (rMgr *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error
 	return probes, nil
 }
 
-func (rMgr *RipeMgrImpl) GetNearestProbe(lat, long float64) (*atlas.Probe, error) {
+func (rMgr *RipeMgrImpl) GetNearestProbe(latitude, longitude float64) (*[]atlas.Probe, error) {
 	var err error
 	nearestProbes := []atlas.Probe{}
 
 	maxLocRange := rMgr.conf.GetFloat64("RIPE_LOCATION_RANGE_MAX")
 	coordRange := rMgr.conf.GetFloat64("RIPE_LOCATION_RANGE_INIT")
+	minNearestProbes := rMgr.conf.GetInt("RIPE_PROBES_PER_AIRPORT")
 
-	for len(nearestProbes) < 1 && coordRange < maxLocRange {
-		opts := rMgr.getLatLongRange(lat, long, coordRange)
+	for len(nearestProbes) < minNearestProbes && coordRange < maxLocRange {
+		opts := rMgr.getLatLongRange(latitude, longitude, coordRange)
 
 		nearestProbes, err = rMgr.c.GetProbes(opts)
 
-		if err != nil {
-			if err.Error() == "empty probe list" {
-				coordRange *= 2
+		if len(nearestProbes) < minNearestProbes {
+			coordRange *= 2
 
-				continue
-			}
-
+			continue
+		}
+		if err != nil && err.Error() != "empty probe list" {
 			return nil, err
 		}
 	}
-	if len(nearestProbes) > 0 {
-		return &nearestProbes[0], nil
-	}
 
-	return &atlas.Probe{}, nil
+	return &nearestProbes, nil
 }
 
 func (rMgr *RipeMgrImpl) getLatLongRange(lat, long, coordRange float64) map[string]string {

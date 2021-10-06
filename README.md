@@ -41,7 +41,8 @@ cp .env.example .env
 | RIPE_LOCATION_RANGE_INIT | float | Initial range to find probes from airport location |
 | RIPE_LOCATION_RANGE_MAX | float | Max range to find probes from airport location |
 | RIPE_PACKETS | number | Amount of packets to ping miners. |
-| NEAREST_PROBES_AMOUNT | number | Amount of nearest probes to miner to test latency. |
+| NEAREST_AIRPORTS | number | Amount of nearest probes to miner to test latency. |
+| RIPE_PROBES_PER_AIRPORT | number | Amount of probes near to miner to airport. |
 
 Edit .env to add a valid Ripe Atlas API Key
 

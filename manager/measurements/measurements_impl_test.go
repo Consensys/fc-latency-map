@@ -364,7 +364,7 @@ func TestMeasurementServiceImpl_GetProbIDs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.fields.Conf.SetDefault("NEAREST_PROBES_AMOUNT", tt.args.amount)
+			tt.fields.Conf.SetDefault("NEAREST_AIRPORTS", tt.args.amount)
 			tt.fields.DBMgr.GetDB().
 				Create(tt.locations).
 				Create(tt.probes)
