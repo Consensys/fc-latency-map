@@ -5,14 +5,14 @@ import (
 	"context"
 	"net/http"
 
-	address "github.com/filecoin-project/go-address"
-	jsonrpc "github.com/filecoin-project/go-jsonrpc"
+	"github.com/filecoin-project/go-address"
+	"github.com/filecoin-project/go-jsonrpc"
 	"github.com/filecoin-project/go-state-types/abi"
 	lotusapi "github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/filecoin-project/specs-actors/actors/builtin/market"
-	cid "github.com/ipfs/go-cid"
+	"github.com/ipfs/go-cid"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -152,4 +152,35 @@ func (fMgr *FilecoinMgrImpl) getVerifiedDeals(params *market.PublishStorageDeals
 	}
 
 	return verifiedDeals
+}
+
+func (fMgr *FilecoinMgrImpl) GetVerifiedDealsByStateMarket() ([]VerifiedDeal, error) {
+	verifiedDeals := []VerifiedDeal{}
+	addresses := map[address.Address]bool{}
+
+	log.Println("Started Filecoin.StateMarketDeals")
+	deals, err := fMgr.api.StateMarketDeals(context.Background(), types.EmptyTSK)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("loading data from Filecoin")
+
+		return nil, err
+	}
+	for _, deal := range deals { //nolint:gocritic
+		proposal := deal.Proposal
+		if !proposal.VerifiedDeal {
+			continue
+		}
+		if _, found := addresses[proposal.Provider]; found {
+			continue
+		}
+
+		addresses[proposal.Provider] = true
+		verifiedDeals = append(verifiedDeals, VerifiedDeal{
+			Provider: proposal.Provider,
+		})
+	}
+
+	return verifiedDeals, nil
 }

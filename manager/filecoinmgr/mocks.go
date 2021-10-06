@@ -111,3 +111,18 @@ func (mr *MockFilecoinMgrMockRecorder) GetVerifiedDealsByBlockRange(arg0, arg1 i
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVerifiedDealsByBlockRange", reflect.TypeOf((*MockFilecoinMgr)(nil).GetVerifiedDealsByBlockRange), arg0, arg1)
 }
+
+// GetVerifiedDealsByStateMarket mocks base method.
+func (m *MockFilecoinMgr) GetVerifiedDealsByStateMarket() ([]VerifiedDeal, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetVerifiedDealsByStateMarket")
+	ret0, _ := ret[0].([]VerifiedDeal)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetVerifiedDealsByStateMarket indicates an expected call of GetVerifiedDealsByStateMarket.
+func (mr *MockFilecoinMgrMockRecorder) GetVerifiedDealsByStateMarket() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVerifiedDealsByStateMarket", reflect.TypeOf((*MockFilecoinMgr)(nil).GetVerifiedDealsByStateMarket))
+}
