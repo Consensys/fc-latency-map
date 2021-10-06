@@ -25,7 +25,7 @@ func NewGeoMgrImpl(v *viper.Viper) GeoMgr {
 func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 	// to free use of api
 	// you can check you ip status https://www.geoplugin.com/ip_status.php?ip=xx.xx.xx.xx
-	const sleepTime = 100 * time.Millisecond
+	const sleepTime = 200 * time.Millisecond
 	time.Sleep(sleepTime)
 	response, err := http.Get(g.ipgeoURL(ip)) //nolint:noctx
 	if err != nil {
@@ -57,8 +57,13 @@ func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 	}
 
 	log.WithFields(log.Fields{
-		"ip":  ip,
-		"geo": geo,
+		"ip":        ip,
+		"region":    geo.GeopluginRegion,
+		"city":      geo.GeopluginCity,
+		"latitude":  geo.GeopluginLatitude,
+		"longitude": geo.GeopluginLongitude,
+		"status":    geo.GeopluginStatus,
+		"timezone":  geo.GeopluginTimezone,
 	}).Info("ipgeolocation")
 
 	return toFloat(geo.GeopluginLatitude), toFloat(geo.GeopluginLongitude)

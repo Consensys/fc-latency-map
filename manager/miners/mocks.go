@@ -75,3 +75,17 @@ func (mr *MockMinerServiceMockRecorder) ParseMinersByBlockOffset(arg0 interface{
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParseMinersByBlockOffset", reflect.TypeOf((*MockMinerService)(nil).ParseMinersByBlockOffset), arg0)
 }
+
+// ParseMinersByStateMarket mocks base method.
+func (m *MockMinerService) ParseMinersByStateMarket() []*models.Miner {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ParseMinersByStateMarket")
+	ret0, _ := ret[0].([]*models.Miner)
+	return ret0
+}
+
+// ParseMinersByStateMarket indicates an expected call of ParseMinersByStateMarket.
+func (mr *MockMinerServiceMockRecorder) ParseMinersByStateMarket() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParseMinersByStateMarket", reflect.TypeOf((*MockMinerService)(nil).ParseMinersByStateMarket))
+}

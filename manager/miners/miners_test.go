@@ -299,3 +299,52 @@ func Test_ParseMinersByBlockHeight_OK(t *testing.T) {
 	assert.Equal(t, dummyMiner.Latitude, actual.Latitude)
 	assert.Equal(t, dummyMiner.Longitude, actual.Longitude)
 }
+
+func Test_ParseMinersByMarketDeal_Error_GetVerifiedDealsByMarketDeal(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
+	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
+	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
+
+	// Act
+	mockFMgr.EXPECT().GetVerifiedDealsByStateMarket().Return(make([]fmgr.VerifiedDeal, 0), errors.New(""))
+	miners := srv.ParseMinersByStateMarket()
+
+	// Assert
+	assert.NotNil(t, miners)
+	assert.Empty(t, miners)
+}
+
+func Test_ParseMinersByStateMarket_OK(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+	mockFMgr := fmgr.NewMockFilecoinMgr(ctrl)
+	mockGMgr := geomgr.NewMockGeoMgr(ctrl)
+	srv := NewMinerServiceImpl(mockConfig, mockDbMgr, mockFMgr, mockGMgr)
+
+	// Act
+
+	mockFMgr.EXPECT().GetVerifiedDealsByStateMarket().Return(dummyVerifiedDeals, nil)
+	mockFMgr.EXPECT().GetMinerInfo(gomock.Any()).Return(dummyMinerInfo, nil)
+	mockGMgr.EXPECT().IPGeolocation(gomock.Any()).Return(dummyGeoLatitude, dummyGeoLongitude)
+	miners := srv.ParseMinersByStateMarket()
+
+	// Assert
+	assert.NotNil(t, miners)
+	assert.NotEmpty(t, miners)
+
+	actual := *(miners[0])
+	assert.Equal(t, dummyMiner.Address, actual.Address)
+	assert.Equal(t, dummyMiner.IP, actual.IP)
+	assert.Equal(t, dummyMiner.Latitude, actual.Latitude)
+	assert.Equal(t, dummyMiner.Longitude, actual.Longitude)
+}
