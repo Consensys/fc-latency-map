@@ -10,6 +10,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
+	"github.com/ConsenSys/fc-latency-map/manager/internal/handlers"
 	"github.com/ConsenSys/fc-latency-map/manager/restapi/operations"
 	"github.com/ConsenSys/fc-latency-map/manager/restapi/operations/check"
 )
@@ -38,16 +39,14 @@ func configureAPI(api *operations.ManagerAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.CheckGetHealthCheckHandler == nil {
-		api.CheckGetHealthCheckHandler = check.GetHealthCheckHandlerFunc(func(params check.GetHealthCheckParams) middleware.Responder {
-			return middleware.NotImplemented("operation check.GetHealthCheck has not yet been implemented")
-		})
-	}
-	if api.CheckGetMetricsHandler == nil {
-		api.CheckGetMetricsHandler = check.GetMetricsHandlerFunc(func(params check.GetMetricsParams) middleware.Responder {
-			return middleware.NotImplemented("operation check.GetMetrics has not yet been implemented")
-		})
-	}
+	api.CheckGetHealthCheckHandler = check.GetHealthCheckHandlerFunc(func(params check.GetHealthCheckParams) middleware.Responder {
+		payload := handlers.GetHealthCheckHandler()
+		return check.NewGetHealthCheckOK().WithPayload(&payload)
+	})
+	api.CheckGetMetricsHandler = check.GetMetricsHandlerFunc(func(params check.GetMetricsParams) middleware.Responder {
+		payload := handlers.GetMetricsHandler()
+		return check.NewGetMetricsOK().WithPayload(&payload)
+	})
 
 	api.PreServerShutdown = func() {}
 

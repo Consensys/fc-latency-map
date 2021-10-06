@@ -20,7 +20,6 @@ import (
 	"github.com/go-openapi/swag"
 
 	"github.com/ConsenSys/fc-latency-map/manager/restapi/operations/check"
-	"github.com/ConsenSys/fc-latency-map/manager/internal/handlers"
 )
 
 // NewManagerAPI creates a new Manager instance
@@ -46,12 +45,10 @@ func NewManagerAPI(spec *loads.Document) *ManagerAPI {
 		JSONProducer: runtime.JSONProducer(),
 
 		CheckGetHealthCheckHandler: check.GetHealthCheckHandlerFunc(func(params check.GetHealthCheckParams) middleware.Responder {
-			payload := handlers.GetHealthCheckHandler()
-			return check.NewGetHealthCheckOK().WithPayload(&payload)
+			return middleware.NotImplemented("operation check.GetHealthCheck has not yet been implemented")
 		}),
 		CheckGetMetricsHandler: check.GetMetricsHandlerFunc(func(params check.GetMetricsParams) middleware.Responder {
-			payload := handlers.GetMetricsHandler()
-			return check.NewGetMetricsOK().WithPayload(&payload)
+			return middleware.NotImplemented("operation check.GetMetrics has not yet been implemented")
 		}),
 	}
 }
