@@ -78,6 +78,7 @@ func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
 	results.Miners = miners
 	results.Locations = m.getLocationsFromIata(iataCodes)
 	results.Probes = m.GetProbesFromIata(iataCodes)
+	results.Dates = m.GetDates()
 
 	return results
 }
@@ -217,6 +218,12 @@ func (m *ExportServiceImpl) GetProbesFromIata(codes []string) []*models.Probe {
 	}
 
 	return probes
+}
+
+func (m *ExportServiceImpl) GetDates() []string {
+	var dates []string
+	(m.DBMgr).GetDB().Model(&models.MeasurementResult{}).Distinct().Pluck("measurement_date", &dates)
+	return dates
 }
 
 func add(s []string, str string) []string {
