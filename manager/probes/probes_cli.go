@@ -11,6 +11,7 @@ import (
 
 const (
 	probesUpdate = "probes-update"
+	probesImport = "probes-import"
 	probesList   = "probes-list"
 )
 
@@ -40,7 +41,9 @@ func (cmd *ProbeCommander) Execute(in string) {
 	case probesUpdate:
 		cmd.Handler.Update()
 	case probesList:
-		cmd.Handler.GetAllProbes()
+		cmd.Handler.List()
+	case probesImport:
+		cmd.Handler.Import()
 	default:
 		log.Printf("unknown command: %s\n", blocks[0])
 	}

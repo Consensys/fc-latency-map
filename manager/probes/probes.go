@@ -16,9 +16,12 @@ type ProbeService interface {
 	// RequestProbes returns Probes from Ripe
 	RequestProbes() ([]*models.Probe, error)
 
-	// GetAllProbes returns all Probes
-	GetAllProbes() []*models.Probe
+	// ListProbes returns all Probes
+	ListProbes() []*models.Probe
 
 	// Update handle refresh probes list
 	Update()
+
+	// ImportProbes from ripe
+	ImportProbes()
 }

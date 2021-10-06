@@ -6,7 +6,7 @@ package probes
 // 	r, err := NewClient(apiKey)
 // 	assert.Nil(t, err)
 
-// 	probes, err := r.GetAllProbes()
+// 	probes, err := r.List()
 // 	assert.Nil(t, err)
 
 // 	fmt.Printf("Get %v probes", len(probes))

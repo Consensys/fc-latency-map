@@ -34,10 +34,10 @@ func (m *MockProbeService) EXPECT() *MockProbeServiceMockRecorder {
 	return m.recorder
 }
 
-// GetAllProbes mocks base method.
-func (m *MockProbeService) GetAllProbes() []*models.Probe {
+// ListProbes mocks base method.
+func (m *MockProbeService) ListProbes() []*models.Probe {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllProbes")
+	ret := m.ctrl.Call(m, "List")
 	ret0, _ := ret[0].([]*models.Probe)
 	return ret0
 }
@@ -45,7 +45,7 @@ func (m *MockProbeService) GetAllProbes() []*models.Probe {
 // GetAllProbes indicates an expected call of GetAllProbes.
 func (mr *MockProbeServiceMockRecorder) GetAllProbes() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllProbes", reflect.TypeOf((*MockProbeService)(nil).GetAllProbes))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockProbeService)(nil).ListProbes))
 }
 
 // RequestProbes mocks base method.

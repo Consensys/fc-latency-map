@@ -6,7 +6,7 @@ import (
 
 type Miner struct {
 	gorm.Model `json:"-"`
-	Address    string  `gorm:"column:address;uniqueIndex" json:"address"`
+	Address    string  `gorm:"column:address;index:idx_address,unique" json:"address"`
 	IP         string  `json:"ip,omitempty"`
 	Latitude   float64 `json:"latitude,omitempty"`
 	Longitude  float64 `json:"longitude,omitempty"`

@@ -15,8 +15,10 @@ type DatabaseMgrImpl struct {
 
 func NewDatabaseMgrImpl(conf *viper.Viper) (DatabaseMgr, error) {
 	dbName := conf.GetString("DB_CONNECTION")
+	const sqliteMaxVariables = 999
 	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent),
+		CreateBatchSize: sqliteMaxVariables,
+		Logger:          logger.Default.LogMode(logger.Silent),
 	})
 	if err != nil {
 		panic("failed to connect database")
