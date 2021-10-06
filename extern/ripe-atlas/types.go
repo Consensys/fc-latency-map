@@ -159,6 +159,7 @@ type Measurement struct {
 	Status                struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
+		When int    `json:"when"`
 	} `json:"status"`
 	StopTime  int    `json:"stop_time"`
 	Target    string `json:"target"`

@@ -3,6 +3,8 @@ package measurements
 import (
 	"time"
 
+	"gorm.io/gorm/clause"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -32,32 +34,47 @@ type Probes struct {
 	gorm.Model
 }
 
-func (m *MeasurementServiceImpl) CreateMeasurements(mrs []*atlas.Measurement) {
+func (m *MeasurementServiceImpl) UpsertMeasurements(mrs []*atlas.Measurement) {
 	measurements := []*models.Measurement{}
 	for _, mr := range mrs {
-		measurements = append(measurements,
-			&models.Measurement{
-				MeasurementID: mr.ID,
-				IsOneOff:      mr.IsOneoff,
-				StartTime:     mr.StartTime,
-				StopTime:      mr.StopTime,
-			})
+		mdl := &models.Measurement{
+			MeasurementID: mr.ID,
+			IsOneOff:      mr.IsOneoff,
+			StartTime:     mr.StartTime,
+			StopTime:      mr.StopTime,
+			Status:        mr.Status.Name,
+		}
+		if mr.Status.Name == stopped {
+			mdl.StatusStopTime = mr.Status.When
+		}
+		measurements = append(measurements, mdl)
 	}
 
 	m.dbCreate(measurements)
 }
 
-func (m *MeasurementServiceImpl) GetMeasuresLastResultTime() map[int]int {
-	measurements := make(map[int]int)
-	for _, id := range m.getRipeMeasurementsID() {
-		measurements[id] = m.getLastMeasurementResultTime(id)
+func (m *MeasurementServiceImpl) GetMeasuresLastResultTime() (measurements []*models.Measurement, measurementsStartTime map[int]int) {
+	measurementsStartTime = make(map[int]int)
+	measurements = m.GetMeasurements()
+	for _, id := range measurements {
+		resultTime := m.getLastMeasurementResultTime(id.MeasurementID)
+		if resultTime > 0 {
+			measurementsStartTime[id.MeasurementID] = resultTime
+		}
 	}
 
-	return measurements
+	return measurements, measurementsStartTime
 }
 
 func (m *MeasurementServiceImpl) dbCreate(measurements []*models.Measurement) {
-	err := (m.DBMgr).GetDB().Create(&measurements).Error
+	err := (m.DBMgr).GetDB().
+		Clauses(clause.OnConflict{
+			Columns: []clause.Column{
+				{Name: "measurement_id"},
+			},
+			DoUpdates: clause.AssignmentColumns([]string{"status", "status_stop_time", "stop_time"}),
+		}).
+		Create(&measurements).Error
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -83,7 +100,7 @@ func (m *MeasurementServiceImpl) GetMiners() []*models.Miner {
 }
 
 func (m *MeasurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult) {
-	dbc := (m.DBMgr).GetDB().Debug()
+	dbc := (m.DBMgr).GetDB()
 	var insert []*models.MeasurementResult
 	for _, result := range mr { //nolint:gocritic
 		t := time.Unix(int64(result.Timestamp), 0)
@@ -98,10 +115,18 @@ func (m *MeasurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult)
 			TimeMin:              result.Min,
 		})
 	}
-	affected := dbc.Model(&models.MeasurementResult{}).Create(
-		insert).RowsAffected
+	dbc = dbc.Model(&models.MeasurementResult{}).
+		Clauses(clause.OnConflict{
+			Columns: []clause.Column{
+				{Name: "probe_id"},
+				{Name: "measurement_id"},
+				{Name: "measurement_timestamp"},
+				{Name: "ip"},
+			},
+			DoNothing: true,
+		}).Create(insert)
 	log.WithFields(log.Fields{
-		"insert rows": affected,
+		"insert rows": dbc.RowsAffected,
 	}).Info("Create measurement MeasurementResults")
 
 	if dbc.Error != nil {
@@ -111,16 +136,16 @@ func (m *MeasurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult)
 	}
 }
 
-func (m *MeasurementServiceImpl) getRipeMeasurementsID() []int {
-	var ripeIDs []int
-	dbc := (m.DBMgr).GetDB().Debug()
-	dbc.Model(&models.Measurement{}).Pluck("measurement_id", &ripeIDs)
+func (m *MeasurementServiceImpl) GetMeasurements() []*models.Measurement {
+	var measurements []*models.Measurement
+	dbc := (m.DBMgr).GetDB()
+	dbc.Model(&models.Measurement{}).Find(&measurements)
 
-	return ripeIDs
+	return measurements
 }
 
 func (m *MeasurementServiceImpl) getLastMeasurementResultTime(measurementID int) int {
-	dbc := (m.DBMgr).GetDB().Debug()
+	dbc := (m.DBMgr).GetDB()
 
 	measurementResults := &models.MeasurementResult{}
 
@@ -132,17 +157,44 @@ func (m *MeasurementServiceImpl) getLastMeasurementResultTime(measurementID int)
 	return measurementResults.MeasurementTimestamp
 }
 
-func (m *MeasurementServiceImpl) GetProbIDs() []string {
-	var probesIDs []string
-
-	err := (m.DBMgr).GetDB().Model(models.Probe{}).Select("probe_id").Find(&probesIDs).Error
-	if err != nil {
-		log.WithFields(log.Fields{
-			"err": err,
-		}).Info("Find db miners")
-
-		return nil
+func (m *MeasurementServiceImpl) GetProbIDs(places []Place, lat, long float64) []string {
+	if lat == 0 && long == 0 {
+		return []string{}
+	}
+	p := Place{Latitude: lat, Longitude: long}
+	nearestProbesAmount := m.Conf.GetInt("NEAREST_PROBES_AMOUNT")
+	nearestLocationsIDs := FindNearest(places, p, nearestProbesAmount)
+	if len(nearestLocationsIDs) == 0 {
+		return []string{}
 	}
 
-	return probesIDs
+	var ripeIDs []string
+	if err := m.DBMgr.GetDB().
+		Select("probes.probe_id").
+		Model(&Probes{}).
+		Preload("locations").
+		Joins("JOIN locations on locations.iata_code=probes.iata_code").
+		Where("locations.id in (?)", nearestLocationsIDs).
+		Scan(&ripeIDs).Error; err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("get probeId from locations")
+
+		return []string{}
+	}
+
+	return ripeIDs
+}
+
+func (m *MeasurementServiceImpl) PlacesDataSet() ([]Place, error) {
+	var places []Place
+	err := m.DBMgr.GetDB().Model(&models.Location{}).Find(&places).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("get places from db")
+
+		return places, err
+	}
+	return places, nil
 }

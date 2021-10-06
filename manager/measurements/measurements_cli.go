@@ -27,6 +27,7 @@ type MesuresCommander struct {
 func NewMesuresCommander() cli.Commander {
 	return &MesuresCommander{
 		Handler: NewHandler(),
+		Export:  export.NewExportHandler(),
 	}
 }
 
@@ -54,7 +55,7 @@ func (cmd *MesuresCommander) Execute(in string) {
 	case measuresExport:
 		cmd.measuresExport(blocks)
 	default:
-		log.Printf("unknown command: %s\n", blocks[0])
+		log.Printf("unknown command: %stopped\n", blocks[0])
 	}
 }
 

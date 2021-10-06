@@ -40,8 +40,8 @@ cp .env.example .env
 | RIPE_REQUESTED_PROBES | number | Max number of probes to call miners |
 | RIPE_LOCATION_RANGE_INIT | float | Initial range to find probes from airport location |
 | RIPE_LOCATION_RANGE_MAX | float | Max range to find probes from airport location |
-| IPGEOLOCATION_ABSTRACTAPI_KEY | string | [IPGeolocation api key management](https://app.abstractapi.com/api/ip-geolocation/tester) to obtain miner geolocation |
-
+| RIPE_PACKETS | number | Amount of packets to ping miners. |
+| NEAREST_PROBES_AMOUNT | number | Amount of nearest probes to miner to test latency. |
 
 Edit .env to add a valid Ripe Atlas API Key
 
@@ -74,3 +74,10 @@ Export reasults
 [./manager/README.md](./manager/README.md)
 
 [JSON Schema for data](./docs/json/schema.json)
+
+### License
+
+The code is licensed under:
+
+* [Apache v2.0 license](./LICENSE-APACHE).
+* [MIT license](./LICENSE-MIT).
