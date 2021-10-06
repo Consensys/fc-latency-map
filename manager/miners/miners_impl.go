@@ -108,10 +108,15 @@ func getMinerIP(minerInfo *miner.MinerInfo) string {
 }
 
 func (srv *MinerServiceImpl) upsertMinersInDB(miners []*models.Miner) {
-	srv.DBMgr.GetDB().Clauses(clause.OnConflict{
+	err := srv.DBMgr.GetDB().Debug().Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "address"}},
 		DoUpdates: clause.AssignmentColumns([]string{"ip", "latitude", "longitude"}),
-	}).Create(&miners)
+	}).Create(&miners).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("upsertMinersInDB")
+	}
 }
 
 func (srv *MinerServiceImpl) ParseMinersByBlockHeight(height int64) []*models.Miner {
