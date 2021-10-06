@@ -4,6 +4,8 @@ import (
 	"strings"
 	"time"
 
+	atlas "github.com/keltia/ripe-atlas"
+
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 
 	log "github.com/sirupsen/logrus"
@@ -19,6 +21,8 @@ type Handler struct {
 	ripeMgr ripemgr.RipeMgr
 }
 
+const stopped = "Stopped"
+
 func NewHandler() *Handler {
 	conf := config.NewConfig()
 	dbMgr, err := db.NewDatabaseMgrImpl(conf)
@@ -28,12 +32,12 @@ func NewHandler() *Handler {
 	nodeURL := conf.GetString("FILECOIN_NODE_URL")
 	fMgr, err := fmgr.NewFilecoinImpl(nodeURL)
 	if err != nil {
-		log.Fatalf("connecting with lotus failed: %s", err)
+		log.Fatalf("connecting with lotus failed: %stopped", err)
 	}
 
 	ripeMgr, err := ripemgr.NewRipeImpl(conf)
 	if err != nil {
-		log.Fatalf("connecting with lotus failed: %s", err)
+		log.Fatalf("connecting with lotus failed: %stopped", err)
 	}
 
 	mSer := NewMeasurementServiceImpl(conf, dbMgr, fMgr)
@@ -44,9 +48,28 @@ func NewHandler() *Handler {
 	}
 }
 func (h *Handler) ImportMeasures() {
-	measures := h.Service.GetMeasuresLastResultTime()
-	for k, v := range measures {
-		results, err := h.ripeMgr.GetMeasurementResults(k, v)
+	measurements, measuremStartTime := h.Service.GetMeasuresLastResultTime()
+	for _, m := range measurements {
+		if m.Status == "Failed" {
+			continue
+		}
+
+		if m.Status != stopped {
+			measure, _ := h.ripeMgr.GetMeasurement(m.MeasurementID)
+			h.Service.UpsertMeasurements([]*atlas.Measurement{measure})
+		}
+		i, found := measuremStartTime[m.MeasurementID]
+		const delayBetweenStopTime = 200
+		if found && i-m.StatusStopTime < delayBetweenStopTime {
+			continue
+		}
+		log.WithFields(log.Fields{
+			"MeasurementID":    m.MeasurementID,
+			"StatusStopTime":   m.StatusStopTime,
+			"StopTime":         m.StopTime,
+			"Results StopTime": i,
+		}).Info("GetMeasurementResults")
+		results, err := h.ripeMgr.GetMeasurementResults(m.MeasurementID, i)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"err": err,
@@ -87,7 +110,7 @@ func (h *Handler) CreateMeasurements() {
 			continue
 		}
 
-		h.Service.CreateMeasurements(measures)
+		h.Service.UpsertMeasurements(measures)
 		const waitTime = 5 * time.Second
 		time.Sleep(waitTime)
 	}

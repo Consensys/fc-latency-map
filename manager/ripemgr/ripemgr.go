@@ -24,4 +24,6 @@ type RipeMgr interface {
 
 	// GetMeasurementResults get ripe measurements results from last
 	GetMeasurementResults(measurementID, startTime int) ([]atlas.MeasurementResult, error)
+
+	GetMeasurement(measurementID int) (*atlas.Measurement, error)
 }

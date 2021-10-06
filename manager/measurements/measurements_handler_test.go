@@ -37,7 +37,7 @@ func TestHandler_CreateMeasurementsRipeError(t *testing.T) {
 		Return(nil, fmt.Errorf("error")).
 		MaxTimes(1)
 
-	service.EXPECT().CreateMeasurements(gomock.Any()).Times(0)
+	service.EXPECT().UpsertMeasurements(gomock.Any()).Times(0)
 
 	h.CreateMeasurements()
 }
@@ -69,7 +69,7 @@ func TestHandler_CreateMeasurements(t *testing.T) {
 		Return(nil, nil).
 		MaxTimes(1)
 
-	service.EXPECT().CreateMeasurements(gomock.Any()).Times(1)
+	service.EXPECT().UpsertMeasurements(gomock.Any()).Times(1)
 
 	h.CreateMeasurements()
 }

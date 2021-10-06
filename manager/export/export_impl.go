@@ -122,6 +122,7 @@ func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []
 			"max(time_max) time_max," +
 			"min(time_min) time_min").
 		Group("ip, measurement_date").
+		Order("measurement_date desc").
 		Where(&models.MeasurementResult{
 			ProbeID: probe.ProbeID,
 			IP:      ip,

@@ -15,10 +15,11 @@ type MeasurementService interface {
 
 	GetProbIDs(places []Place, latitude, longitude float64) []string
 
-	CreateMeasurements([]*atlas.Measurement)
+	UpsertMeasurements([]*atlas.Measurement)
 
 	// GetMeasuresLastResultTime load RIPE MeasurementResults
-	GetMeasuresLastResultTime() map[int]int
+	GetMeasuresLastResultTime() ([]*models.Measurement, map[int]int)
 
 	PlacesDataSet() ([]Place, error)
+	GetMeasurements() []*models.Measurement
 }

@@ -70,7 +70,7 @@ func TestMeasurementServiceImpl_CreateMeasurement(t *testing.T) {
 				DBMgr: tt.fields.DBMgr,
 				FMgr:  tt.fields.FMgr,
 			}
-			m.CreateMeasurements(tt.args.mr)
+			m.UpsertMeasurements(tt.args.mr)
 			var rows []*models.Measurement
 			err := tt.fields.DBMgr.GetDB().Find(&rows).Error
 			assert.Nil(t, err)
@@ -175,7 +175,7 @@ func TestMeasurementServiceImpl_ImportMeasurement(t *testing.T) {
 					},
 				},
 			},
-			want: 2,
+			want: 1,
 		},
 	}
 	for _, tt := range tests {
@@ -221,7 +221,7 @@ func TestMeasurementServiceImpl_GetMeasuresLastResultTime(t *testing.T) {
 			create: []models.Measurement{
 				{MeasurementID: 11, StartTime: 11, StopTime: 11},
 			},
-			want: map[int]int{11: 0},
+			want: map[int]int{},
 		},
 	}
 	for _, tt := range tests {
@@ -232,7 +232,7 @@ func TestMeasurementServiceImpl_GetMeasuresLastResultTime(t *testing.T) {
 				tt.fields.FMgr,
 			)
 			tt.fields.DBMgr.GetDB().Create(tt.create)
-			if got := m.GetMeasuresLastResultTime(); !reflect.DeepEqual(got, tt.want) {
+			if _, got := m.GetMeasuresLastResultTime(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetMeasuresLastResultTime() = %v, want %v", got, tt.want)
 			}
 		})

@@ -35,24 +35,27 @@ func (m *MockMeasurementService) EXPECT() *MockMeasurementServiceMockRecorder {
 	return m.recorder
 }
 
-// CreateMeasurements mocks base method.
-func (m *MockMeasurementService) CreateMeasurements(arg0 []*ripe_atlas.Measurement) {
+// GetMeasurements mocks base method.
+func (m *MockMeasurementService) GetMeasurements() []*models.Measurement {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "CreateMeasurements", arg0)
+	ret := m.ctrl.Call(m, "GetMeasurements")
+	ret0, _ := ret[0].([]*models.Measurement)
+	return ret0
 }
 
-// CreateMeasurements indicates an expected call of CreateMeasurements.
-func (mr *MockMeasurementServiceMockRecorder) CreateMeasurements(arg0 interface{}) *gomock.Call {
+// GetMeasurements indicates an expected call of GetMeasurements.
+func (mr *MockMeasurementServiceMockRecorder) GetMeasurements() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMeasurements", reflect.TypeOf((*MockMeasurementService)(nil).CreateMeasurements), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMeasurements", reflect.TypeOf((*MockMeasurementService)(nil).GetMeasurements))
 }
 
 // GetMeasuresLastResultTime mocks base method.
-func (m *MockMeasurementService) GetMeasuresLastResultTime() map[int]int {
+func (m *MockMeasurementService) GetMeasuresLastResultTime() ([]*models.Measurement, map[int]int) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMeasuresLastResultTime")
-	ret0, _ := ret[0].(map[int]int)
-	return ret0
+	ret0, _ := ret[0].([]*models.Measurement)
+	ret1, _ := ret[1].(map[int]int)
+	return ret0, ret1
 }
 
 // GetMeasuresLastResultTime indicates an expected call of GetMeasuresLastResultTime.
@@ -114,4 +117,16 @@ func (m *MockMeasurementService) PlacesDataSet() ([]Place, error) {
 func (mr *MockMeasurementServiceMockRecorder) PlacesDataSet() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlacesDataSet", reflect.TypeOf((*MockMeasurementService)(nil).PlacesDataSet))
+}
+
+// UpsertMeasurements mocks base method.
+func (m *MockMeasurementService) UpsertMeasurements(arg0 []*ripe_atlas.Measurement) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "UpsertMeasurements", arg0)
+}
+
+// UpsertMeasurements indicates an expected call of UpsertMeasurements.
+func (mr *MockMeasurementServiceMockRecorder) UpsertMeasurements(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertMeasurements", reflect.TypeOf((*MockMeasurementService)(nil).UpsertMeasurements), arg0)
 }

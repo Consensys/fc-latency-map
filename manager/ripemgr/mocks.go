@@ -50,6 +50,21 @@ func (mr *MockRipeMgrMockRecorder) CreateMeasurements(arg0, arg1, arg2 interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMeasurements", reflect.TypeOf((*MockRipeMgr)(nil).CreateMeasurements), arg0, arg1, arg2)
 }
 
+// GetMeasurement mocks base method.
+func (m *MockRipeMgr) GetMeasurement(arg0 int) (*atlas.Measurement, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMeasurement", arg0)
+	ret0, _ := ret[0].(*atlas.Measurement)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMeasurement indicates an expected call of GetMeasurement.
+func (mr *MockRipeMgrMockRecorder) GetMeasurement(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMeasurement", reflect.TypeOf((*MockRipeMgr)(nil).GetMeasurement), arg0)
+}
+
 // GetMeasurementResults mocks base method.
 func (m *MockRipeMgr) GetMeasurementResults(arg0, arg1 int) ([]atlas.MeasurementResult, error) {
 	m.ctrl.T.Helper()

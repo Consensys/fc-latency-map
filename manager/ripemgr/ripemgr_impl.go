@@ -111,8 +111,21 @@ func (rMgr *RipeMgrImpl) getLatLongRange(lat, long, coordRange float64) map[stri
 	return opts
 }
 
+func (rMgr *RipeMgrImpl) GetMeasurement(measurementID int) (*atlas.Measurement, error) {
+	measurement, err := rMgr.c.GetMeasurement(measurementID)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err":         err,
+			"measurement": measurementID,
+		}).Error("get measurements results")
+		return nil, err
+	}
+
+	return measurement, nil
+}
+
 func (rMgr *RipeMgrImpl) GetMeasurementResults(measurementID, startTime int) ([]atlas.MeasurementResult, error) {
-	rMgr.c.SetOption("start", strconv.Itoa(startTime))
+	rMgr.c.SetOption("start", strconv.Itoa(startTime+1))
 	log.WithFields(log.Fields{
 		"measurement": measurementID,
 		"start time":  startTime,
