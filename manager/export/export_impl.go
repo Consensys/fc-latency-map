@@ -54,7 +54,7 @@ func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
 	miners := m.getMiners()
 
 	for _, l := range loc {
-		probes := m.getProbes(l)
+		probes := l.Probes
 
 		for _, miner := range miners {
 			latency := &Miner{
@@ -139,22 +139,6 @@ func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []
 	return meas
 }
 
-func (m *ExportServiceImpl) getProbes(l *models.Location) []*models.Probe {
-	var probes []*models.Probe
-	err := (m.DBMgr).GetDB().Where(&models.Probe{
-		IataCode: l.IataCode,
-	}).Find(&probes).Error
-	if err != nil {
-		jg.WithFields(jg.Fields{
-			"error": err,
-		}).Error("GetProbes")
-
-		return nil
-	}
-
-	return probes
-}
-
 func (m *ExportServiceImpl) getMiners() []*models.Miner {
 	var miners []*models.Miner
 
@@ -162,7 +146,7 @@ func (m *ExportServiceImpl) getMiners() []*models.Miner {
 	if err != nil {
 		jg.WithFields(jg.Fields{
 			"error": err,
-		}).Error("GetMiners")
+		}).Error("GetMinersWithGeoLocation")
 
 		return nil
 	}
@@ -173,6 +157,7 @@ func (m *ExportServiceImpl) getMiners() []*models.Miner {
 func (m *ExportServiceImpl) getLocations() []*models.Location {
 	var loc []*models.Location
 	err := (m.DBMgr).GetDB().
+		Preload(clause.Associations).
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: false}).
 		Find(&loc).Error
 	if err != nil {

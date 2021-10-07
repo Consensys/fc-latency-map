@@ -3,7 +3,7 @@ package seeds
 import (
 	"strings"
 
-	prompt "github.com/c-bata/go-prompt"
+	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/cli"
@@ -20,14 +20,14 @@ func NewSeederCommander() cli.Commander {
 	return &SeederCommander{}
 }
 
-// completes the input
+// Complete completes the input
 func (cmd *SeederCommander) Complete() []prompt.Suggest {
 	return []prompt.Suggest{
 		{Text: seedData, Description: "Seed data(location, probes, miners, measures)"},
 	}
 }
 
-// executes the command
+// Execute executes the command
 func (cmd *SeederCommander) Execute(in string) {
 	blocks := strings.Split(strings.TrimSpace(in), " ")
 

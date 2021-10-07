@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	gomock "github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"

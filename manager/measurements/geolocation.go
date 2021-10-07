@@ -5,6 +5,7 @@ import (
 	"gonum.org/v1/gonum/spatial/vptree"
 )
 
+// FindNearest find an amount of the nearest places from a place
 func FindNearest(places []Place, q Place, amount int) []int {
 	if len(places) == 0 {
 		return []int{}

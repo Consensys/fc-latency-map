@@ -10,20 +10,15 @@ import (
 
 type RipeMgr interface {
 
-	// GetProbe return a probe by id
-	GetProbe(id int) (*atlas.Probe, error)
-
-	// GetProbes return probes list
+	// GetProbes return atlas.Probe list filtered by opts map
 	GetProbes(opts map[string]string) ([]atlas.Probe, error)
 
-	// GetNearestProbe get the nearest probe from a location
-	GetNearestProbe(latitude, longitude float64) (*[]atlas.Probe, error)
-
-	// CreateMeasurements create ripe measurements
+	// CreateMeasurements create ripe atlas.Measurement
 	CreateMeasurements(miners []*models.Miner, probeIDs string, t int) ([]*atlas.Measurement, error)
 
-	// GetMeasurementResults get ripe measurements results from last
+	// GetMeasurementResults get ripe atlas.MeasurementResult from last
 	GetMeasurementResults(measurementID, startTime int) ([]atlas.MeasurementResult, error)
 
+	// GetMeasurement get ripe atlas.Measurement resource
 	GetMeasurement(measurementID int) (*atlas.Measurement, error)
 }

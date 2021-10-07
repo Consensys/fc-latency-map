@@ -62,7 +62,7 @@ func (srv *LocationServiceImpl) GetLocation(location *models.Location) *models.L
 func (srv *LocationServiceImpl) AddLocation(newLocation *models.Location) *models.Location {
 	location := models.Location{}
 	srv.DBMgr.GetDB().Where("iata_code = ?", newLocation.IataCode).First(&location)
-	if location == (models.Location{}) {
+	if location.ID == 0 {
 		srv.DBMgr.GetDB().Create(&newLocation)
 		log.Printf("new location, ID:%d - Country code: %s\n", newLocation.ID, newLocation.Country)
 	} else {
@@ -105,7 +105,7 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) er
 		if airport.Type == airportTypeFormated {
 			existsLocation := models.Location{}
 			srv.DBMgr.GetDB().Where("iata_code = ?", airport.IataCode).First(&existsLocation)
-			if existsLocation == (models.Location{}) {
+			if existsLocation.ID == 0 {
 				coords := strings.Split(airport.Coordinates, ", ")
 				lat, _ := strconv.ParseFloat(coords[1], 64)
 				long, _ := strconv.ParseFloat(coords[0], 64)

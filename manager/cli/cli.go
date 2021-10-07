@@ -1,7 +1,7 @@
 package cli
 
 import (
-	prompt "github.com/c-bata/go-prompt"
+	"github.com/c-bata/go-prompt"
 )
 
 type Commander interface {

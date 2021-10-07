@@ -65,7 +65,7 @@ func TestMeasurementServiceImpl_CreateMeasurement(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MeasurementServiceImpl{
+			m := &measurementServiceImpl{
 				Conf:  tt.fields.Conf,
 				DBMgr: tt.fields.DBMgr,
 				FMgr:  tt.fields.FMgr,
@@ -180,7 +180,7 @@ func TestMeasurementServiceImpl_ImportMeasurement(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MeasurementServiceImpl{
+			m := &measurementServiceImpl{
 				Conf:  tt.fields.Conf,
 				DBMgr: tt.fields.DBMgr,
 				FMgr:  tt.fields.FMgr,
@@ -226,7 +226,7 @@ func TestMeasurementServiceImpl_GetMeasuresLastResultTime(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := NewMeasurementServiceImpl(
+			m := newMeasurementServiceImpl(
 				tt.fields.Conf,
 				tt.fields.DBMgr,
 				tt.fields.FMgr,
@@ -279,15 +279,15 @@ func TestMeasurementServiceImpl_GetMiners(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := NewMeasurementServiceImpl(
+			m := newMeasurementServiceImpl(
 				tt.fields.Conf,
 				tt.fields.DBMgr,
 				tt.fields.FMgr,
 			)
 			tt.fields.DBMgr.GetDB().Create(tt.create)
-			got := m.GetMiners()
+			got := m.GetMinersWithGeoLocation()
 			if len(got) != len(tt.want) {
-				t.Errorf("GetMiners() = %v, want %v", len(got), len(tt.want))
+				t.Errorf("GetMinersWithGeoLocation() = %v, want %v", len(got), len(tt.want))
 			}
 			if len(tt.want) == 0 {
 				return
@@ -340,7 +340,7 @@ func TestMeasurementServiceImpl_GetProbIDs(t *testing.T) {
 				amount int
 			}{lat: 0, long: 0, amount: 2},
 			locations: []models.Location{{IataCode: "iata", Latitude: 1, Longitude: 11}},
-			probes:    []models.Probe{{ProbeID: 1, IataCode: "iata", Latitude: 1, Longitude: 11}},
+			probes:    []models.Probe{{ProbeID: 1, Latitude: 1, Longitude: 11}},
 			want:      []string{},
 		},
 		{name: "no found probe", fields: struct {
@@ -357,8 +357,8 @@ func TestMeasurementServiceImpl_GetProbIDs(t *testing.T) {
 				long   float64
 				amount int
 			}{lat: 1, long: 1, amount: 2},
-			locations: []models.Location{},
-			probes:    []models.Probe{},
+			locations: []models.Location{{IataCode: "iata", Latitude: 1, Longitude: 11}},
+			probes:    []models.Probe{{ProbeID: 1, Latitude: 1, Longitude: 11}},
 			want:      []string{},
 		},
 	}
@@ -366,9 +366,9 @@ func TestMeasurementServiceImpl_GetProbIDs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.fields.Conf.SetDefault("NEAREST_AIRPORTS", tt.args.amount)
 			tt.fields.DBMgr.GetDB().
-				Create(tt.locations).
-				Create(tt.probes)
-			m := NewMeasurementServiceImpl(
+				Create(tt.locations)
+
+			m := newMeasurementServiceImpl(
 				tt.fields.Conf,
 				tt.fields.DBMgr,
 				tt.fields.FMgr,

@@ -123,7 +123,6 @@ go run cmd/cli/main.go locations-add ORY
 go run cmd/cli/main.go locations-add JFK
 go run cmd/cli/main.go locations-add OPO
 
-go run cmd/cli/main.go probes-update
 
 go run cmd/cli/main.go measures-create
 #   wait until have ripe results
@@ -138,4 +137,9 @@ go run cmd/cli/main.go probes-update
 
 go run cmd/cli/main.go measures-get
 go run cmd/cli/main.go measures-export
+
+##
+go run cmd/cli/main.go locations-update large
+go run cmd/cli/main.go probes-import
+go run cmd/cli/main.go probes-update
 ```

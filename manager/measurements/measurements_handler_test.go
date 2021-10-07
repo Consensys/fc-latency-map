@@ -28,9 +28,9 @@ func TestHandler_CreateMeasurementsRipeError(t *testing.T) {
 		Address: "fx002",
 		IP:      "100.12.35.5",
 	}}
-	service.EXPECT().PlacesDataSet().Return([]Place{}, nil)
+	service.EXPECT().PlacesLocations().Return([]Place{}, nil)
 	service.EXPECT().GetProbIDs(gomock.Any(), gomock.Any(), gomock.Any()).Return(strings.Split(probes, ",")).MaxTimes(1)
-	service.EXPECT().GetMiners().Return(miners).MaxTimes(1)
+	service.EXPECT().GetMinersWithGeoLocation().Return(miners).MaxTimes(1)
 
 	ripeMgr.EXPECT().
 		CreateMeasurements(gomock.Any(), gomock.Any(), gomock.Any()).
@@ -59,10 +59,10 @@ func TestHandler_CreateMeasurements(t *testing.T) {
 		IP:      "100.12.35.5",
 	}}
 
-	service.EXPECT().PlacesDataSet().Return([]Place{}, nil)
+	service.EXPECT().PlacesLocations().Return([]Place{}, nil)
 	service.EXPECT().GetProbIDs(gomock.Any(), gomock.Any(), gomock.Any()).Return(strings.Split(probes, ",")).Times(1)
 
-	service.EXPECT().GetMiners().Return(miners).Times(1)
+	service.EXPECT().GetMinersWithGeoLocation().Return(miners).Times(1)
 
 	ripeMgr.EXPECT().
 		CreateMeasurements(miners, probes, 0).

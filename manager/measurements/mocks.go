@@ -36,9 +36,9 @@ func (m *MockMeasurementService) EXPECT() *MockMeasurementServiceMockRecorder {
 }
 
 // GetMeasurements mocks base method.
-func (m *MockMeasurementService) GetMeasurements() []*models.Measurement {
+func (m *MockMeasurementService) GetMeasurementsRunning() []*models.Measurement {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMeasurements")
+	ret := m.ctrl.Call(m, "GetMeasurementsRunning")
 	ret0, _ := ret[0].([]*models.Measurement)
 	return ret0
 }
@@ -46,7 +46,7 @@ func (m *MockMeasurementService) GetMeasurements() []*models.Measurement {
 // GetMeasurements indicates an expected call of GetMeasurements.
 func (mr *MockMeasurementServiceMockRecorder) GetMeasurements() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMeasurements", reflect.TypeOf((*MockMeasurementService)(nil).GetMeasurements))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMeasurementsRunning", reflect.TypeOf((*MockMeasurementService)(nil).GetMeasurementsRunning))
 }
 
 // GetMeasuresLastResultTime mocks base method.
@@ -64,18 +64,18 @@ func (mr *MockMeasurementServiceMockRecorder) GetMeasuresLastResultTime() *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMeasuresLastResultTime", reflect.TypeOf((*MockMeasurementService)(nil).GetMeasuresLastResultTime))
 }
 
-// GetMiners mocks base method.
-func (m *MockMeasurementService) GetMiners() []*models.Miner {
+// GetMinersWithGeoLocation mocks base method.
+func (m *MockMeasurementService) GetMinersWithGeoLocation() []*models.Miner {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMiners")
+	ret := m.ctrl.Call(m, "GetMinersWithGeoLocation")
 	ret0, _ := ret[0].([]*models.Miner)
 	return ret0
 }
 
-// GetMiners indicates an expected call of GetMiners.
-func (mr *MockMeasurementServiceMockRecorder) GetMiners() *gomock.Call {
+// GetMinersWithGeoLocation indicates an expected call of GetMinersWithGeoLocation.
+func (mr *MockMeasurementServiceMockRecorder) GetMinersWithGeoLocation() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMiners", reflect.TypeOf((*MockMeasurementService)(nil).GetMiners))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMinersWithGeoLocation", reflect.TypeOf((*MockMeasurementService)(nil).GetMinersWithGeoLocation))
 }
 
 // GetProbIDs mocks base method.
@@ -104,19 +104,19 @@ func (mr *MockMeasurementServiceMockRecorder) ImportMeasurement(arg0 interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ImportMeasurement", reflect.TypeOf((*MockMeasurementService)(nil).ImportMeasurement), arg0)
 }
 
-// PlacesDataSet mocks base method.
-func (m *MockMeasurementService) PlacesDataSet() ([]Place, error) {
+// PlacesLocations mocks base method.
+func (m *MockMeasurementService) PlacesLocations() ([]Place, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PlacesDataSet")
+	ret := m.ctrl.Call(m, "PlacesLocations")
 	ret0, _ := ret[0].([]Place)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// PlacesDataSet indicates an expected call of PlacesDataSet.
-func (mr *MockMeasurementServiceMockRecorder) PlacesDataSet() *gomock.Call {
+// PlacesLocations indicates an expected call of PlacesLocations.
+func (mr *MockMeasurementServiceMockRecorder) PlacesLocations() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlacesDataSet", reflect.TypeOf((*MockMeasurementService)(nil).PlacesDataSet))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlacesLocations", reflect.TypeOf((*MockMeasurementService)(nil).PlacesLocations))
 }
 
 // UpsertMeasurements mocks base method.

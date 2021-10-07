@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	prompt "github.com/c-bata/go-prompt"
+	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/cli"
@@ -26,7 +26,7 @@ func NewMinerCommander() cli.Commander {
 	}
 }
 
-// completes the input
+// Complete completes the input
 func (cmd *MinerCommander) Complete() []prompt.Suggest {
 	return []prompt.Suggest{
 		{Text: minersList, Description: "List all miners"},
@@ -35,7 +35,7 @@ func (cmd *MinerCommander) Complete() []prompt.Suggest {
 	}
 }
 
-// executes the command
+// Execute executes the command
 func (cmd *MinerCommander) Execute(in string) {
 	blocks := strings.Split(strings.TrimSpace(in), " ")
 

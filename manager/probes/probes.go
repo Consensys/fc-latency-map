@@ -14,7 +14,7 @@ type Miner struct {
 type ProbeService interface {
 
 	// RequestProbes returns Probes from Ripe
-	RequestProbes() ([]*models.Probe, error)
+	RequestProbes() error
 
 	// ListProbes returns all Probes
 	ListProbes() []*models.Probe

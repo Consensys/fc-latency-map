@@ -38,8 +38,6 @@ cp .env.example .env
 | RIPE_PING_RUNNING_TIME| number | Running period get latency|
 | RIPE_ONE_OFF | boolean | On ping only to get latency. When is 'true' the RIPE_PING_INTERVAL and RIPE_PING_RUNNING_TIME are ignored|
 | RIPE_REQUESTED_PROBES | number | Max number of probes to call miners |
-| RIPE_LOCATION_RANGE_INIT | float | Initial range to find probes from airport location |
-| RIPE_LOCATION_RANGE_MAX | float | Max range to find probes from airport location |
 | RIPE_PACKETS | number | Amount of packets to ping miners. |
 | NEAREST_AIRPORTS | number | Amount of nearest probes to miner to test latency. |
 | RIPE_PROBES_PER_AIRPORT | number | Amount of probes near to miner to airport. |

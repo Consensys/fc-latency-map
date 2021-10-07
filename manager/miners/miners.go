@@ -8,7 +8,7 @@ import (
 
 type MinerService interface {
 
-	// GetMiners retrieve miners from db
+	// GetAllMiners GetMinersWithGeoLocation retrieve miners from db
 	GetAllMiners() []*models.Miner
 
 	// ParseMinersByBlockOffset parse miners from Filecoin

@@ -3,7 +3,7 @@ package locations
 import (
 	"strings"
 
-	prompt "github.com/c-bata/go-prompt"
+	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/cli"
@@ -27,7 +27,7 @@ func NewLocationCommander() cli.Commander {
 	}
 }
 
-// completes the input
+// Complete completes the input
 func (cmd *LocationCommander) Complete() []prompt.Suggest {
 	return []prompt.Suggest{
 		{Text: locationsList, Description: "List all locations"},
@@ -37,7 +37,7 @@ func (cmd *LocationCommander) Complete() []prompt.Suggest {
 	}
 }
 
-// executes the command
+// Execute executes the command
 func (cmd *LocationCommander) Execute(in string) {
 	blocks := strings.Split(strings.TrimSpace(in), " ")
 

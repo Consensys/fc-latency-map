@@ -5,14 +5,14 @@ import (
 	"context"
 	"net/http"
 
-	address "github.com/filecoin-project/go-address"
-	jsonrpc "github.com/filecoin-project/go-jsonrpc"
+	"github.com/filecoin-project/go-address"
+	"github.com/filecoin-project/go-jsonrpc"
 	"github.com/filecoin-project/go-state-types/abi"
 	lotusapi "github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/filecoin-project/specs-actors/actors/builtin/market"
-	cid "github.com/ipfs/go-cid"
+	"github.com/ipfs/go-cid"
 	log "github.com/sirupsen/logrus"
 )
 
