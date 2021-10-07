@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  manager:
+    image: fc-latency-manager
+    container_name: fc-latency-manager
+    network_mode: "bridge"
+    ports:
+      - 3000:3000
+    volumes:
+      - ./manager/data/database.db:/data/database.db
+    env_file:
+      - ./manager/.env
+    restart: unless-stopped
