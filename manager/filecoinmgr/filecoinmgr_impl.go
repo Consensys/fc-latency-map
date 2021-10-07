@@ -136,7 +136,7 @@ func (fMgr *FilecoinMgrImpl) getVerifiedDealsByBlock(height abi.ChainEpoch) ([]V
 }
 
 func (fMgr *FilecoinMgrImpl) getVerifiedDeals(params *market.PublishStorageDealsParams, message *types.Message, verifiedDeals []VerifiedDeal) []VerifiedDeal {
-	for _, deal := range params.Deals {
+	for _, deal := range params.Deals { //nolint:gocritic
 		proposal := deal.Proposal
 
 		if proposal.VerifiedDeal {
@@ -167,7 +167,7 @@ func (fMgr *FilecoinMgrImpl) GetVerifiedDealsByStateMarket() ([]VerifiedDeal, er
 
 		return nil, err
 	}
-	for _, deal := range deals {
+	for _, deal := range deals { //nolint:gocritic
 		proposal := deal.Proposal
 		if !proposal.VerifiedDeal {
 			continue

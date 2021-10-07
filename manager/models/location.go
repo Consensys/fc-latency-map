@@ -12,5 +12,5 @@ type Location struct {
 	Latitude   float64  `gorm:"column:latitude" json:"latitude,omitempty"`
 	Longitude  float64  `gorm:"column:longitude" json:"longitude,omitempty"`
 	Type       string   `json:"type"`
-	Probes     []*Probe `gorm:"many2many:locations_probes;"`
+	Probes     []*Probe `gorm:"many2many:locations_probes;" json:"-"`
 }

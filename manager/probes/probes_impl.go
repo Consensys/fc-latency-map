@@ -114,7 +114,7 @@ func (srv *ProbeServiceImpl) ImportProbes() {
 	}
 
 	probesDB := []*models.Probe{}
-	for _, v := range probes {
+	for _, v := range probes { //nolint:gocritic
 		newProbe := &models.Probe{
 			ProbeID:     v.ID,
 			CountryCode: v.CountryCode,

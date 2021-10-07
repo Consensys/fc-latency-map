@@ -98,7 +98,7 @@ func (m *measurementServiceImpl) GetMinersWithGeoLocation() []*models.Miner {
 func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult) {
 	dbc := (m.DBMgr).GetDB()
 	var insert []*models.MeasurementResult
-	for _, result := range mr {
+	for _, result := range mr { //nolint:gocritic
 		t := time.Unix(int64(result.Timestamp), 0)
 		insert = append(insert, &models.MeasurementResult{
 			IP:                   result.DstAddr,
