@@ -79,7 +79,27 @@ func Test_GetAllLocations_OK(t *testing.T) {
 	assert.Equal(t, dummyLocation.Latitude, actual.Latitude)
 	assert.Equal(t, dummyLocation.Longitude, actual.Longitude)
 	assert.Equal(t, dummyLocation.Type, actual.Type)
+}
 
+func Test_GetTotalLocations_OK(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+
+	sqlDB, _ := mockDbMgr.GetDB().DB()
+	defer sqlDB.Close()
+
+	srv := NewLocationServiceImpl(mockConfig, mockDbMgr)
+
+	// Act
+	srv.AddLocation(&dummyLocation)
+	count := srv.GetTotalLocations()
+
+	// Assert
+	assert.Equal(t, int64(1), count)
 }
 
 func Test_GetLocation_Empty(t *testing.T) {

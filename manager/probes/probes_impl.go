@@ -63,6 +63,12 @@ func (srv *ProbeServiceImpl) GetAllProbes() []*models.Probe {
 	return probesList
 }
 
+func (srv *ProbeServiceImpl) GetTotalProbes() int64 {
+	var count int64
+	srv.DBMgr.GetDB().Model(&models.Probe{}).Count(&count)
+	return count
+}
+
 func (srv *ProbeServiceImpl) Update() {
 	probes, err := srv.RequestProbes()
 	if err != nil {
