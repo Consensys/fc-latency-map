@@ -47,7 +47,7 @@ func (cmd *MesuresCommander) Execute(in string) {
 
 	switch blocks[0] {
 	case measuresCreate:
-		cmd.Handler.CreateMeasurements()
+		cmd.Handler.CreateMeasurements(blocks)
 	case measuresGet:
 		cmd.Handler.ImportMeasures()
 	case measuresList:

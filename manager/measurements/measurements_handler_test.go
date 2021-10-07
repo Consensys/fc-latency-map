@@ -39,7 +39,7 @@ func TestHandler_CreateMeasurementsRipeError(t *testing.T) {
 
 	service.EXPECT().UpsertMeasurements(gomock.Any()).Times(0)
 
-	h.CreateMeasurements()
+	h.CreateMeasurements(nil)
 }
 func TestHandler_CreateMeasurements(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -71,7 +71,7 @@ func TestHandler_CreateMeasurements(t *testing.T) {
 
 	service.EXPECT().UpsertMeasurements(gomock.Any()).Times(1)
 
-	h.CreateMeasurements()
+	h.CreateMeasurements(nil)
 }
 
 func TestHandler_ImportMeasuresError(t *testing.T) {

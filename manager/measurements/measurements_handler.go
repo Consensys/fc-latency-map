@@ -80,7 +80,7 @@ func (h *Handler) ImportMeasures() {
 	}
 }
 
-func (h *Handler) CreateMeasurements() {
+func (h *Handler) CreateMeasurements(parameters []string) {
 	places, err := h.Service.PlacesLocations()
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -92,6 +92,9 @@ func (h *Handler) CreateMeasurements() {
 
 	miners := h.Service.GetMinersWithGeoLocation()
 	for i, v := range miners {
+		if len(parameters) > 1 && parameters[1] != v.Address {
+			continue
+		}
 		pIDs := strings.Join(h.Service.GetProbIDs(places, v.Latitude, v.Longitude), ",")
 		log.WithFields(log.Fields{
 			"miner.address": v.Address,
