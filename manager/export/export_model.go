@@ -8,6 +8,7 @@ type Result struct {
 	Locations    []*models.Location             `json:"locations,omitempty"`
 	Miners       []*models.Miner                `json:"miners,omitempty"`
 	Probes       []*models.Probe                `json:"probes,omitempty"`
+	Dates        []string                       `json:"dates,omitempty"`
 	Measurements map[string]map[string][]*Miner `json:"measurements,omitempty"`
 }
 
