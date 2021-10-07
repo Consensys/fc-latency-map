@@ -98,7 +98,7 @@ func (m *measurementServiceImpl) GetMinersWithGeoLocation() []*models.Miner {
 func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult) {
 	dbc := (m.DBMgr).GetDB()
 	var insert []*models.MeasurementResult
-	for _, result := range mr { //nolint:gocritic
+	for _, result := range mr {
 		t := time.Unix(int64(result.Timestamp), 0)
 		insert = append(insert, &models.MeasurementResult{
 			IP:                   result.DstAddr,
@@ -135,7 +135,7 @@ func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult)
 func (m *measurementServiceImpl) GetMeasurementsRunning() []*models.Measurement {
 	var measurements []*models.Measurement
 	dbc := (m.DBMgr).GetDB()
-	dbc.Debug().Model(&models.Measurement{}).Find(&measurements, "status not in ('Failed', 'Stopped')")
+	dbc.Model(&models.Measurement{}).Find(&measurements, "status not in ('Failed', 'Stopped')")
 
 	return measurements
 }
@@ -164,10 +164,10 @@ func (m *measurementServiceImpl) GetProbIDs(places []Place, lat, long float64) [
 		return []string{}
 	}
 
-	var ripeProbeIDs []string
+	ripeProbeIDs := []string{}
 	var nearestLocations []*models.Location
 
-	if err := m.DBMgr.GetDB().Debug().Model(models.Location{}).
+	if err := m.DBMgr.GetDB().Model(models.Location{}).
 		Preload(clause.Associations).
 		Find(&nearestLocations, "id in ?", nearestLocationsIDs).
 		Error; err != nil {

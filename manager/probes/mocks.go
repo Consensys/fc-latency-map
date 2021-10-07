@@ -34,6 +34,20 @@ func (m *MockProbeService) EXPECT() *MockProbeServiceMockRecorder {
 	return m.recorder
 }
 
+// GetTotalProbes mocks base method.
+func (m *MockProbeService) GetTotalProbes() int64 {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTotalProbes")
+	ret0, _ := ret[0].(int64)
+	return ret0
+}
+
+// GetTotalProbes indicates an expected call of GetTotalProbes.
+func (mr *MockProbeServiceMockRecorder) GetTotalProbes() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTotalProbes", reflect.TypeOf((*MockProbeService)(nil).GetTotalProbes))
+}
+
 // ImportProbes mocks base method.
 func (m *MockProbeService) ImportProbes() {
 	m.ctrl.T.Helper()

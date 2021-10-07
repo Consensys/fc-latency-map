@@ -1,13 +1,14 @@
 import React, { useRef, useState, useLayoutEffect } from "react";
 import { Row, Col } from "antd";
-
-// import logo from "./logo.svg";
-// import "./Map.css";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4maps from "@amcharts/amcharts4/maps";
 import am4geodata_worldLow from "@amcharts/amcharts4-geodata/worldLow";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 
+import { Button } from "antd";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+
+import styles from "@src/styles/Global.module.css";
 import Location from "./Location";
 import Miner from "./Miner";
 
@@ -15,13 +16,50 @@ am4core.useTheme(am4themes_animated);
 
 interface Props {
   data: any;
-  locationsJson: any;
+  height: any;
+  width: any;
+}
+
+interface Miner {
+  address: string;
+  ip: string;
+  latitude: number;
+  longitude: number;
+}
+
+interface Location {
+  name: string;
+  country: string;
+  iata_code: string;
+  latitude: number;
+  longitude: number;
+  type: string;
+}
+
+interface MinerLatency {
+  address: string;
+  ip: string;
+  latitude: number;
+  longitude: number;
+  latency: {
+    avg: number;
+  };
+}
+
+interface MinerLatencyData {
+  address: string;
+  measures: LatencyMeasureData[];
+}
+
+interface LatencyMeasureData {
+  ip: string;
+  latency: [];
 }
 
 const Map = (props: Props) => {
-  const { data, locationsJson } = props;
+  const { data, height, width } = props;
   const dataJson = JSON.parse(data);
-  const locations = dataJson.location;
+  const locations = dataJson.locations;
   const miners = dataJson.miners;
 
   const chart = useRef(null);
@@ -46,7 +84,7 @@ const Map = (props: Props) => {
       },
       {
         name: "Miners",
-        fill: "#6F00FF",
+        fill: "#4169E1",
       },
       {
         name: "Low Latency Miners",
@@ -85,23 +123,23 @@ const Map = (props: Props) => {
     circle.propertyFields.fill = "color";
     circle.nonScaling = true;
 
-    imageSeries.data = minersList.map((miner) => {
+    imageSeries.data = minersList.map((miner: Miner) => {
       return {
         latitude: miner.latitude,
         longitude: miner.longitude,
         title: miner.address,
-        color: "#6F00FF",
+        color: "#4169E1",
       };
     });
 
-    imageSeries.mapImages.template.events.on(`hit`, (ev) => {
-      const miner = ev.target.dataItem.dataContext;
+    imageSeries.mapImages.template.events.on(`hit`, (e: any) => {
+      const miner = e.target.dataItem.dataContext;
       setMiner(miner);
     });
   }
 
-  /* Add miners */
-  function addMinersLantecy(chart: any, minersList: any) {
+  /* Add miners with latency*/
+  function addMinersLatency(chart: any, minersList: any) {
     var imageSeries = chart.series.push(new am4maps.MapImageSeries());
     imageSeries.mapImages.template.propertyFields.longitude = "longitude";
     imageSeries.mapImages.template.propertyFields.latitude = "latitude";
@@ -117,20 +155,20 @@ const Map = (props: Props) => {
     circle2.radius = 3;
     circle2.propertyFields.fill = "color";
 
-    circle2.events.on("inited", function (event) {
+    circle2.events.on("inited", function (event: any) {
       animateBullet(chart, event.target);
     });
 
     // imageSeries.data = minersList;
-    imageSeries.data = minersList.map((miner) => {
+    imageSeries.data = minersList.map((miner: MinerLatency) => {
       let color = "#ff0000";
 
       if (miner.latency.avg == -1) {
         color = "#000000";
-      } else if (miner.latency.avg < 80) {
+      } else if (miner.latency.avg < 50) {
         color = "#00ff00";
       } else if (miner.latency.avg < 100) {
-        color = "#00ffff";
+        color = "#ffff00";
       } else {
         color = "#ff0000";
       }
@@ -144,13 +182,13 @@ const Map = (props: Props) => {
       };
     });
 
-    imageSeries.mapImages.template.events.on(`hit`, (ev) => {
-      const miner = ev.target.dataItem.dataContext;
+    imageSeries.mapImages.template.events.on(`hit`, (event: any) => {
+      const miner = event.target.dataItem.dataContext;
       setMiner(miner);
     });
   }
 
-  function animateBullet(chart, circle) {
+  function animateBullet(chart: am4maps.MapChart, circle: any) {
     var animation = circle.animate(
       [
         {
@@ -163,7 +201,7 @@ const Map = (props: Props) => {
       1000,
       am4core.ease.circleOut
     );
-    animation.events.on("animationended", function (event) {
+    animation.events.on("animationended", (event: any) => {
       animateBullet(chart, event.target.object);
     });
   }
@@ -188,13 +226,14 @@ const Map = (props: Props) => {
     circle.nonScaling = true;
     circle.tooltipText = "{title}";
 
-    series.data = locations.map((location) => {
+    series.data = locations.map((location: Location) => {
       return {
-        latitude: location.latitude,
-        longitude: location.longitude,
-        title: location.iata_code,
+        title: `${location.iata_code} - ${location.name}`,
+        name: location.name,
         iataCode: location.iata_code,
         country: location.country,
+        latitude: location.latitude,
+        longitude: location.longitude,
       };
     });
 
@@ -202,30 +241,26 @@ const Map = (props: Props) => {
       const location = ev.target.dataItem.dataContext;
       setLocation(location);
 
-      const latenciesList =
-        dataJson.measurements[location.country][location.iataCode];
+      const latenciesList = dataJson.measurements[location.country][
+        location.iataCode
+      ]
+        ? dataJson.measurements[location.country][location.iataCode]
+        : [];
 
-      let minersLatency = [];
-      let minersNoLatency = [];
+      let minersLatency: MinerLatency[] = [];
+      let minersNoLatency: MinerLatency[] = [];
 
-      latenciesList.forEach((latency) => {
-        const index = miners.findIndex(
-          (miner) => miner.address == latency.address
+      miners.forEach((miner: Miner, index: number) => {
+        const existsLatency = latenciesList.find(
+          (latency: MinerLatencyData) => latency.address == miner.address
         );
-
-        if (
-          latency.measures &&
-          !minersLatency.find((miner) => miner.address == latency.address)
-        ) {
+        if (existsLatency) {
           const minerLatency = {
             ...miners[index],
-            latency: latency.measures[0].latency[0],
+            latency: existsLatency.measures[0].latency[0],
           };
           minersLatency.push(minerLatency);
-        } else if (
-          !latency.measures &&
-          !minersNoLatency.find((miner) => miner.address == latency.address)
-        ) {
+        } else {
           minersNoLatency.push(miners[index]);
         }
       });
@@ -234,7 +269,7 @@ const Map = (props: Props) => {
         chart.series.removeIndex(chart.series.length - 1);
       }
 
-      addMinersLantecy(chart, minersLatency);
+      addMinersLatency(chart, minersLatency);
       addMiners(chart, minersNoLatency);
     });
   }
@@ -258,8 +293,6 @@ const Map = (props: Props) => {
     polygonTemplate.tooltipText = "{name}";
     polygonTemplate.polygon.fillOpacity = 0.6;
 
-    // polygonTemplate.fill = am4core.color("#454a58");
-
     // Create hover state and set alternative fill color
     var hs = polygonTemplate.states.create("hover");
     hs.properties.fill = chart.colors.getIndex(0);
@@ -276,17 +309,43 @@ const Map = (props: Props) => {
     };
   }, []);
 
+  const previousDateHandler = () => {
+    console.log("previousDateHandler");
+  };
+
+  const nextDateHandler = () => {
+    console.log("nextDateHandler");
+  };
+
   return (
     <div>
       <div
         id="chartdiv"
         style={{
           width: "100%",
-          height: "1000px",
-          // backgroundColor: "#454a58"
+          height: width / 1.7,
+          minHeight: "600px",
         }}
       ></div>
-      <Row gutter={[16, 16]}>
+      <div className={styles.dates}>
+        <Button
+          shape="circle"
+          type="link"
+          icon={<LeftOutlined />}
+          onClick={previousDateHandler}
+          className={styles.dateButton}
+        />
+        <div className={styles.date}>2021/12/10</div>
+        <Button
+          shape="circle"
+          type="link"
+          icon={<RightOutlined />}
+          onClick={nextDateHandler}
+          className={styles.dateButton}
+        />
+      </div>
+
+      <Row gutter={[16, 16]} className={styles.informations}>
         <Col span={12}>
           <Location location={location} />
         </Col>

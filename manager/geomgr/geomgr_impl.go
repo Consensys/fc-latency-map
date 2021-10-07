@@ -57,8 +57,13 @@ func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 	}
 
 	log.WithFields(log.Fields{
-		"ip":  ip,
-		"geo": geo,
+		"ip":        ip,
+		"region":    geo.GeopluginRegion,
+		"city":      geo.GeopluginCity,
+		"latitude":  geo.GeopluginLatitude,
+		"longitude": geo.GeopluginLongitude,
+		"status":    geo.GeopluginStatus,
+		"timezone":  geo.GeopluginTimezone,
 	}).Info("ipgeolocation")
 
 	return toFloat(geo.GeopluginLatitude), toFloat(geo.GeopluginLongitude)

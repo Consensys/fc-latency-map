@@ -43,6 +43,12 @@ func (srv *MinerServiceImpl) GetAllMiners() []*models.Miner {
 	return miners
 }
 
+func (srv *MinerServiceImpl) GetTotalMiners() int64 {
+	var count int64
+	srv.DBMgr.GetDB().Model(&models.Miner{}).Count(&count)
+	return count
+}
+
 func (srv *MinerServiceImpl) ParseMinersByBlockOffset(offset int) []*models.Miner {
 	blockHeight, err := (srv.FMgr).GetBlockHeight()
 	if err != nil {
@@ -108,14 +114,28 @@ func getMinerIP(minerInfo *miner.MinerInfo) string {
 }
 
 func (srv *MinerServiceImpl) upsertMinersInDB(miners []*models.Miner) {
-	srv.DBMgr.GetDB().Clauses(clause.OnConflict{
+	err := srv.DBMgr.GetDB().Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "address"}},
-		DoUpdates: clause.AssignmentColumns([]string{"ip"}),
-	}).Create(&miners)
+		DoUpdates: clause.AssignmentColumns([]string{"ip", "latitude", "longitude"}),
+	}).Create(&miners).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("upsertMinersInDB")
+	}
 }
 
 func (srv *MinerServiceImpl) ParseMinersByBlockHeight(height int64) []*models.Miner {
 	deals, err := (srv.FMgr).GetVerifiedDealsByBlockHeight(abi.ChainEpoch(height))
+	if err != nil {
+		log.Printf("get Verified Deals By Block Height failed: %s", err)
+		return []*models.Miner{}
+	}
+	return srv.parseMinersFromDeals(deals)
+}
+
+func (srv *MinerServiceImpl) ParseMinersByStateMarket() []*models.Miner {
+	deals, err := (srv.FMgr).GetVerifiedDealsByStateMarket()
 	if err != nil {
 		log.Printf("get Verified Deals By Block Height failed: %s", err)
 		return []*models.Miner{}

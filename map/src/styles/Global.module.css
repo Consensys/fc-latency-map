@@ -1,11 +1,8 @@
 .container {
-  min-height: 100vh;
-  padding: 0 0.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
 
 .main {
@@ -17,20 +14,45 @@
   align-items: center;
 }
 
-.footer {
+.header {
+  background-color: #ffffff;
+  padding: 0;
   width: 100%;
-  height: 100px;
-  border-top: 1px solid #eaeaea;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  height: 65px;
 }
 
-.footer a {
+.headerLogo {
+  float: left;
+  width: 300px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.headerLogo a {
+  color: #f48055;
+}
+
+.dates {
+  width: 150px;
   display: flex;
   justify-content: center;
-  align-items: center;
-  flex-grow: 1;
+  margin: 0 auto 10px auto;
+  background-color: #f2f2f2;
+}
+
+.dateButton {
+  color: #f48055;
+}
+
+.date {
+  padding: 6px 0 0 0;
+}
+
+.informations {
+  width: 100%;
+  min-height: 200px;
+  padding: 10px;
+  border-top: 2px solid #ff7f50;
 }
 
 .title a {

@@ -136,7 +136,7 @@ func (fMgr *FilecoinMgrImpl) getVerifiedDealsByBlock(height abi.ChainEpoch) ([]V
 }
 
 func (fMgr *FilecoinMgrImpl) getVerifiedDeals(params *market.PublishStorageDealsParams, message *types.Message, verifiedDeals []VerifiedDeal) []VerifiedDeal {
-	for _, deal := range params.Deals { //nolint:gocritic
+	for _, deal := range params.Deals {
 		proposal := deal.Proposal
 
 		if proposal.VerifiedDeal {
@@ -152,4 +152,35 @@ func (fMgr *FilecoinMgrImpl) getVerifiedDeals(params *market.PublishStorageDeals
 	}
 
 	return verifiedDeals
+}
+
+func (fMgr *FilecoinMgrImpl) GetVerifiedDealsByStateMarket() ([]VerifiedDeal, error) {
+	verifiedDeals := []VerifiedDeal{}
+	addresses := map[address.Address]bool{}
+
+	log.Println("Started Filecoin.StateMarketDeals")
+	deals, err := fMgr.api.StateMarketDeals(context.Background(), types.EmptyTSK)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("loading data from Filecoin")
+
+		return nil, err
+	}
+	for _, deal := range deals {
+		proposal := deal.Proposal
+		if !proposal.VerifiedDeal {
+			continue
+		}
+		if _, found := addresses[proposal.Provider]; found {
+			continue
+		}
+
+		addresses[proposal.Provider] = true
+		verifiedDeals = append(verifiedDeals, VerifiedDeal{
+			Provider: proposal.Provider,
+		})
+	}
+
+	return verifiedDeals, nil
 }

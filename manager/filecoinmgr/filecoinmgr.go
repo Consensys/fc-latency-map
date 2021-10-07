@@ -25,4 +25,7 @@ type FilecoinMgr interface {
 
 	// GetMinerInfo
 	GetMinerInfo(addr address.Address) (miner.MinerInfo, error)
+
+	// GetVerifiedDealsByStateMarket returns all miners with active deals
+	GetVerifiedDealsByStateMarket() ([]VerifiedDeal, error)
 }

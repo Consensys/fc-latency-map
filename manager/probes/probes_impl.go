@@ -40,7 +40,10 @@ func (srv *ProbeServiceImpl) RequestProbes() error {
 	}
 
 	locsList := []*models.Location{}
-	dbc.Order("country, iata_code").Find(&locsList)
+	dbc.
+		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: true}).
+		Order("country, iata_code").
+		Find(&locsList)
 	for _, location := range locsList {
 		log.WithFields(log.Fields{
 			"country": location.Country,
@@ -78,6 +81,12 @@ func (srv *ProbeServiceImpl) ListProbes() []*models.Probe {
 	return probesList
 }
 
+func (srv *ProbeServiceImpl) GetTotalProbes() int64 {
+	var count int64
+	srv.DBMgr.GetDB().Model(&models.Probe{}).Count(&count)
+	return count
+}
+
 func (srv *ProbeServiceImpl) Update() {
 	err := srv.RequestProbes()
 	if err != nil {
@@ -105,7 +114,7 @@ func (srv *ProbeServiceImpl) ImportProbes() {
 	}
 
 	probesDB := []*models.Probe{}
-	for _, v := range probes { // nolint:gocritic
+	for _, v := range probes {
 		newProbe := &models.Probe{
 			ProbeID:     v.ID,
 			CountryCode: v.CountryCode,

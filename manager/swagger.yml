@@ -1,0 +1,88 @@
+swagger: "2.0"
+info:
+  title: "Filecoin latency map"
+  version: "0.0.1"
+  description: |
+    Miners latency map data.
+produces:
+  - "application/json"
+consumes:
+  - "application/json"
+schemes:
+  - "http"
+
+basePath: /
+
+paths:
+  # Check
+  /health-check:
+    get:
+      tags:
+        - "Check"
+      summary: "Get Manager health check"
+      operationId: "getHealthCheck"
+      description: "<b>Get Manager health check success</b>"
+      responses:
+        200:
+          description: "Manager health check sent"
+          schema:
+            $ref: "#/definitions/HealthCheck"
+        default:
+          description: "Internal error"
+          schema:
+            $ref: "#/definitions/Error"
+  /metrics:
+    get:
+      tags:
+        - "Check"
+      summary: "Get Manager metrics"
+      operationId: "getMetrics"
+      description: "<b>Get Manager general and database metrics</b>"
+      responses:
+        200:
+          description: "Manager metrics sent"
+          schema:
+            $ref: "#/definitions/Metrics"
+        default:
+          description: "Internal error"
+          schema:
+            $ref: "#/definitions/Error"
+
+definitions:
+  # Responses
+  HealthCheck:
+    type: "object"
+    properties:
+      success:
+        type: "boolean"
+
+  Metrics:
+    type: "object"
+    properties:
+      locations:
+        type: "integer"
+        format: "int64"
+      miners:
+        type: "integer"
+        format: "int64"
+      probes:
+        type: "integer"
+        format: "int64"
+    required:
+      - locations
+      - miners
+      - probes
+
+  Error:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
+      fields:
+        type: "string"
+    required:
+      - "code"
+      - "message"

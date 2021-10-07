@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	minersList        = "miners-list"
-	minersParseOffset = "miners-parse-offset"
-	minersParseBlock  = "miners-parse-block"
+	minersList             = "miners-list"
+	minersParseOffset      = "miners-parse-offset"
+	minersParseBlock       = "miners-parse-block"
+	minersParseStateMarket = "miners-parse-state-market"
 )
 
 type MinerCommander struct {
@@ -32,6 +33,7 @@ func (cmd *MinerCommander) Complete() []prompt.Suggest {
 		{Text: minersList, Description: "List all miners"},
 		{Text: minersParseOffset, Description: "Parse miners by finding active deals in past block heights. Offset is optional. ex: miners-parse-offset <offset>"},
 		{Text: minersParseBlock, Description: "Parse miners by finding active deals in a given block height. ex: miners-parse-block <block_height>"},
+		{Text: minersParseStateMarket, Description: "Parse miners by finding state market deals. ex: miners-parse-state-market"},
 	}
 }
 
@@ -44,6 +46,8 @@ func (cmd *MinerCommander) Execute(in string) {
 		cmd.Handler.GetAllMiners()
 	case minersParseOffset:
 		cmd.minersParseOffset(blocks)
+	case minersParseStateMarket:
+		cmd.minersParseStateMarket()
 	case minersParseBlock:
 		cmd.minersParseBlock(blocks)
 	default:
@@ -72,4 +76,8 @@ func (cmd *MinerCommander) minersParseBlock(blocks []string) {
 		return
 	}
 	cmd.Handler.MinersParseBlock(height)
+}
+
+func (cmd *MinerCommander) minersParseStateMarket() {
+	cmd.Handler.minersParseStateMarket()
 }

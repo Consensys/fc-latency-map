@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	jg "github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm/clause"
 
@@ -18,7 +18,7 @@ type ExportServiceImpl struct {
 	DBMgr db.DatabaseMgr
 }
 
-func NewExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) Service {
+func newExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) Service {
 	return &ExportServiceImpl{
 		Conf:  conf,
 		DBMgr: dbMgr,
@@ -26,11 +26,11 @@ func NewExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) Service {
 }
 
 func (m *ExportServiceImpl) export(fn string) {
-	measurements := m.GetLatencyMeasurementsStored()
+	measurements := m.getLatencyMeasurementsStored()
 
 	fullJSON, err := json.MarshalIndent(measurements, "", "  ")
 	if err != nil {
-		jg.WithFields(jg.Fields{
+		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("Create json data")
 
@@ -38,24 +38,19 @@ func (m *ExportServiceImpl) export(fn string) {
 	}
 
 	file.Create(fn, fullJSON)
-	jg.WithFields(jg.Fields{
+	log.WithFields(log.Fields{
 		"file": fn,
 	}).Info("Export successful")
 }
 
-func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
-	iataCodes := []string{}
+func (m *ExportServiceImpl) getLatencyMeasurementsStored() *Result {
+	var iataCodes []string
 
-	results := &Result{
-		Measurements: map[string]map[string][]*Miner{},
-	}
-
+	results := &Result{Measurements: map[string]map[string][]*Miner{}}
 	loc := m.getLocations()
 	miners := m.getMiners()
 
 	for _, l := range loc {
-		probes := l.Probes
-
 		for _, miner := range miners {
 			latency := &Miner{
 				Address:  miner.Address,
@@ -65,9 +60,9 @@ func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
 				continue
 			}
 
-			latency = m.getLatency(probes, latency, miner.IP)
+			latency = m.getLatency(l.Probes, latency, miner.IP)
 			if len(latency.Measures) > 0 {
-				iataCodes = add(iataCodes, l.IataCode)
+				iataCodes = addNewString(iataCodes, l.IataCode)
 				if _, found := results.Measurements[l.Country]; !found {
 					results.Measurements[l.Country] = make(map[string][]*Miner)
 				}
@@ -75,18 +70,18 @@ func (m *ExportServiceImpl) GetLatencyMeasurementsStored() *Result {
 			}
 		}
 	}
-	results.Miners = miners
-	results.Locations = m.getLocationsFromIata(iataCodes)
-	results.Probes = m.GetProbesFromIata(iataCodes)
+	m.addRootData(results, miners, iataCodes)
 
 	return results
 }
 
-func (m *ExportServiceImpl) GetAllProbes() []*models.Probe {
-	var probesList []*models.Probe
-	m.DBMgr.GetDB().Find(&probesList)
-
-	return probesList
+func (m *ExportServiceImpl) addRootData(results *Result, miners []*models.Miner, iataCodes []string) {
+	results.Miners = miners
+	results.Dates = m.getDates()
+	results.Locations = m.getLocationsFromIata(iataCodes)
+	for _, location := range results.Locations {
+		results.Probes = appendNewProbe(results.Probes, location.Probes)
+	}
 }
 
 func (m *ExportServiceImpl) getLatency(probes []*models.Probe, latency *Miner, ip string) *Miner {
@@ -115,21 +110,21 @@ func (m *ExportServiceImpl) getLatency(probes []*models.Probe, latency *Miner, i
 
 func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []*models.MeasurementResult {
 	var meas []*models.MeasurementResult
-	err := (m.DBMgr).GetDB().Select(
+	err := m.DBMgr.GetDB().Select(
 		"ip," +
-			"date(measurement_timestamp, 'unixepoch') measurement_date," +
+			"measurement_date," +
 			"avg(time_average) time_average," +
 			"max(time_max) time_max," +
 			"min(time_min) time_min").
 		Group("ip, measurement_date").
-		Order("measurement_date desc").
+		Order(clause.OrderByColumn{Column: clause.Column{Name: "measurement_date"}, Desc: true}).
 		Where(&models.MeasurementResult{
 			ProbeID: probe.ProbeID,
 			IP:      ip,
 		}).
 		Find(&meas).Error
 	if err != nil {
-		jg.WithFields(jg.Fields{
+		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("GetMeasureResults")
 
@@ -142,9 +137,9 @@ func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []
 func (m *ExportServiceImpl) getMiners() []*models.Miner {
 	var miners []*models.Miner
 
-	err := (m.DBMgr).GetDB().Find(&miners).Error
+	err := m.DBMgr.GetDB().Find(&miners).Error
 	if err != nil {
-		jg.WithFields(jg.Fields{
+		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("GetMinersWithGeoLocation")
 
@@ -156,12 +151,12 @@ func (m *ExportServiceImpl) getMiners() []*models.Miner {
 
 func (m *ExportServiceImpl) getLocations() []*models.Location {
 	var loc []*models.Location
-	err := (m.DBMgr).GetDB().
+	err := m.DBMgr.GetDB().
 		Preload(clause.Associations).
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: false}).
 		Find(&loc).Error
 	if err != nil {
-		jg.WithFields(jg.Fields{
+		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("GetAllLocations")
 
@@ -173,12 +168,13 @@ func (m *ExportServiceImpl) getLocations() []*models.Location {
 
 func (m *ExportServiceImpl) getLocationsFromIata(codes []string) []*models.Location {
 	var loc []*models.Location
-	err := (m.DBMgr).GetDB().
+	err := m.DBMgr.GetDB().
+		Preload(clause.Associations).
 		Where("iata_code in ?", codes).
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: false}).
 		Find(&loc).Error
 	if err != nil {
-		jg.WithFields(jg.Fields{
+		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("GetAllLocations")
 
@@ -188,23 +184,13 @@ func (m *ExportServiceImpl) getLocationsFromIata(codes []string) []*models.Locat
 	return loc
 }
 
-func (m *ExportServiceImpl) GetProbesFromIata(codes []string) []*models.Probe {
-	var probes []*models.Probe
-	err := (m.DBMgr).GetDB().
-		Where("iata_code in ?", codes).
-		Find(&probes).Error
-	if err != nil {
-		jg.WithFields(jg.Fields{
-			"error": err,
-		}).Error("GetProbes")
-
-		return nil
-	}
-
-	return probes
+func (m *ExportServiceImpl) getDates() []string {
+	var dates []string
+	m.DBMgr.GetDB().Model(&models.MeasurementResult{}).Distinct().Pluck("measurement_date", &dates)
+	return dates
 }
 
-func add(s []string, str string) []string {
+func addNewString(s []string, str string) []string {
 	for _, v := range s {
 		if v == str {
 			return s
@@ -212,4 +198,19 @@ func add(s []string, str string) []string {
 	}
 
 	return append(s, str)
+}
+
+func appendNewProbe(probes, probes2Append []*models.Probe) []*models.Probe {
+	for _, m := range probes2Append {
+		found := false
+		for _, probe := range probes {
+			if found = probe.ProbeID == m.ProbeID; found {
+				break
+			}
+		}
+		if !found {
+			probes = append(probes, m)
+		}
+	}
+	return probes
 }

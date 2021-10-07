@@ -8,6 +8,13 @@ FC Latency Map - Manager allows to get latency measurements
 
 ### Packages
 
+- swagger
+
+```shell
+go get -u github.com/go-swagger/go-swagger/cmd/swagger
+
+```
+
 - sqlite3
 
 ```bash
@@ -102,15 +109,22 @@ or with an offset of 10 (latest block heights)
 ```
 
 3. Parse miners from a given block height
+
 ```bash
 >>> miners-parse 1107781
 ```
 
 4. List miners
+
 ```bash
 >>> miners-list
 ```
 
+5. Load all the miner from MarketDeals
+
+```bash
+>>> miners-parse-state-market
+```
 
 ## Demo
 

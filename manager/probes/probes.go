@@ -19,6 +19,9 @@ type ProbeService interface {
 	// ListProbes returns all Probes
 	ListProbes() []*models.Probe
 
+	// GetTotalProbes returns probes count
+	GetTotalProbes() int64
+
 	// Update handle refresh probes list
 	Update()
 

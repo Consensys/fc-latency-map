@@ -52,6 +52,12 @@ func (srv *LocationServiceImpl) GetAllLocations() []*models.Location {
 	return locsList
 }
 
+func (srv *LocationServiceImpl) GetTotalLocations() int64 {
+	var count int64
+	srv.DBMgr.GetDB().Model(&models.Location{}).Count(&count)
+	return count
+}
+
 func (srv *LocationServiceImpl) GetLocation(location *models.Location) *models.Location {
 	if err := srv.DBMgr.GetDB().Where(location).First(&location).Error; err != nil {
 		return nil
@@ -109,8 +115,9 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) er
 				coords := strings.Split(airport.Coordinates, ", ")
 				lat, _ := strconv.ParseFloat(coords[1], 64)
 				long, _ := strconv.ParseFloat(coords[0], 64)
+
 				srv.DBMgr.GetDB().Create(&models.Location{
-					Name:      airport.Name,
+					Name:      formatName(airport.Name),
 					Country:   airport.IsoCountry,
 					IataCode:  getIataCode(airport.IataCode, airport.Name),
 					Latitude:  lat,
@@ -124,6 +131,52 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) er
 	log.Printf("%d airport imported, type: %s\n", cpt, airportTypeFormated)
 
 	return nil
+}
+
+// nolint
+func formatName(name string) string {
+	name = strings.Replace(name, "\u00e2\u0080\u0093", "-", -1)
+
+	name = strings.Replace(name, "\u00c3\u0087", "Ç", -1)
+	name = strings.Replace(name, "\u00c3\u00a7", "ç", -1)
+
+	name = strings.Replace(name, "\u00c3\u00ad", "í", -1)
+
+	name = strings.Replace(name, "\u00c3\u00ba", "ú", -1)
+
+	name = strings.Replace(name, "\u00c3\u00b3", "ó", -1)
+	name = strings.Replace(name, "\u00c3\u0093", "Ó", -1)
+	name = strings.Replace(name, "\u00c3\u00b4", "ô", -1)
+	name = strings.Replace(name, "\u00c3\u00b6", "ö", -1)
+	name = strings.Replace(name, "\u00c3\u00b8", "ø", -1)
+
+	name = strings.Replace(name, "\u00c5\u0084", "ń", -1)
+	name = strings.Replace(name, "\u00c3\u00b1", "ñ", -1)
+
+	name = strings.Replace(name, "\u00c5\u0082", "ł", -1)
+
+	name = strings.Replace(name, "\u00c5\u0084", "å", -1)
+	name = strings.Replace(name, "\u00c5\u0081", "Å", -1)
+	name = strings.Replace(name, "\u00c3\u00a1", "á", -1)
+	name = strings.Replace(name, "\u00c3\u00a3", "ã", -1)
+	name = strings.Replace(name, "\u00c3\u00a0", "à", -1)
+	name = strings.Replace(name, "\u00c4\u0083", "ă", -1)
+
+	name = strings.Replace(name, "\u00c4\u0099", "ę", -1)
+	name = strings.Replace(name, "\u00c3\u00a9", "é", -1)
+	name = strings.Replace(name, "\u00c3\u00a8", "è", -1)
+
+	name = strings.Replace(name, "\u00c3\u009c", "Ü", -1)
+	name = strings.Replace(name, "\u00c3\u00bc", "ü", -1)
+
+	name = strings.Replace(name, "\u00c5\u00a1", "š", -1)
+	name = strings.Replace(name, "\u00c5\u00a0", "Š", -1)
+
+	name = strings.Replace(name, "\u00c5\u00be", "ž", -1)
+
+	name = strings.Replace(name, "\u00c4\u008d", "č", -1)
+
+	return name
 }
 
 func getIataCode(iata, name string) string {

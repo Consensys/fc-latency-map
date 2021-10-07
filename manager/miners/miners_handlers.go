@@ -64,3 +64,7 @@ func (mHdl *MinerHandler) MinersParseOffset(offset string) {
 func (mHdl *MinerHandler) MinersParseBlock(height int64) {
 	(*mHdl.MSer).ParseMinersByBlockHeight(height)
 }
+
+func (mHdl *MinerHandler) minersParseStateMarket() {
+	(*mHdl.MSer).ParseMinersByStateMarket()
+}

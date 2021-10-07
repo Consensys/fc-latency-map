@@ -35,7 +35,7 @@ func (m *MockMeasurementService) EXPECT() *MockMeasurementServiceMockRecorder {
 	return m.recorder
 }
 
-// GetMeasurements mocks base method.
+// GetMeasurementsRunning mocks base method.
 func (m *MockMeasurementService) GetMeasurementsRunning() []*models.Measurement {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMeasurementsRunning")
@@ -43,8 +43,8 @@ func (m *MockMeasurementService) GetMeasurementsRunning() []*models.Measurement 
 	return ret0
 }
 
-// GetMeasurements indicates an expected call of GetMeasurements.
-func (mr *MockMeasurementServiceMockRecorder) GetMeasurements() *gomock.Call {
+// GetMeasurementsRunning indicates an expected call of GetMeasurementsRunning.
+func (mr *MockMeasurementServiceMockRecorder) GetMeasurementsRunning() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMeasurementsRunning", reflect.TypeOf((*MockMeasurementService)(nil).GetMeasurementsRunning))
 }
