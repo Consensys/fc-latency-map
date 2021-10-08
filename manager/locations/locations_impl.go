@@ -68,7 +68,7 @@ func (srv *LocationServiceImpl) GetLocation(location *models.Location) *models.L
 func (srv *LocationServiceImpl) AddLocation(newLocation *models.Location) *models.Location {
 	location := models.Location{}
 	srv.DBMgr.GetDB().Where("iata_code = ?", newLocation.IataCode).First(&location)
-	if location == (models.Location{}) {
+	if location.ID == 0 {
 		srv.DBMgr.GetDB().Create(&newLocation)
 		log.Printf("new location, ID:%d - Country code: %s\n", newLocation.ID, newLocation.Country)
 	} else {
@@ -111,7 +111,7 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) er
 		if airport.Type == airportTypeFormated {
 			existsLocation := models.Location{}
 			srv.DBMgr.GetDB().Where("iata_code = ?", airport.IataCode).First(&existsLocation)
-			if existsLocation == (models.Location{}) {
+			if existsLocation.ID == 0 {
 				coords := strings.Split(airport.Coordinates, ", ")
 				lat, _ := strconv.ParseFloat(coords[1], 64)
 				long, _ := strconv.ParseFloat(coords[0], 64)
@@ -137,7 +137,7 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) er
 func formatName(name string) string {
 	name = strings.Replace(name, "\u00e2\u0080\u0093", "-", -1)
 
-	name = strings.Replace(name, "\u00c3\u0087", "Ç", -1)	
+	name = strings.Replace(name, "\u00c3\u0087", "Ç", -1)
 	name = strings.Replace(name, "\u00c3\u00a7", "ç", -1)
 
 	name = strings.Replace(name, "\u00c3\u00ad", "í", -1)
@@ -154,7 +154,7 @@ func formatName(name string) string {
 	name = strings.Replace(name, "\u00c3\u00b1", "ñ", -1)
 
 	name = strings.Replace(name, "\u00c5\u0082", "ł", -1)
-	
+
 	name = strings.Replace(name, "\u00c5\u0084", "å", -1)
 	name = strings.Replace(name, "\u00c5\u0081", "Å", -1)
 	name = strings.Replace(name, "\u00c3\u00a1", "á", -1)

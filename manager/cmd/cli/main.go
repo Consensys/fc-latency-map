@@ -6,7 +6,7 @@ import (
 	"runtime/debug"
 	"strings"
 
-	prompt "github.com/c-bata/go-prompt"
+	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 	_ "gorm.io/driver/sqlite"
 
@@ -27,6 +27,11 @@ type LatencyMapCLI struct {
 
 // Start Client CLI
 func main() {
+	log.SetFormatter(&log.TextFormatter{
+		TimestampFormat: "2006-01-02 15:04:05",
+		FullTimestamp:   true,
+	})
+
 	c := &LatencyMapCLI{
 		Commands: []string{"locations", "measures", "miners", "probes", "seed"},
 		Commanders: map[string]cli.Commander{
@@ -74,7 +79,6 @@ func (c *LatencyMapCLI) completer(d prompt.Document) []prompt.Suggest {
 
 // executor executes the command
 func (c *LatencyMapCLI) executor(in string) {
-	log.Printf("executor %s\n", in)
 	blocks := strings.Split(strings.TrimSpace(in), " ")
 
 	log.Printf("Command: %s\n", blocks[0])
@@ -95,6 +99,7 @@ func (c *LatencyMapCLI) executor(in string) {
 
 	if commander, exists := c.Commanders[command]; exists {
 		commander.Execute(in)
+		log.Printf("Command ends: %s\n", blocks[0])
 	} else {
 		log.Printf("unknown command: %s\n", command)
 	}

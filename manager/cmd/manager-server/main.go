@@ -28,8 +28,8 @@ func main() {
 	defer server.Shutdown()
 
 	parser := flags.NewParser(server, flags.Default)
-	parser.ShortDescription = "Filecoin Retrieval Register"
-	parser.LongDescription = "Retrieval Providers and Retrieval Gateways register.\n"
+	parser.ShortDescription = "Filecoin latency map"
+	parser.LongDescription = "Miners latency map data.\n"
 	server.ConfigureFlags()
 	for _, optsGroup := range api.CommandLineOptionsGroups {
 		_, err := parser.AddGroup(optsGroup.ShortDescription, optsGroup.LongDescription, optsGroup.Options)

@@ -6,15 +6,13 @@ import (
 	"os"
 	"testing"
 
-	gomock "github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
-
-var dummyCountryError = "FRX"
 
 var dummyName = "Charles de Gaulle International Airport"
 var dummyCountry = "FR"
@@ -24,7 +22,7 @@ var dummyGeoLongitude = 2.55
 var dummyType = "large_airport"
 
 var dummyLocation = models.Location{
-	Name:   		dummyName,
+	Name:      dummyName,
 	Country:   dummyCountry,
 	IataCode:  dummyIataCode,
 	Latitude:  dummyGeoLatitude,
@@ -209,7 +207,7 @@ func Test_UpdateLocations(t *testing.T) {
 		log.Fatal(err)
 	}
 	defer os.Remove(file.Name())
-	_, err = file.WriteString(mockAirportJson)
+	_, _ = file.WriteString(mockAirportJson)
 
 	// Arrange
 	mockConfig := config.NewMockConfig()
@@ -242,7 +240,7 @@ func Test_FindAirport(t *testing.T) {
 		log.Fatal(err)
 	}
 	defer os.Remove(file.Name())
-	_, err = file.WriteString(mockAirportJson)
+	_, _ = file.WriteString(mockAirportJson)
 
 	// Arrange
 	mockConfig := config.NewMockConfig()

@@ -29,8 +29,8 @@ func init() {
   ],
   "swagger": "2.0",
   "info": {
-    "description": "Retrieval Providers and Retrieval Gateways register.\n",
-    "title": "Filecoin Retrieval Register",
+    "description": "Miners latency map data.\n",
+    "title": "Filecoin latency map",
     "version": "0.0.1"
   },
   "basePath": "/",
@@ -148,8 +148,8 @@ func init() {
   ],
   "swagger": "2.0",
   "info": {
-    "description": "Retrieval Providers and Retrieval Gateways register.\n",
-    "title": "Filecoin Retrieval Register",
+    "description": "Miners latency map data.\n",
+    "title": "Filecoin latency map",
     "version": "0.0.1"
   },
   "basePath": "/",

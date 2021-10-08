@@ -53,7 +53,7 @@ func NewManagerAPI(spec *loads.Document) *ManagerAPI {
 	}
 }
 
-/*ManagerAPI Retrieval Providers and Retrieval Gateways register.
+/*ManagerAPI Miners latency map data.
  */
 type ManagerAPI struct {
 	spec            *loads.Document

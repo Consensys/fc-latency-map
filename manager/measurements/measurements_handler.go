@@ -21,9 +21,7 @@ type Handler struct {
 	ripeMgr ripemgr.RipeMgr
 }
 
-const stopped = "Stopped"
-
-func NewHandler() *Handler {
+func newHandler() *Handler {
 	conf := config.NewConfig()
 	dbMgr, err := db.NewDatabaseMgrImpl(conf)
 	if err != nil {
@@ -40,7 +38,7 @@ func NewHandler() *Handler {
 		log.Fatalf("connecting with lotus failed: %stopped", err)
 	}
 
-	mSer := NewMeasurementServiceImpl(conf, dbMgr, fMgr)
+	mSer := newMeasurementServiceImpl(conf, dbMgr, fMgr)
 
 	return &Handler{
 		Service: mSer,
@@ -50,25 +48,25 @@ func NewHandler() *Handler {
 func (h *Handler) ImportMeasures() {
 	measurements, measuremStartTime := h.Service.GetMeasuresLastResultTime()
 	for _, m := range measurements {
-		if m.Status == "Failed" {
-			continue
-		}
+		measure, err := h.ripeMgr.GetMeasurement(m.MeasurementID)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"err": err,
+			}).Info("GetMeasurement")
 
-		if m.Status != stopped {
-			measure, _ := h.ripeMgr.GetMeasurement(m.MeasurementID)
-			h.Service.UpsertMeasurements([]*atlas.Measurement{measure})
-		}
-		i, found := measuremStartTime[m.MeasurementID]
-		const delayBetweenStopTime = 200
-		if found && i-m.StatusStopTime < delayBetweenStopTime {
 			continue
 		}
+		h.Service.UpsertMeasurements([]*atlas.Measurement{measure})
+
+		i := measuremStartTime[m.MeasurementID]
+
 		log.WithFields(log.Fields{
 			"MeasurementID":    m.MeasurementID,
 			"StatusStopTime":   m.StatusStopTime,
 			"StopTime":         m.StopTime,
 			"Results StopTime": i,
 		}).Info("GetMeasurementResults")
+
 		results, err := h.ripeMgr.GetMeasurementResults(m.MeasurementID, i)
 		if err != nil {
 			log.WithFields(log.Fields{
@@ -82,8 +80,8 @@ func (h *Handler) ImportMeasures() {
 	}
 }
 
-func (h *Handler) CreateMeasurements() {
-	places, err := h.Service.PlacesDataSet()
+func (h *Handler) CreateMeasurements(parameters []string) {
+	places, err := h.Service.GetLocationsAsPlaces()
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -92,8 +90,11 @@ func (h *Handler) CreateMeasurements() {
 		return
 	}
 
-	miners := h.Service.GetMiners()
+	miners := h.Service.GetMinersWithGeolocation()
 	for i, v := range miners {
+		if len(parameters) > 1 && parameters[1] != v.Address {
+			continue
+		}
 		pIDs := strings.Join(h.Service.GetProbIDs(places, v.Latitude, v.Longitude), ",")
 		log.WithFields(log.Fields{
 			"miner.address": v.Address,
@@ -101,7 +102,6 @@ func (h *Handler) CreateMeasurements() {
 		}).Info("locations Measurements")
 
 		measures, err := h.ripeMgr.CreateMeasurements([]*models.Miner{v}, pIDs, i)
-
 		if err != nil {
 			log.WithFields(log.Fields{
 				"err": err,

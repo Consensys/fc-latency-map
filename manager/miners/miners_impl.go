@@ -77,7 +77,7 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 			continue
 		}
 		ip := getMinerIP(&minerInfo)
-		lat, long := srv.getGeoLocation(ip)
+		lat, long := srv.getGeolocation(ip)
 		miners = append(miners, &models.Miner{
 			Address:   address,
 			IP:        ip,
@@ -97,7 +97,7 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 	return miners
 }
 
-func (srv *MinerServiceImpl) getGeoLocation(ip string) (lat, long float64) {
+func (srv *MinerServiceImpl) getGeolocation(ip string) (lat, long float64) {
 	if ip != "" {
 		split := strings.Split(ip, ",")
 
@@ -114,7 +114,7 @@ func getMinerIP(minerInfo *miner.MinerInfo) string {
 }
 
 func (srv *MinerServiceImpl) upsertMinersInDB(miners []*models.Miner) {
-	err := srv.DBMgr.GetDB().Debug().Clauses(clause.OnConflict{
+	err := srv.DBMgr.GetDB().Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "address"}},
 		DoUpdates: clause.AssignmentColumns([]string{"ip", "latitude", "longitude"}),
 	}).Create(&miners).Error

@@ -44,10 +44,6 @@ func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
 	}, nil
 }
 
-func (rMgr *RipeMgrImpl) GetProbe(id int) (*atlas.Probe, error) {
-	return rMgr.c.GetProbe(id)
-}
-
 func (rMgr *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error) {
 	probes, err := rMgr.c.GetProbes(opts)
 	if err != nil {
@@ -55,60 +51,6 @@ func (rMgr *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error
 	}
 
 	return probes, nil
-}
-
-func (rMgr *RipeMgrImpl) GetNearestProbe(lat, long float64) (*atlas.Probe, error) {
-	var err error
-	nearestProbes := []atlas.Probe{}
-
-	maxLocRange := rMgr.conf.GetFloat64("RIPE_LOCATION_RANGE_MAX")
-	coordRange := rMgr.conf.GetFloat64("RIPE_LOCATION_RANGE_INIT")
-
-	for len(nearestProbes) < 1 && coordRange < maxLocRange {
-		opts := rMgr.getLatLongRange(lat, long, coordRange)
-
-		nearestProbes, err = rMgr.c.GetProbes(opts)
-
-		if err != nil {
-			if err.Error() == "empty probe list" {
-				coordRange *= 2
-
-				continue
-			}
-
-			return nil, err
-		}
-	}
-	if len(nearestProbes) > 0 {
-		return &nearestProbes[0], nil
-	}
-
-	return &atlas.Probe{}, nil
-}
-
-func (rMgr *RipeMgrImpl) getLatLongRange(lat, long, coordRange float64) map[string]string {
-	latGte := fmt.Sprintf("%f", lat-coordRange)
-	latLte := fmt.Sprintf("%f", lat+coordRange)
-	longGte := fmt.Sprintf("%f", long-coordRange)
-	longLte := fmt.Sprintf("%f", long+coordRange)
-
-	log.WithFields(log.Fields{
-		"latitude__gte":  latGte,
-		"latitude__lte":  latLte,
-		"longitude__gte": longGte,
-		"longitude__lte": longLte,
-		"range":          coordRange,
-	}).Info("Get probes for geo location")
-
-	opts := make(map[string]string)
-	opts["latitude__gte"] = latGte
-	opts["latitude__lte"] = latLte
-	opts["longitude__gte"] = longGte
-	opts["longitude__lte"] = longLte
-	opts["status_name"] = "Connected"
-	opts["sort"] = "id"
-
-	return opts
 }
 
 func (rMgr *RipeMgrImpl) GetMeasurement(measurementID int) (*atlas.Measurement, error) {

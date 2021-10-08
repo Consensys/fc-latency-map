@@ -38,7 +38,12 @@ func (pHdl *ProbeHandler) Update() {
 	(*pHdl.PSer).Update()
 }
 
-// Update handle updating probes list
-func (pHdl *ProbeHandler) GetAllProbes() []*models.Probe {
-	return (*pHdl.PSer).GetAllProbes()
+// List handle updating probes list
+func (pHdl *ProbeHandler) List() []*models.Probe {
+	return (*pHdl.PSer).ListProbes()
+}
+
+// Import handle Import probes from ripe
+func (pHdl *ProbeHandler) Import() {
+	(*pHdl.PSer).ImportProbes()
 }

@@ -120,6 +120,20 @@ func (mr *MockLocationServiceMockRecorder) GetLocation(arg0 interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLocation", reflect.TypeOf((*MockLocationService)(nil).GetLocation), arg0)
 }
 
+// GetTotalLocations mocks base method.
+func (m *MockLocationService) GetTotalLocations() int64 {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTotalLocations")
+	ret0, _ := ret[0].(int64)
+	return ret0
+}
+
+// GetTotalLocations indicates an expected call of GetTotalLocations.
+func (mr *MockLocationServiceMockRecorder) GetTotalLocations() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTotalLocations", reflect.TypeOf((*MockLocationService)(nil).GetTotalLocations))
+}
+
 // UpdateLocations mocks base method.
 func (m *MockLocationService) UpdateLocations(arg0, arg1 string) error {
 	m.ctrl.T.Helper()

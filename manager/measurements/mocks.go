@@ -35,18 +35,33 @@ func (m *MockMeasurementService) EXPECT() *MockMeasurementServiceMockRecorder {
 	return m.recorder
 }
 
-// GetMeasurements mocks base method.
-func (m *MockMeasurementService) GetMeasurements() []*models.Measurement {
+// GetLocationsAsPlaces mocks base method.
+func (m *MockMeasurementService) GetLocationsAsPlaces() ([]Place, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMeasurements")
+	ret := m.ctrl.Call(m, "GetLocationsAsPlaces")
+	ret0, _ := ret[0].([]Place)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLocationsAsPlaces indicates an expected call of GetLocationsAsPlaces.
+func (mr *MockMeasurementServiceMockRecorder) GetLocationsAsPlaces() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLocationsAsPlaces", reflect.TypeOf((*MockMeasurementService)(nil).GetLocationsAsPlaces))
+}
+
+// GetMeasurementsRunning mocks base method.
+func (m *MockMeasurementService) GetMeasurementsRunning() []*models.Measurement {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMeasurementsRunning")
 	ret0, _ := ret[0].([]*models.Measurement)
 	return ret0
 }
 
-// GetMeasurements indicates an expected call of GetMeasurements.
-func (mr *MockMeasurementServiceMockRecorder) GetMeasurements() *gomock.Call {
+// GetMeasurementsRunning indicates an expected call of GetMeasurementsRunning.
+func (mr *MockMeasurementServiceMockRecorder) GetMeasurementsRunning() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMeasurements", reflect.TypeOf((*MockMeasurementService)(nil).GetMeasurements))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMeasurementsRunning", reflect.TypeOf((*MockMeasurementService)(nil).GetMeasurementsRunning))
 }
 
 // GetMeasuresLastResultTime mocks base method.
@@ -64,18 +79,18 @@ func (mr *MockMeasurementServiceMockRecorder) GetMeasuresLastResultTime() *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMeasuresLastResultTime", reflect.TypeOf((*MockMeasurementService)(nil).GetMeasuresLastResultTime))
 }
 
-// GetMiners mocks base method.
-func (m *MockMeasurementService) GetMiners() []*models.Miner {
+// GetMinersWithGeolocation mocks base method.
+func (m *MockMeasurementService) GetMinersWithGeolocation() []*models.Miner {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMiners")
+	ret := m.ctrl.Call(m, "GetMinersWithGeolocation")
 	ret0, _ := ret[0].([]*models.Miner)
 	return ret0
 }
 
-// GetMiners indicates an expected call of GetMiners.
-func (mr *MockMeasurementServiceMockRecorder) GetMiners() *gomock.Call {
+// GetMinersWithGeolocation indicates an expected call of GetMinersWithGeolocation.
+func (mr *MockMeasurementServiceMockRecorder) GetMinersWithGeolocation() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMiners", reflect.TypeOf((*MockMeasurementService)(nil).GetMiners))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMinersWithGeolocation", reflect.TypeOf((*MockMeasurementService)(nil).GetMinersWithGeolocation))
 }
 
 // GetProbIDs mocks base method.
@@ -102,21 +117,6 @@ func (m *MockMeasurementService) ImportMeasurement(arg0 []ripe_atlas.Measurement
 func (mr *MockMeasurementServiceMockRecorder) ImportMeasurement(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ImportMeasurement", reflect.TypeOf((*MockMeasurementService)(nil).ImportMeasurement), arg0)
-}
-
-// PlacesDataSet mocks base method.
-func (m *MockMeasurementService) PlacesDataSet() ([]Place, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PlacesDataSet")
-	ret0, _ := ret[0].([]Place)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// PlacesDataSet indicates an expected call of PlacesDataSet.
-func (mr *MockMeasurementServiceMockRecorder) PlacesDataSet() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlacesDataSet", reflect.TypeOf((*MockMeasurementService)(nil).PlacesDataSet))
 }
 
 // UpsertMeasurements mocks base method.

@@ -14,14 +14,17 @@ type Miner struct {
 type ProbeService interface {
 
 	// RequestProbes returns Probes from Ripe
-	RequestProbes() ([]*models.Probe, error)
+	RequestProbes() error
 
-	// GetAllProbes returns all Probes
-	GetAllProbes() []*models.Probe
+	// ListProbes returns all Probes
+	ListProbes() []*models.Probe
 
 	// GetTotalProbes returns probes count
 	GetTotalProbes() int64
 
 	// Update handle refresh probes list
 	Update()
+
+	// ImportProbes from ripe
+	ImportProbes()
 }

@@ -1,9 +1,9 @@
 swagger: "2.0"
 info:
-  title: "Filecoin Retrieval Register"
+  title: "Filecoin latency map"
   version: "0.0.1"
   description: |
-    Retrieval Providers and Retrieval Gateways register.
+    Miners latency map data.
 produces:
   - "application/json"
 consumes:

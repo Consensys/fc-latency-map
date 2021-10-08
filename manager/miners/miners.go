@@ -8,7 +8,7 @@ import (
 
 type MinerService interface {
 
-	// GetMiners retrieve miners from db
+	// GetAllMiners retrieve miners from db
 	GetAllMiners() []*models.Miner
 
 	// GetTotalMiners returns miners count

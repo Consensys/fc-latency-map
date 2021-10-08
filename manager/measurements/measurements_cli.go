@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	prompt "github.com/c-bata/go-prompt"
+	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/cli"
@@ -26,12 +26,12 @@ type MesuresCommander struct {
 
 func NewMesuresCommander() cli.Commander {
 	return &MesuresCommander{
-		Handler: NewHandler(),
+		Handler: newHandler(),
 		Export:  export.NewExportHandler(),
 	}
 }
 
-// completes the input
+// Complete completes the input
 func (cmd *MesuresCommander) Complete() []prompt.Suggest {
 	return []prompt.Suggest{
 		{Text: measuresList, Description: "Get last measures"},
@@ -41,13 +41,13 @@ func (cmd *MesuresCommander) Complete() []prompt.Suggest {
 	}
 }
 
-// executes the command
+// Execute executes the command
 func (cmd *MesuresCommander) Execute(in string) {
 	blocks := strings.Split(strings.TrimSpace(in), " ")
 
 	switch blocks[0] {
 	case measuresCreate:
-		cmd.Handler.CreateMeasurements()
+		cmd.Handler.CreateMeasurements(blocks)
 	case measuresGet:
 		cmd.Handler.ImportMeasures()
 	case measuresList:

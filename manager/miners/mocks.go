@@ -48,6 +48,20 @@ func (mr *MockMinerServiceMockRecorder) GetAllMiners() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllMiners", reflect.TypeOf((*MockMinerService)(nil).GetAllMiners))
 }
 
+// GetTotalMiners mocks base method.
+func (m *MockMinerService) GetTotalMiners() int64 {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTotalMiners")
+	ret0, _ := ret[0].(int64)
+	return ret0
+}
+
+// GetTotalMiners indicates an expected call of GetTotalMiners.
+func (mr *MockMinerServiceMockRecorder) GetTotalMiners() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTotalMiners", reflect.TypeOf((*MockMinerService)(nil).GetTotalMiners))
+}
+
 // ParseMinersByBlockHeight mocks base method.
 func (m *MockMinerService) ParseMinersByBlockHeight(arg0 int64) []*models.Miner {
 	m.ctrl.T.Helper()

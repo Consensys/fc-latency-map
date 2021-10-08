@@ -34,27 +34,52 @@ func (m *MockProbeService) EXPECT() *MockProbeServiceMockRecorder {
 	return m.recorder
 }
 
-// GetAllProbes mocks base method.
-func (m *MockProbeService) GetAllProbes() []*models.Probe {
+// GetTotalProbes mocks base method.
+func (m *MockProbeService) GetTotalProbes() int64 {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllProbes")
+	ret := m.ctrl.Call(m, "GetTotalProbes")
+	ret0, _ := ret[0].(int64)
+	return ret0
+}
+
+// GetTotalProbes indicates an expected call of GetTotalProbes.
+func (mr *MockProbeServiceMockRecorder) GetTotalProbes() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTotalProbes", reflect.TypeOf((*MockProbeService)(nil).GetTotalProbes))
+}
+
+// ImportProbes mocks base method.
+func (m *MockProbeService) ImportProbes() {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "ImportProbes")
+}
+
+// ImportProbes indicates an expected call of ImportProbes.
+func (mr *MockProbeServiceMockRecorder) ImportProbes() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ImportProbes", reflect.TypeOf((*MockProbeService)(nil).ImportProbes))
+}
+
+// ListProbes mocks base method.
+func (m *MockProbeService) ListProbes() []*models.Probe {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListProbes")
 	ret0, _ := ret[0].([]*models.Probe)
 	return ret0
 }
 
-// GetAllProbes indicates an expected call of GetAllProbes.
-func (mr *MockProbeServiceMockRecorder) GetAllProbes() *gomock.Call {
+// ListProbes indicates an expected call of ListProbes.
+func (mr *MockProbeServiceMockRecorder) ListProbes() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllProbes", reflect.TypeOf((*MockProbeService)(nil).GetAllProbes))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListProbes", reflect.TypeOf((*MockProbeService)(nil).ListProbes))
 }
 
 // RequestProbes mocks base method.
-func (m *MockProbeService) RequestProbes() ([]*models.Probe, error) {
+func (m *MockProbeService) RequestProbes() error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RequestProbes")
-	ret0, _ := ret[0].([]*models.Probe)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // RequestProbes indicates an expected call of RequestProbes.

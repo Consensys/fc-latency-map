@@ -11,7 +11,7 @@ on:
     paths-ignore:
       - '**.md'
 env:
-  MIN_COVERAGE: 29
+  MIN_COVERAGE: 45
 jobs:
   lint:
     name: Run lint

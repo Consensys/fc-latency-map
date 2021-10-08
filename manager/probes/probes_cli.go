@@ -3,7 +3,7 @@ package probes
 import (
 	"strings"
 
-	prompt "github.com/c-bata/go-prompt"
+	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/cli"
@@ -11,6 +11,7 @@ import (
 
 const (
 	probesUpdate = "probes-update"
+	probesImport = "probes-import"
 	probesList   = "probes-list"
 )
 
@@ -24,7 +25,7 @@ func NewProbeCommander() cli.Commander {
 	}
 }
 
-// completes the input
+// Complete completes the input
 func (cmd *ProbeCommander) Complete() []prompt.Suggest {
 	return []prompt.Suggest{
 		{Text: probesUpdate, Description: "Update probes list by finding online and active probes"},
@@ -32,7 +33,7 @@ func (cmd *ProbeCommander) Complete() []prompt.Suggest {
 	}
 }
 
-// executes the command
+// Execute executes the command
 func (cmd *ProbeCommander) Execute(in string) {
 	blocks := strings.Split(strings.TrimSpace(in), " ")
 
@@ -40,7 +41,9 @@ func (cmd *ProbeCommander) Execute(in string) {
 	case probesUpdate:
 		cmd.Handler.Update()
 	case probesList:
-		cmd.Handler.GetAllProbes()
+		cmd.Handler.List()
+	case probesImport:
+		cmd.Handler.Import()
 	default:
 		log.Printf("unknown command: %s\n", blocks[0])
 	}
