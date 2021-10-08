@@ -196,53 +196,6 @@ func TestMeasurementServiceImpl_ImportMeasurement(t *testing.T) {
     }
 }
 
-func TestMeasurementServiceImpl_GetMeasuresLastResultTime(t *testing.T) {
-    ctrl := gomock.NewController(t)
-    defer ctrl.Finish()
-
-    type fields struct {
-        Conf  *viper.Viper
-        DBMgr db.DatabaseMgr
-        FMgr  filecoinmgr.FilecoinMgr
-    }
-    tests := []struct {
-        name               string
-        fields             fields
-        want               map[int]int
-        measurements       []models.Measurement
-        measurementResults []models.MeasurementResult
-    }{
-        {name: "not empty ", fields: struct {
-            Conf  *viper.Viper
-            DBMgr db.DatabaseMgr
-            FMgr  filecoinmgr.FilecoinMgr
-        }{
-            Conf:  config.NewMockConfig(),
-            DBMgr: db.NewMockDatabaseMgr(),
-            FMgr:  filecoinmgr.NewMockFilecoinMgr(ctrl),
-        },
-            measurements: []models.Measurement{
-                {MeasurementID: 11, StartTime: 11, StopTime: 11},
-            },
-            measurementResults: []models.MeasurementResult{{MeasurementID: 11}},
-            want:               map[int]int{},
-        },
-    }
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            m := newMeasurementServiceImpl(
-                tt.fields.Conf,
-                tt.fields.DBMgr,
-                tt.fields.FMgr,
-            )
-            tt.fields.DBMgr.GetDB().Create(tt.measurements)
-            if _, got := m.GetMeasuresLastResultTime(); !reflect.DeepEqual(got, tt.want) {
-                t.Errorf("GetMeasuresLastResultTime() = %v, want %v", got, tt.want)
-            }
-        })
-    }
-}
-
 func TestMeasurementServiceImpl_GetMiners(t *testing.T) {
     ctrl := gomock.NewController(t)
     defer ctrl.Finish()

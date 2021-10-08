@@ -44,3 +44,15 @@ func (mr *MockServiceMockRecorder) export(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "export", reflect.TypeOf((*MockService)(nil).export), arg0)
 }
+
+// exportAll mocks base method.
+func (m *MockService) exportAll() {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "exportAll")
+}
+
+// exportAll indicates an expected call of exportAll.
+func (mr *MockServiceMockRecorder) exportAll() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "exportAll", reflect.TypeOf((*MockService)(nil).exportAll))
+}

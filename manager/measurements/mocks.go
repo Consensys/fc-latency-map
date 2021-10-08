@@ -64,21 +64,6 @@ func (mr *MockMeasurementServiceMockRecorder) GetMeasurementsRunning() *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMeasurementsRunning", reflect.TypeOf((*MockMeasurementService)(nil).GetMeasurementsRunning))
 }
 
-// GetMeasuresLastResultTime mocks base method.
-func (m *MockMeasurementService) GetMeasuresLastResultTime() ([]*models.Measurement, map[int]int) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMeasuresLastResultTime")
-	ret0, _ := ret[0].([]*models.Measurement)
-	ret1, _ := ret[1].(map[int]int)
-	return ret0, ret1
-}
-
-// GetMeasuresLastResultTime indicates an expected call of GetMeasuresLastResultTime.
-func (mr *MockMeasurementServiceMockRecorder) GetMeasuresLastResultTime() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMeasuresLastResultTime", reflect.TypeOf((*MockMeasurementService)(nil).GetMeasuresLastResultTime))
-}
-
 // GetMinersWithGeolocation mocks base method.
 func (m *MockMeasurementService) GetMinersWithGeolocation() []*models.Miner {
 	m.ctrl.T.Helper()

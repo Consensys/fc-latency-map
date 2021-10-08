@@ -17,9 +17,6 @@ type MeasurementService interface {
 
 	UpsertMeasurements([]*atlas.Measurement)
 
-	// GetMeasuresLastResultTime load RIPE MeasurementResults
-	GetMeasuresLastResultTime() ([]*models.Measurement, map[int]int)
-
 	// GetLocationsAsPlaces returns slice of measurements.Place
 	GetLocationsAsPlaces() ([]Place, error)
 

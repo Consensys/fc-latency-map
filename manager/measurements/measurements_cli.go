@@ -13,10 +13,11 @@ import (
 )
 
 const (
-	measuresGet    = "measures-get"
-	measuresCreate = "measures-create"
-	measuresList   = "measures-list"
-	measuresExport = "measures-export"
+	measuresGet       = "measures-get"
+	measuresCreate    = "measures-create"
+	measuresList      = "measures-list"
+	measuresExport    = "measures-export"
+	measuresExportAll = "measures-export-all"
 )
 
 type MesuresCommander struct {
@@ -54,6 +55,8 @@ func (cmd *MesuresCommander) Execute(in string) {
 		cmd.measuresList(blocks)
 	case measuresExport:
 		cmd.measuresExport(blocks)
+	case measuresExportAll:
+		cmd.measuresExportAll()
 	default:
 		log.Printf("unknown command: %stopped\n", blocks[0])
 	}
@@ -72,4 +75,8 @@ func (cmd *MesuresCommander) measuresExport(blocks []string) {
 		fn = fmt.Sprintf("data_%v.json", time.Now().Unix())
 	}
 	cmd.Export.Export(fn)
+}
+
+func (cmd *MesuresCommander) measuresExportAll() {
+	cmd.Export.ExportAll()
 }

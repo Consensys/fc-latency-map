@@ -4,6 +4,9 @@ package export
 
 type Service interface {
 
-	// dbExportData from db to json file
+	// export from db to json file
 	export(fn string)
+
+	// exportAll json files
+	exportAll()
 }

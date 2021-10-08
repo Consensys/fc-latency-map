@@ -47,19 +47,6 @@ func (m *measurementServiceImpl) UpsertMeasurements(mrs []*atlas.Measurement) {
 	m.dbCreate(measurements)
 }
 
-func (m *measurementServiceImpl) GetMeasuresLastResultTime() (measurements []*models.Measurement, measurementsStartTime map[int]int) {
-	measurementsStartTime = make(map[int]int)
-	measurements = m.GetMeasurementsRunning()
-	for _, id := range measurements {
-		resultTime := m.getLastMeasurementResultTime(id.MeasurementID)
-		if resultTime > 0 {
-			measurementsStartTime[id.MeasurementID] = resultTime
-		}
-	}
-
-	return measurements, measurementsStartTime
-}
-
 func (m *measurementServiceImpl) dbCreate(measurements []*models.Measurement) {
 	err := (m.DBMgr).GetDB().
 		Clauses(clause.OnConflict{
@@ -98,8 +85,15 @@ func (m *measurementServiceImpl) GetMinersWithGeolocation() []*models.Miner {
 func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult) {
 	dbc := (m.DBMgr).GetDB()
 	var insert []*models.MeasurementResult
+	locations := make(map[int][]*models.Location)
+
 	for _, result := range mr { //nolint:gocritic
 		t := time.Unix(int64(result.Timestamp), 0)
+
+		if _, found := locations[result.PrbID]; !found {
+			locations[result.PrbID] = m.getLocationsWithProbID(result.PrbID)
+		}
+
 		insert = append(insert, &models.MeasurementResult{
 			IP:                   result.DstAddr,
 			MeasurementID:        result.MsmID,
@@ -109,8 +103,10 @@ func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult)
 			TimeAverage:          result.Avg,
 			TimeMax:              result.Max,
 			TimeMin:              result.Min,
+			Locations:            locations[result.PrbID],
 		})
 	}
+
 	dbc = dbc.Model(&models.MeasurementResult{}).
 		Clauses(clause.OnConflict{
 			Columns: []clause.Column{
@@ -135,22 +131,10 @@ func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult)
 func (m *measurementServiceImpl) GetMeasurementsRunning() []*models.Measurement {
 	var measurements []*models.Measurement
 	dbc := (m.DBMgr).GetDB()
-	dbc.Model(&models.Measurement{}).Find(&measurements, "status not in ('Failed', 'Stopped')")
+	dbc.Model(&models.Measurement{}).
+		Find(&measurements, "status not in ('Failed', 'Stopped')")
 
 	return measurements
-}
-
-func (m *measurementServiceImpl) getLastMeasurementResultTime(measurementID int) int {
-	dbc := (m.DBMgr).GetDB()
-
-	measurementResults := &models.MeasurementResult{}
-
-	dbc.Model(&models.MeasurementResult{}).
-		Select("max(measurement_timestamp) measurement_timestamp").
-		Where("measurement_id = ?", measurementID).
-		First(&measurementResults)
-
-	return measurementResults.MeasurementTimestamp
 }
 
 func (m *measurementServiceImpl) GetProbIDs(places []Place, lat, long float64) []string {
@@ -210,4 +194,23 @@ func (m *measurementServiceImpl) GetLocationsAsPlaces() ([]Place, error) {
 		return places, err
 	}
 	return places, nil
+}
+
+func (m *measurementServiceImpl) getLocationsWithProbID(ripeProbeID int) []*models.Location {
+	l := []*models.Location{}
+	dbc := m.DBMgr.GetDB()
+	err := dbc.Where("id in (?)", dbc.
+		Select("location_id").
+		Table("locations_probes").
+		Where("probe_id in (?)",
+			dbc.Select("id").
+				Table("probes").
+				Where("probe_id in (?)", ripeProbeID)),
+	).Find(&l).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("getLocationsWithProbID")
+	}
+	return l
 }

@@ -85,12 +85,8 @@ func TestHandler_ImportMeasuresError(t *testing.T) {
 		Service: service,
 		ripeMgr: ripeMgr,
 	}
-	service.EXPECT().GetMeasuresLastResultTime().Times(1)
-	ripeMgr.EXPECT().
-		GetMeasurementResults(gomock.Any(), gomock.Any()).
-		Return(nil, fmt.Errorf("error")).
-		MaxTimes(1)
 
+	service.EXPECT().GetMeasurementsRunning().Times(1)
 	service.EXPECT().ImportMeasurement(gomock.Any()).Times(0)
 
 	h.ImportMeasures()
@@ -107,10 +103,11 @@ func TestHandler_ImportMeasures(t *testing.T) {
 		Service: service,
 		ripeMgr: ripeMgr,
 	}
-	service.EXPECT().GetMeasuresLastResultTime().Times(1)
+
+	service.EXPECT().GetMeasurementsRunning().Times(1)
 
 	ripeMgr.EXPECT().
-		GetMeasurementResults(gomock.Any(), gomock.Any()).
+		GetMeasurementResults(gomock.Any()).
 		Return(nil, nil).
 		MaxTimes(1)
 
