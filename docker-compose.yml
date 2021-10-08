@@ -6,9 +6,21 @@ services:
     container_name: fc-latency-manager
     network_mode: "bridge"
     ports:
-      - 3000:3000
+      - 3001:3000
     volumes:
       - ./manager/data/database.db:/data/database.db
     env_file:
       - ./manager/.env
+    restart: unless-stopped
+  
+  map:
+    image: fc-latency-map
+    container_name: fc-latency-map
+    network_mode: "bridge"
+    ports:
+      - 3000:3000
+    # volumes:
+    #   - ./map/data:/opt/app/data
+    env_file:
+      - ./map/.env
     restart: unless-stopped

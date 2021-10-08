@@ -1,4 +1,11 @@
-.PHONY: build
+.PHONY: default manager map
+.DEFAULT_GOAL := default
 
-build:
-	docker build -t fc-latency-manager .
+default: manager map
+	docker-compose up
+
+manager:
+	docker build -f manager/Dockerfile -t fc-latency-manager .
+
+map:
+	docker build -f map/Dockerfile -t fc-latency-map ./map
