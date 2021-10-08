@@ -11,7 +11,7 @@ import (
 type MeasurementService interface {
 	ImportMeasurement(measures []atlas.MeasurementResult)
 
-	GetMinersWithGeoLocation() []*models.Miner
+	GetMinersWithGeolocation() []*models.Miner
 
 	GetProbIDs(places []Place, latitude, longitude float64) []string
 
@@ -20,8 +20,8 @@ type MeasurementService interface {
 	// GetMeasuresLastResultTime load RIPE MeasurementResults
 	GetMeasuresLastResultTime() ([]*models.Measurement, map[int]int)
 
-	// PlacesLocations
-	PlacesLocations() ([]Place, error)
+	// GetLocationsAsPlaces returns slice of measurements.Place
+	GetLocationsAsPlaces() ([]Place, error)
 
 	// GetMeasurementsRunning models.Measurement running on ripe
 	GetMeasurementsRunning() []*models.Measurement

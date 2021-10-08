@@ -289,9 +289,9 @@ func TestMeasurementServiceImpl_GetMiners(t *testing.T) {
                 tt.fields.FMgr,
             )
             tt.fields.DBMgr.GetDB().Create(tt.create)
-            got := m.GetMinersWithGeoLocation()
+            got := m.GetMinersWithGeolocation()
             if len(got) != len(tt.want) {
-                t.Errorf("GetMinersWithGeoLocation() = %v, want %v", len(got), len(tt.want))
+                t.Errorf("GetMinersWithGeolocation() = %v, want %v", len(got), len(tt.want))
             }
             if len(tt.want) == 0 {
                 return

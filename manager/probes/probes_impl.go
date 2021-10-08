@@ -92,7 +92,7 @@ func (srv *ProbeServiceImpl) Update() {
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
-		}).Error("List")
+		}).Error("Update")
 
 		return
 	}
@@ -109,7 +109,7 @@ func (srv *ProbeServiceImpl) ImportProbes() {
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
-		}).Info("get all probe from ripe")
+		}).Error("get all probes from ripe")
 		return
 	}
 

@@ -81,7 +81,7 @@ func (h *Handler) ImportMeasures() {
 }
 
 func (h *Handler) CreateMeasurements(parameters []string) {
-	places, err := h.Service.PlacesLocations()
+	places, err := h.Service.GetLocationsAsPlaces()
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -90,7 +90,7 @@ func (h *Handler) CreateMeasurements(parameters []string) {
 		return
 	}
 
-	miners := h.Service.GetMinersWithGeoLocation()
+	miners := h.Service.GetMinersWithGeolocation()
 	for i, v := range miners {
 		if len(parameters) > 1 && parameters[1] != v.Address {
 			continue

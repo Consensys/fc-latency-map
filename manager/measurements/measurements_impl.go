@@ -78,7 +78,7 @@ func (m *measurementServiceImpl) dbCreate(measurements []*models.Measurement) {
 	}
 }
 
-func (m *measurementServiceImpl) GetMinersWithGeoLocation() []*models.Miner {
+func (m *measurementServiceImpl) GetMinersWithGeolocation() []*models.Miner {
 	var miners []*models.Miner
 
 	err := (m.DBMgr).GetDB().
@@ -87,7 +87,7 @@ func (m *measurementServiceImpl) GetMinersWithGeoLocation() []*models.Miner {
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
-		}).Error("GetMinersWithGeoLocation")
+		}).Error("GetMinersWithGeolocation")
 
 		return nil
 	}
@@ -196,7 +196,7 @@ func add(s []string, str string) []string {
 	return append(s, str)
 }
 
-func (m *measurementServiceImpl) PlacesLocations() ([]Place, error) {
+func (m *measurementServiceImpl) GetLocationsAsPlaces() ([]Place, error) {
 	var places []Place
 	err := m.DBMgr.GetDB().
 		Model(&models.Location{}).

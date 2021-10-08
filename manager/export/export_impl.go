@@ -126,7 +126,7 @@ func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
-		}).Error("GetMeasureResults")
+		}).Error("getMeasureResults")
 
 		return nil
 	}
@@ -141,7 +141,7 @@ func (m *ExportServiceImpl) getMiners() []*models.Miner {
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
-		}).Error("GetMinersWithGeoLocation")
+		}).Error("getMiners")
 
 		return nil
 	}
