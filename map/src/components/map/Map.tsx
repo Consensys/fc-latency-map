@@ -237,7 +237,7 @@ const Map = (props: Props) => {
       };
     });
 
-    series.mapImages.template.events.on(`hit`, (ev) => {
+    series.mapImages.template.events.on(`hit`, (ev: any) => {
       const location = ev.target.dataItem.dataContext;
       setLocation(location);
 

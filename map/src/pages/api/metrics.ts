@@ -2,7 +2,7 @@ import type { NextApiResponse } from "next";
 import type { AppProps, NextWebVitalsMetric } from "next/app";
 
 export default async ({}, res: NextApiResponse) => {
-  const formatMemoryUsage = (data) =>
+  const formatMemoryUsage = (data: any) =>
     `${Math.round((data / 1024 / 1024) * 100) / 100} MB`;
 
   const memoryData = process.memoryUsage();
