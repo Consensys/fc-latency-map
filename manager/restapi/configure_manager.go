@@ -57,7 +57,7 @@ func configureAPI(api *operations.ManagerAPI) http.Handler {
 	})
 
 	schedule := conf.GetString("CRON_SCHEDULE")
-	log.Printf("Scheduling GetMesures task ====> %s\n", schedule)
+	log.Printf("Scheduling GetMesures task: %s\n", schedule)
 	scheduler.AddFunc(schedule, func() {
 		log.Printf("GetMesures task started at %s\n", time.Now())
 		jobs.RunTaskGetMeasures()

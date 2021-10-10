@@ -21,7 +21,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./manager/data/exports:/data
+      - ./manager/data/exports:/opt/app/data
     env_file:
       - ./map/.env
     restart: unless-stopped
