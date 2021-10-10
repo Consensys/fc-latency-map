@@ -2,6 +2,8 @@ package export
 
 import (
 	"encoding/json"
+	"os"
+	"path/filepath"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -25,7 +27,7 @@ func newExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) Service {
 	}
 }
 
-func (m *ExportServiceImpl) export(fn string) {
+func (m *ExportServiceImpl) Export(fn string) {
 	measurements := m.getLatencyMeasurementsStored()
 
 	fullJSON, err := json.MarshalIndent(measurements, "", "  ")
@@ -36,7 +38,10 @@ func (m *ExportServiceImpl) export(fn string) {
 
 		return
 	}
-
+	if err := os.MkdirAll(filepath.Dir(fn), 0770); err != nil {
+		log.Printf("Directory path not created: %s\n")
+		return
+	}
 	file.Create(fn, fullJSON)
 	log.WithFields(log.Fields{
 		"file": fn,

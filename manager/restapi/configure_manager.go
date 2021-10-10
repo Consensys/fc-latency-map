@@ -4,18 +4,26 @@ package restapi
 
 import (
 	"crypto/tls"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/robfig/cron"
 
+	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/internal/handlers"
+	"github.com/ConsenSys/fc-latency-map/manager/jobs"
 	"github.com/ConsenSys/fc-latency-map/manager/restapi/operations"
 	"github.com/ConsenSys/fc-latency-map/manager/restapi/operations/check"
 )
 
 //go:generate swagger generate server --target ../../manager --name Manager --spec ../swagger.yml --principal interface{}
+
+var conf = config.NewConfig()
+var scheduler = cron.New()
 
 func configureFlags(_ *operations.ManagerAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -48,9 +56,19 @@ func configureAPI(api *operations.ManagerAPI) http.Handler {
 		return check.NewGetMetricsOK().WithPayload(&payload)
 	})
 
+	schedule := conf.GetString("CRON_SCHEDULE")
+	log.Printf("Scheduling GetMesures task ====> %s\n", schedule)
+	scheduler.AddFunc(schedule, func() {
+		log.Printf("GetMesures task started at %s\n", time.Now())
+		jobs.RunTaskGetMeasures()
+	})
+	scheduler.Start()
+
 	api.PreServerShutdown = func() {}
 
-	api.ServerShutdown = func() {}
+	api.ServerShutdown = func() {
+		scheduler.Stop()
+	}
 
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
 }

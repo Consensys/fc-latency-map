@@ -24,5 +24,5 @@ func NewExportHandler() *ExportHandler {
 }
 
 func (h *ExportHandler) Export(fn string) {
-	(*h.Service).export(fn)
+	(*h.Service).Export(fn)
 }

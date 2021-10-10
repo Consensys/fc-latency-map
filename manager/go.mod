@@ -153,6 +153,7 @@ require (
 	github.com/polydawn/refmt v0.0.0-20190809202753-05966cbd336a // indirect
 	github.com/raulk/clock v1.1.0 // indirect
 	github.com/rivo/uniseg v0.1.0 // indirect
+	github.com/robfig/cron v1.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/rs/cors v1.6.0 // indirect
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect

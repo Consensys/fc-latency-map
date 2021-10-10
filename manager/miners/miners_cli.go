@@ -79,5 +79,5 @@ func (cmd *MinerCommander) minersParseBlock(blocks []string) {
 }
 
 func (cmd *MinerCommander) minersParseStateMarket() {
-	cmd.Handler.minersParseStateMarket()
+	cmd.Handler.MinersParseStateMarket()
 }

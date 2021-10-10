@@ -21,7 +21,7 @@ type Handler struct {
 	ripeMgr ripemgr.RipeMgr
 }
 
-func newHandler() *Handler {
+func NewHandler() *Handler {
 	conf := config.NewConfig()
 	dbMgr, err := db.NewDatabaseMgrImpl(conf)
 	if err != nil {
