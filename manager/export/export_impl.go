@@ -2,8 +2,7 @@ package export
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
+	"fmt"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -14,8 +13,6 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/file"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
-
-const rights = 0770
 
 type ExportServiceImpl struct {
 	Conf  *viper.Viper
@@ -29,34 +26,48 @@ func newExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) Service {
 	}
 }
 
-func (m *ExportServiceImpl) Export(fn string) {
-	measurements := m.getLatencyMeasurementsStored()
+func (m *ExportServiceImpl) export() {
+	dates := m.getDates()
+	for _, date := range dates {
+		fn := fmt.Sprintf("export_%s.json", date)
+		if file.IsUpdated(fn, date) {
+			log.WithFields(
+				map[string]interface{}{
+					"file": fn,
+				},
+			).Info("file exists")
+			continue
+		}
+		log.WithFields(
+			map[string]interface{}{
+				"file": fn,
+			},
+		).Info("generate file")
 
+		measurements := m.getLatencyMeasurementsStored(date)
+		j := m.marshalJSON(measurements)
+		file.Create(fn, j)
+	}
+	fmt.Println("Main: Completed")
+}
+
+func (m *ExportServiceImpl) marshalJSON(measurements *Result) []byte {
 	fullJSON, err := json.MarshalIndent(measurements, "", "  ")
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("Create json data")
 
-		return
+		return nil
 	}
-	if err := os.MkdirAll(filepath.Dir(fn), rights); err != nil {
-		log.Printf("Directory path not created: %s\n", err)
-		return
-	}
-	file.Create(fn, fullJSON)
-	log.WithFields(log.Fields{
-		"file": fn,
-	}).Info("Export successful")
+	return fullJSON
 }
 
-func (m *ExportServiceImpl) getLatencyMeasurementsStored() *Result {
+func (m *ExportServiceImpl) getLatencyMeasurementsStored(date string) *Result {
 	var iataCodes []string
-
 	results := &Result{Measurements: map[string]map[string][]*Miner{}}
 	loc := m.getLocations()
 	miners := m.getMiners()
-
 	for _, l := range loc {
 		for _, miner := range miners {
 			latency := &Miner{
@@ -67,7 +78,7 @@ func (m *ExportServiceImpl) getLatencyMeasurementsStored() *Result {
 				continue
 			}
 
-			latency = m.getLatency(l.Probes, latency, miner.IP)
+			latency = m.getLatency(latency, int(l.Model.ID), miner.IP, date)
 			if len(latency.Measures) > 0 {
 				iataCodes = addNewString(iataCodes, l.IataCode)
 				if _, found := results.Measurements[l.Country]; !found {
@@ -77,6 +88,7 @@ func (m *ExportServiceImpl) getLatencyMeasurementsStored() *Result {
 			}
 		}
 	}
+
 	m.addRootData(results, miners, iataCodes)
 
 	return results
@@ -91,44 +103,49 @@ func (m *ExportServiceImpl) addRootData(results *Result, miners []*models.Miner,
 	}
 }
 
-func (m *ExportServiceImpl) getLatency(probes []*models.Probe, latency *Miner, ip string) *Miner {
-	for _, probe := range probes {
-		for _, ip := range strings.Split(ip, ",") {
-			measure := &MeasureIP{IP: ip}
+func (m *ExportServiceImpl) getLatency(latency *Miner, locationID int, ip, date string) *Miner {
+	for _, ip := range strings.Split(ip, ",") {
+		measure := &MeasureIP{IP: ip}
+		meas := m.getMeasureResults(date, ip, locationID)
+		if len(meas) > 0 {
+			latency.Measures = append(latency.Measures, measure)
+		}
 
-			meas := m.getMeasureResults(probe, ip)
-			if len(meas) > 0 {
-				latency.Measures = append(latency.Measures, measure)
-			}
-			for _, m := range meas {
-				measureData := &Latency{
-					Avg:  m.TimeAverage,
-					Min:  m.TimeMin,
-					Max:  m.TimeMax,
-					Date: m.MeasurementDate,
-				}
-				measure.Latency = append(measure.Latency, measureData)
-			}
+		for _, m := range meas {
+			measure.Latency = append(measure.Latency, &Latency{
+				Avg:  m.TimeAverage,
+				Min:  m.TimeMin,
+				Max:  m.TimeMax,
+				Date: m.MeasurementDate,
+			})
 		}
 	}
 
 	return latency
 }
 
-func (m *ExportServiceImpl) getMeasureResults(probe *models.Probe, ip string) []*models.MeasurementResult {
+func (m *ExportServiceImpl) getMeasureResults(date, ip string, locationID int) []*models.MeasurementResult {
 	var meas []*models.MeasurementResult
-	err := m.DBMgr.GetDB().Select(
-		"ip," +
-			"measurement_date," +
-			"avg(time_average) time_average," +
-			"max(time_max) time_max," +
+	where := &models.MeasurementResult{
+		IP: ip,
+	}
+	if date != "" {
+		where.MeasurementDate = date
+	}
+	dbc := m.DBMgr.GetDB()
+	err := dbc.Select(
+		"ip,"+
+			"measurement_date,"+
+			"avg(time_average) time_average,"+
+			"max(time_max) time_max,"+
 			"min(time_min) time_min").
+		Where(where).
+		Where("probe_id in (?)",
+			dbc.Select("probe_id").
+				Table("locations_probes").
+				Where("location_id in (?)", locationID)).
 		Group("ip, measurement_date").
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "measurement_date"}, Desc: true}).
-		Where(&models.MeasurementResult{
-			ProbeID: probe.ProbeID,
-			IP:      ip,
-		}).
 		Find(&meas).Error
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -193,7 +210,7 @@ func (m *ExportServiceImpl) getLocationsFromIata(codes []string) []*models.Locat
 
 func (m *ExportServiceImpl) getDates() []string {
 	var dates []string
-	m.DBMgr.GetDB().Model(&models.MeasurementResult{}).Distinct().Pluck("measurement_date", &dates)
+	m.DBMgr.GetDB().Model(&models.MeasurementResult{}).Distinct().Order("measurement_date").Pluck("measurement_date", &dates)
 	return dates
 }
 

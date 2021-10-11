@@ -1,9 +1,6 @@
 package jobs
 
 import (
-	"fmt"
-	"time"
-
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/constants"
@@ -39,6 +36,5 @@ func RunTaskImportMeasures() {
 	measurements.NewHandler().ImportMeasures()
 
 	log.Println("Export data ...")
-	fn := fmt.Sprintf("data/exports/data_%v.json", time.Now().Unix())
-	export.NewExportHandler().Export(fn)
+	export.NewExportHandler().Export()
 }

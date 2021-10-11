@@ -13,16 +13,13 @@ type MeasurementService interface {
 
 	GetMinersWithGeolocation() []*models.Miner
 
-	GetProbIDs(places []Place, latitude, longitude float64) []string
+	getProbIDs(places []Place, latitude, longitude float64) []string
 
 	UpsertMeasurements([]*atlas.Measurement)
 
-	// GetMeasuresLastResultTime load RIPE MeasurementResults
-	GetMeasuresLastResultTime() ([]*models.Measurement, map[int]int)
-
 	// GetLocationsAsPlaces returns slice of measurements.Place
-	GetLocationsAsPlaces() ([]Place, error)
+	getLocationsAsPlaces() ([]Place, error)
 
 	// GetMeasurementsRunning models.Measurement running on ripe
-	GetMeasurementsRunning() []*models.Measurement
+	getMeasurementsRunning() []*models.Measurement
 }

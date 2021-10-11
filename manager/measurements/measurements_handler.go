@@ -46,7 +46,7 @@ func NewHandler() *Handler {
 	}
 }
 func (h *Handler) ImportMeasures() {
-	measurements, measuremStartTime := h.Service.GetMeasuresLastResultTime()
+	measurements := h.Service.getMeasurementsRunning()
 	for _, m := range measurements {
 		measure, err := h.ripeMgr.GetMeasurement(m.MeasurementID)
 		if err != nil {
@@ -58,16 +58,13 @@ func (h *Handler) ImportMeasures() {
 		}
 		h.Service.UpsertMeasurements([]*atlas.Measurement{measure})
 
-		i := measuremStartTime[m.MeasurementID]
-
 		log.WithFields(log.Fields{
-			"MeasurementID":    m.MeasurementID,
-			"StatusStopTime":   m.StatusStopTime,
-			"StopTime":         m.StopTime,
-			"Results StopTime": i,
+			"MeasurementID":  m.MeasurementID,
+			"StatusStopTime": m.StatusStopTime,
+			"StopTime":       m.StopTime,
 		}).Info("GetMeasurementResults")
 
-		results, err := h.ripeMgr.GetMeasurementResults(m.MeasurementID, i)
+		results, err := h.ripeMgr.GetMeasurementResults(m.MeasurementID)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"err": err,
@@ -81,7 +78,7 @@ func (h *Handler) ImportMeasures() {
 }
 
 func (h *Handler) CreateMeasurements(parameters []string) {
-	places, err := h.Service.GetLocationsAsPlaces()
+	places, err := h.Service.getLocationsAsPlaces()
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -95,7 +92,7 @@ func (h *Handler) CreateMeasurements(parameters []string) {
 		if len(parameters) > 1 && parameters[1] != v.Address {
 			continue
 		}
-		pIDs := strings.Join(h.Service.GetProbIDs(places, v.Latitude, v.Longitude), ",")
+		pIDs := strings.Join(h.Service.getProbIDs(places, v.Latitude, v.Longitude), ",")
 		log.WithFields(log.Fields{
 			"miner.address": v.Address,
 			"probeId":       pIDs,
