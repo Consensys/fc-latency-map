@@ -56,11 +56,18 @@ func configureAPI(api *operations.ManagerAPI) http.Handler {
 		return check.NewGetMetricsOK().WithPayload(&payload)
 	})
 
-	schedule := conf.GetString("CRON_SCHEDULE")
-	log.Printf("Scheduling GetMesures task: %s\n", schedule)
-	scheduler.AddFunc(schedule, func() {
-		log.Printf("GetMesures task started at %s\n", time.Now())
-		jobs.RunTaskGetMeasures()
+	createSchdl := conf.GetString("CRON_SCHEDULE_CREATE_MESURES")
+	log.Printf("Scheduling CreateMeasures task: %s\n", createSchdl)
+	scheduler.AddFunc(createSchdl, func() {
+		log.Printf("CreateMeasures task started at %s\n", time.Now())
+		jobs.RunTaskCreateMeasures()
+	})
+
+	importSchdl := conf.GetString("CRON_SCHEDULE_IMPORT_MESURES")
+	log.Printf("Scheduling ImportMeasures task: %s\n", importSchdl)
+	scheduler.AddFunc(importSchdl, func() {
+		log.Printf("ImportMeasures task started at %s\n", time.Now())
+		jobs.RunTaskImportMeasures()
 	})
 	scheduler.Start()
 
