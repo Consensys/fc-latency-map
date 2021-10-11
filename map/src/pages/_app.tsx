@@ -7,7 +7,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <div>
       <Head>
-        <link
+        {/* <link
           rel="apple-touch-icon"
           sizes="196x196"
           href="./favicon-196x196.png"
@@ -29,7 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           type="image/png"
           sizes="16x16"
           href="./favicon-16x16.png"
-        />
+        /> */}
       </Head>
       <Component {...pageProps} />
     </div>

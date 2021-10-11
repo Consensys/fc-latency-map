@@ -40,6 +40,10 @@
   background-color: #f2f2f2;
 }
 
+.dates a {
+  padding-top: 7px !important;
+}
+
 .dateButton {
   color: #f48055;
 }
