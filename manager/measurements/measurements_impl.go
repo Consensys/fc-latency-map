@@ -85,14 +85,9 @@ func (m *measurementServiceImpl) GetMinersWithGeolocation() []*models.Miner {
 func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult) {
 	dbc := (m.DBMgr).GetDB()
 	var insert []*models.MeasurementResult
-	locations := make(map[int][]*models.Location)
 
 	for _, result := range mr { //nolint:gocritic
 		t := time.Unix(int64(result.Timestamp), 0)
-
-		if _, found := locations[result.PrbID]; !found {
-			locations[result.PrbID] = m.getLocationsWithProbID(result.PrbID)
-		}
 
 		insert = append(insert, &models.MeasurementResult{
 			IP:                   result.DstAddr,
@@ -103,7 +98,6 @@ func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult)
 			TimeAverage:          result.Avg,
 			TimeMax:              result.Max,
 			TimeMin:              result.Min,
-			Locations:            locations[result.PrbID],
 		})
 	}
 
@@ -194,23 +188,4 @@ func (m *measurementServiceImpl) GetLocationsAsPlaces() ([]Place, error) {
 		return places, err
 	}
 	return places, nil
-}
-
-func (m *measurementServiceImpl) getLocationsWithProbID(ripeProbeID int) []*models.Location {
-	l := []*models.Location{}
-	dbc := m.DBMgr.GetDB()
-	err := dbc.Where("id in (?)", dbc.
-		Select("location_id").
-		Table("locations_probes").
-		Where("probe_id in (?)",
-			dbc.Select("id").
-				Table("probes").
-				Where("probe_id in (?)", ripeProbeID)),
-	).Find(&l).Error
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error("getLocationsWithProbID")
-	}
-	return l
 }

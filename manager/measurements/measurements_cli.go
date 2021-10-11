@@ -1,9 +1,7 @@
 package measurements
 
 import (
-	"fmt"
 	"strings"
-	"time"
 
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
@@ -13,11 +11,10 @@ import (
 )
 
 const (
-	measuresGet       = "measures-get"
-	measuresCreate    = "measures-create"
-	measuresList      = "measures-list"
-	measuresExport    = "measures-export"
-	measuresExportAll = "measures-export-all"
+	measuresGet    = "measures-get"
+	measuresCreate = "measures-create"
+	measuresList   = "measures-list"
+	measuresExport = "measures-export"
 )
 
 type MesuresCommander struct {
@@ -54,9 +51,7 @@ func (cmd *MesuresCommander) Execute(in string) {
 	case measuresList:
 		cmd.measuresList(blocks)
 	case measuresExport:
-		cmd.measuresExport(blocks)
-	case measuresExportAll:
-		cmd.measuresExportAll()
+		cmd.measuresExport()
 	default:
 		log.Printf("unknown command: %stopped\n", blocks[0])
 	}
@@ -69,14 +64,6 @@ func (cmd *MesuresCommander) measuresList(blocks []string) {
 	}
 }
 
-func (cmd *MesuresCommander) measuresExport(blocks []string) {
-	var fn string
-	if len(blocks) == 1 {
-		fn = fmt.Sprintf("data_%v.json", time.Now().Unix())
-	}
-	cmd.Export.Export(fn)
-}
-
-func (cmd *MesuresCommander) measuresExportAll() {
-	cmd.Export.ExportAll()
+func (cmd *MesuresCommander) measuresExport() {
+	cmd.Export.Export()
 }

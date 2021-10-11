@@ -5,8 +5,5 @@ package export
 type Service interface {
 
 	// export from db to json file
-	export(fn string)
-
-	// exportAll json files
-	exportAll()
+	export()
 }

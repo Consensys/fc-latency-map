@@ -23,10 +23,6 @@ func NewExportHandler() *ExportHandler {
 	}
 }
 
-func (h *ExportHandler) Export(fn string) {
-	(*h.Service).export(fn)
-}
-
-func (h *ExportHandler) ExportAll() {
-	(*h.Service).exportAll()
+func (h *ExportHandler) Export() {
+	(*h.Service).export()
 }

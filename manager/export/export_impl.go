@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"sync"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -27,51 +26,29 @@ func newExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) Service {
 	}
 }
 
-func (m *ExportServiceImpl) exportAll() {
-	var wg sync.WaitGroup
-
+func (m *ExportServiceImpl) export() {
 	dates := m.getDates()
 	for _, date := range dates {
-		wg.Add(1)
-		go m.worker(&wg, date)
-	}
-	wg.Wait()
-	fmt.Println("Main: Completed")
-}
-
-func (m *ExportServiceImpl) worker(wg *sync.WaitGroup, date string) {
-	defer wg.Done()
-
-	fn := fmt.Sprintf("export-%s.json", date)
-	if file.IsUpdated(fn, date) {
+		fn := fmt.Sprintf("export_%s.json", date)
+		if file.IsUpdated(fn, date) {
+			log.WithFields(
+				map[string]interface{}{
+					"file": fn,
+				},
+			).Info("file exists")
+			continue
+		}
 		log.WithFields(
 			map[string]interface{}{
 				"file": fn,
 			},
-		).Info("file exists")
-		return
+		).Info("generate file")
+
+		measurements := m.getLatencyMeasurementsStored(date)
+		j := m.marshalJSON(measurements)
+		file.Create(fn, j)
 	}
-	log.WithFields(
-		map[string]interface{}{
-			"file": fn,
-		},
-	).Info("generate file")
-
-	measurements := m.getLatencyMeasurementsStored(date)
-	j := m.marshalJSON(measurements)
-	file.Create(fn, j)
-}
-
-// export json into one file
-func (m *ExportServiceImpl) export(fn string) {
-	measurements := m.getLatencyMeasurementsStored("")
-
-	fullJSON := m.marshalJSON(measurements)
-
-	file.Create(fn, fullJSON)
-	log.WithFields(log.Fields{
-		"file": fn,
-	}).Info("Export successful")
+	fmt.Println("Main: Completed")
 }
 
 func (m *ExportServiceImpl) marshalJSON(measurements *Result) []byte {
@@ -164,9 +141,9 @@ func (m *ExportServiceImpl) getMeasureResults(date, ip string, locationID int) [
 			"max(time_max) time_max,"+
 			"min(time_min) time_min").
 		Where(where).
-		Where("id in (?)",
-			dbc.Select("measurement_result_id").
-				Table("locations_measurement_result").
+		Where("probe_id in (?)",
+			dbc.Select("probe_id").
+				Table("locations_probes").
 				Where("location_id in (?)", locationID)).
 		Group("ip, measurement_date").
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "measurement_date"}, Desc: true}).

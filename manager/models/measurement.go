@@ -24,7 +24,6 @@ type MeasurementResult struct {
 	IP                   string      `gorm:"index:idx_name,unique;index:idx_measurement_ip"`
 	MeasurementDate      string      `gorm:"index:idx_measurement_date"`
 	TimeAverage          float64
-	TimeMax              float64     `gorm:"index:idx_measurement_max"`
-	TimeMin              float64     `gorm:"index:idx_measurement_min"`
-	Locations            []*Location `gorm:"many2many:locations_measurement_result;" json:"-"`
+	TimeMax              float64 `gorm:"index:idx_measurement_max"`
+	TimeMin              float64 `gorm:"index:idx_measurement_min"`
 }

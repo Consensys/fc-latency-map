@@ -9,7 +9,7 @@ import (
 )
 
 const layoutISO = "2006-01-02"
-const jsonFolder = "export/"
+const jsonFolder = "data/export/"
 
 // Create file
 func Create(fn string, fullJSON []byte) {
