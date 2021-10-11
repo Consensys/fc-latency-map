@@ -358,39 +358,3 @@ func TestMeasurementServiceImpl_GetProbIDs(t *testing.T) {
         })
     }
 }
-
-func Test_add(t *testing.T) {
-    type args struct {
-        s   []string
-        str string
-    }
-    tests := []struct {
-        name string
-        args args
-        want []string
-    }{
-        {
-            name: "slice try add duplicate",
-            args: args{
-                s:   []string{""},
-                str: "",
-            },
-            want: []string{""},
-        },
-        {
-            name: "slice add new string",
-            args: args{
-                s:   []string{},
-                str: "new",
-            },
-            want: []string{"new"},
-        },
-    }
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            if got := add(tt.args.s, tt.args.str); !reflect.DeepEqual(got, tt.want) {
-                t.Errorf("add() = %v, want %v", got, tt.want)
-            }
-        })
-    }
-}

@@ -10,7 +10,7 @@ import (
 
 const layoutISO = "2006-01-02"
 
-var folder = "data/export/"
+var folder = "data/exports/"
 
 // Create file
 func Create(fn string, payload []byte) {
