@@ -1,9 +1,7 @@
 package measurements
 
 import (
-	"fmt"
 	"strings"
-	"time"
 
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
@@ -47,13 +45,13 @@ func (cmd *MesuresCommander) Execute(in string) {
 
 	switch blocks[0] {
 	case measuresCreate:
-		cmd.Handler.CreateMeasurements(blocks)
+		cmd.Handler.createMeasurements(blocks)
 	case measuresGet:
-		cmd.Handler.ImportMeasures()
+		cmd.Handler.importMeasures()
 	case measuresList:
 		cmd.measuresList(blocks)
 	case measuresExport:
-		cmd.measuresExport(blocks)
+		cmd.measuresExport()
 	default:
 		log.Printf("unknown command: %stopped\n", blocks[0])
 	}
@@ -66,10 +64,6 @@ func (cmd *MesuresCommander) measuresList(blocks []string) {
 	}
 }
 
-func (cmd *MesuresCommander) measuresExport(blocks []string) {
-	var fn string
-	if len(blocks) == 1 {
-		fn = fmt.Sprintf("data_%v.json", time.Now().Unix())
-	}
-	cmd.Export.Export(fn)
+func (cmd *MesuresCommander) measuresExport() {
+	cmd.Export.Export()
 }

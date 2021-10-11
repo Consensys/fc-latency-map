@@ -196,53 +196,6 @@ func TestMeasurementServiceImpl_ImportMeasurement(t *testing.T) {
     }
 }
 
-func TestMeasurementServiceImpl_GetMeasuresLastResultTime(t *testing.T) {
-    ctrl := gomock.NewController(t)
-    defer ctrl.Finish()
-
-    type fields struct {
-        Conf  *viper.Viper
-        DBMgr db.DatabaseMgr
-        FMgr  filecoinmgr.FilecoinMgr
-    }
-    tests := []struct {
-        name               string
-        fields             fields
-        want               map[int]int
-        measurements       []models.Measurement
-        measurementResults []models.MeasurementResult
-    }{
-        {name: "not empty ", fields: struct {
-            Conf  *viper.Viper
-            DBMgr db.DatabaseMgr
-            FMgr  filecoinmgr.FilecoinMgr
-        }{
-            Conf:  config.NewMockConfig(),
-            DBMgr: db.NewMockDatabaseMgr(),
-            FMgr:  filecoinmgr.NewMockFilecoinMgr(ctrl),
-        },
-            measurements: []models.Measurement{
-                {MeasurementID: 11, StartTime: 11, StopTime: 11},
-            },
-            measurementResults: []models.MeasurementResult{{MeasurementID: 11}},
-            want:               map[int]int{},
-        },
-    }
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            m := newMeasurementServiceImpl(
-                tt.fields.Conf,
-                tt.fields.DBMgr,
-                tt.fields.FMgr,
-            )
-            tt.fields.DBMgr.GetDB().Create(tt.measurements)
-            if _, got := m.GetMeasuresLastResultTime(); !reflect.DeepEqual(got, tt.want) {
-                t.Errorf("GetMeasuresLastResultTime() = %v, want %v", got, tt.want)
-            }
-        })
-    }
-}
-
 func TestMeasurementServiceImpl_GetMiners(t *testing.T) {
     ctrl := gomock.NewController(t)
     defer ctrl.Finish()
@@ -399,8 +352,44 @@ func TestMeasurementServiceImpl_GetProbIDs(t *testing.T) {
                 tt.fields.DBMgr,
                 tt.fields.FMgr,
             )
-            if got := m.GetProbIDs(tt.args.places, tt.args.lat, tt.args.long); !reflect.DeepEqual(got, tt.want) {
-                t.Errorf("GetProbIDs() = %v, want %v", got, tt.want)
+            if got := m.getProbIDs(tt.args.places, tt.args.lat, tt.args.long); !reflect.DeepEqual(got, tt.want) {
+                t.Errorf("getProbIDs() = %v, want %v", got, tt.want)
+            }
+        })
+    }
+}
+
+func Test_add(t *testing.T) {
+    type args struct {
+        s   []string
+        str string
+    }
+    tests := []struct {
+        name string
+        args args
+        want []string
+    }{
+        {
+            name: "slice try add duplicate",
+            args: args{
+                s:   []string{""},
+                str: "",
+            },
+            want: []string{""},
+        },
+        {
+            name: "slice add new string",
+            args: args{
+                s:   []string{},
+                str: "new",
+            },
+            want: []string{"new"},
+        },
+    }
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            if got := add(tt.args.s, tt.args.str); !reflect.DeepEqual(got, tt.want) {
+                t.Errorf("add() = %v, want %v", got, tt.want)
             }
         })
     }

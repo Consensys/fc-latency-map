@@ -3,7 +3,6 @@ package ripemgr
 import (
 	"fmt"
 	"net"
-	"strconv"
 	"strings"
 	"time"
 
@@ -66,18 +65,15 @@ func (rMgr *RipeMgrImpl) GetMeasurement(measurementID int) (*atlas.Measurement, 
 	return measurement, nil
 }
 
-func (rMgr *RipeMgrImpl) GetMeasurementResults(measurementID, startTime int) ([]atlas.MeasurementResult, error) {
-	rMgr.c.SetOption("start", strconv.Itoa(startTime+1))
+func (rMgr *RipeMgrImpl) GetMeasurementResults(measurementID int) ([]atlas.MeasurementResult, error) {
 	log.WithFields(log.Fields{
 		"measurement": measurementID,
-		"start time":  startTime,
 	}).Warn("get measurements results")
 	measurementResult, err := rMgr.c.GetResults(measurementID)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err":         err,
 			"measurement": measurementID,
-			"start time":  startTime,
 		}).Error("get measurements results")
 		return nil, err
 	}
