@@ -45,8 +45,8 @@ func newHandler() *Handler {
 		ripeMgr: ripeMgr,
 	}
 }
-func (h *Handler) ImportMeasures() {
-	measurements := h.Service.GetMeasurementsRunning()
+func (h *Handler) importMeasures() {
+	measurements := h.Service.getMeasurementsRunning()
 	for _, m := range measurements {
 		measure, err := h.ripeMgr.GetMeasurement(m.MeasurementID)
 		if err != nil {
@@ -77,8 +77,8 @@ func (h *Handler) ImportMeasures() {
 	}
 }
 
-func (h *Handler) CreateMeasurements(parameters []string) {
-	places, err := h.Service.GetLocationsAsPlaces()
+func (h *Handler) createMeasurements(parameters []string) {
+	places, err := h.Service.getLocationsAsPlaces()
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -92,7 +92,7 @@ func (h *Handler) CreateMeasurements(parameters []string) {
 		if len(parameters) > 1 && parameters[1] != v.Address {
 			continue
 		}
-		pIDs := strings.Join(h.Service.GetProbIDs(places, v.Latitude, v.Longitude), ",")
+		pIDs := strings.Join(h.Service.getProbIDs(places, v.Latitude, v.Longitude), ",")
 		log.WithFields(log.Fields{
 			"miner.address": v.Address,
 			"probeId":       pIDs,

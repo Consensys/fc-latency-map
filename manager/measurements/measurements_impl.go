@@ -122,7 +122,7 @@ func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult)
 	}
 }
 
-func (m *measurementServiceImpl) GetMeasurementsRunning() []*models.Measurement {
+func (m *measurementServiceImpl) getMeasurementsRunning() []*models.Measurement {
 	var measurements []*models.Measurement
 	dbc := (m.DBMgr).GetDB()
 	dbc.Model(&models.Measurement{}).
@@ -131,7 +131,7 @@ func (m *measurementServiceImpl) GetMeasurementsRunning() []*models.Measurement 
 	return measurements
 }
 
-func (m *measurementServiceImpl) GetProbIDs(places []Place, lat, long float64) []string {
+func (m *measurementServiceImpl) getProbIDs(places []Place, lat, long float64) []string {
 	if lat == 0 && long == 0 {
 		return []string{}
 	}
@@ -174,7 +174,7 @@ func add(s []string, str string) []string {
 	return append(s, str)
 }
 
-func (m *measurementServiceImpl) GetLocationsAsPlaces() ([]Place, error) {
+func (m *measurementServiceImpl) getLocationsAsPlaces() ([]Place, error) {
 	var places []Place
 	err := m.DBMgr.GetDB().
 		Model(&models.Location{}).

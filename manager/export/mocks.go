@@ -34,25 +34,13 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // export mocks base method.
-func (m *MockService) export(arg0 string) {
+func (m *MockService) export() {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "export", arg0)
+	m.ctrl.Call(m, "export")
 }
 
 // export indicates an expected call of export.
-func (mr *MockServiceMockRecorder) export(arg0 interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) export() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "export", reflect.TypeOf((*MockService)(nil).export), arg0)
-}
-
-// exportAll mocks base method.
-func (m *MockService) exportAll() {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "exportAll")
-}
-
-// exportAll indicates an expected call of exportAll.
-func (mr *MockServiceMockRecorder) exportAll() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "exportAll", reflect.TypeOf((*MockService)(nil).exportAll))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "export", reflect.TypeOf((*MockService)(nil).export))
 }
