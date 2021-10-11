@@ -2,6 +2,7 @@
 .DEFAULT_GOAL := default
 
 default: manager map
+	mkdir -p exports
 	docker-compose up
 
 manager:
