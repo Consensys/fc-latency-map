@@ -21,7 +21,7 @@ type Handler struct {
 	ripeMgr ripemgr.RipeMgr
 }
 
-func newHandler() *Handler {
+func NewHandler() *Handler {
 	conf := config.NewConfig()
 	dbMgr, err := db.NewDatabaseMgrImpl(conf)
 	if err != nil {
@@ -45,7 +45,7 @@ func newHandler() *Handler {
 		ripeMgr: ripeMgr,
 	}
 }
-func (h *Handler) importMeasures() {
+func (h *Handler) ImportMeasures() {
 	measurements := h.Service.getMeasurementsRunning()
 	for _, m := range measurements {
 		measure, err := h.ripeMgr.GetMeasurement(m.MeasurementID)
@@ -77,7 +77,7 @@ func (h *Handler) importMeasures() {
 	}
 }
 
-func (h *Handler) createMeasurements(parameters []string) {
+func (h *Handler) CreateMeasurements(parameters []string) {
 	places, err := h.Service.getLocationsAsPlaces()
 	if err != nil {
 		log.WithFields(log.Fields{

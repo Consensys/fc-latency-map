@@ -2,12 +2,13 @@ package measurements
 
 import (
 	"fmt"
+	"strings"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	atlas "github.com/keltia/ripe-atlas"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
-	"strings"
-	"testing"
 
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 	"github.com/ConsenSys/fc-latency-map/manager/ripemgr"
@@ -41,7 +42,7 @@ func TestHandler_CreateMeasurementsRipeError(t *testing.T) {
 
 	service.EXPECT().UpsertMeasurements(gomock.Any()).Times(0)
 
-	h.createMeasurements(nil)
+	h.CreateMeasurements(nil)
 }
 
 func TestHandler_CreateMeasurements(t *testing.T) {
@@ -74,7 +75,7 @@ func TestHandler_CreateMeasurements(t *testing.T) {
 
 	service.EXPECT().UpsertMeasurements(gomock.Any()).Times(1)
 
-	h.createMeasurements(nil)
+	h.CreateMeasurements(nil)
 }
 
 func TestHandler_ImportMeasuresError(t *testing.T) {
@@ -92,7 +93,7 @@ func TestHandler_ImportMeasuresError(t *testing.T) {
 	service.EXPECT().getMeasurementsRunning().Times(1)
 	service.EXPECT().ImportMeasurement(gomock.Any()).Times(0)
 
-	h.importMeasures()
+	h.ImportMeasures()
 }
 
 func TestHandler_ImportMeasures(t *testing.T) {
@@ -139,7 +140,7 @@ func TestHandler_ImportMeasures(t *testing.T) {
 
 	service.EXPECT().ImportMeasurement(gomock.Any()).Times(1)
 
-	h.importMeasures()
+	h.ImportMeasures()
 }
 
 func TestHandler_ImportMeasures_GetMeasurementError(t *testing.T) {
@@ -187,7 +188,7 @@ func TestHandler_ImportMeasures_GetMeasurementError(t *testing.T) {
 
 	service.EXPECT().ImportMeasurement(gomock.Any()).Times(0)
 
-	h.importMeasures()
+	h.ImportMeasures()
 }
 
 func TestHandler_ImportMeasures_GetMeasurementResultsError(t *testing.T) {
@@ -235,5 +236,5 @@ func TestHandler_ImportMeasures_GetMeasurementResultsError(t *testing.T) {
 
 	service.EXPECT().ImportMeasurement(gomock.Any()).Times(0)
 
-	h.importMeasures()
+	h.ImportMeasures()
 }

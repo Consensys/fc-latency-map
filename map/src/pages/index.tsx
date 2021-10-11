@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import dynamic from "next/dynamic";
 import getConfig from "next/config";
+import { promises as fs } from 'fs';
 
 import styles from "@src/styles/Global.module.css";
 import Header from "@src/components/Header";
@@ -63,14 +64,18 @@ const Home = (props: Props) => {
 };
 
 export async function getServerSideProps() {
-  // const data = await import(
-  //   serverRuntimeConfig.path.exportsMeasures + "export.json"
-  // );
-  const data = await import("../../data/data01.json");
-
+  let data = undefined
+  const exports = await fs.readdir(serverRuntimeConfig.path.exportsMeasures);
+  if (exports && exports.length > 0) {
+    const sorted = exports.sort()
+    const latest = sorted[sorted.length - 1]
+    console.log("Serving export:", latest)
+    data = await fs.readFile(`${serverRuntimeConfig.path.exportsMeasures}/${latest}`, 'utf-8');
+    data = JSON.stringify(data);
+  }
   return {
     props: {
-      data: JSON.stringify(data),
+      data,
     },
   };
 }

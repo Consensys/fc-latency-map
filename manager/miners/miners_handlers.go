@@ -65,6 +65,6 @@ func (mHdl *MinerHandler) MinersParseBlock(height int64) {
 	(*mHdl.MSer).ParseMinersByBlockHeight(height)
 }
 
-func (mHdl *MinerHandler) minersParseStateMarket() {
+func (mHdl *MinerHandler) MinersParseStateMarket() {
 	(*mHdl.MSer).ParseMinersByStateMarket()
 }

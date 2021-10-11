@@ -24,7 +24,7 @@ type MesuresCommander struct {
 
 func NewMesuresCommander() cli.Commander {
 	return &MesuresCommander{
-		Handler: newHandler(),
+		Handler: NewHandler(),
 		Export:  export.NewExportHandler(),
 	}
 }
@@ -45,9 +45,9 @@ func (cmd *MesuresCommander) Execute(in string) {
 
 	switch blocks[0] {
 	case measuresCreate:
-		cmd.Handler.createMeasurements(blocks)
+		cmd.Handler.CreateMeasurements(blocks)
 	case measuresGet:
-		cmd.Handler.importMeasures()
+		cmd.Handler.ImportMeasures()
 	case measuresList:
 		cmd.measuresList(blocks)
 	case measuresExport:

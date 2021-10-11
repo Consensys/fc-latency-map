@@ -1,12 +1,13 @@
 package export
 
 import (
+	"testing"
+
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
-	"testing"
 )
 
 func TestExportServiceImpl_export(t *testing.T) {

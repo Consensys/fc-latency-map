@@ -60,7 +60,6 @@ func (m *ExportServiceImpl) marshalJSON(measurements *Result) []byte {
 
 		return nil
 	}
-
 	return fullJSON
 }
 
