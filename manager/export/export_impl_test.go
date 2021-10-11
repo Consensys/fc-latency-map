@@ -1,11 +1,12 @@
 package export
 
 import (
+	"testing"
+
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 	"github.com/spf13/viper"
-	"testing"
 )
 
 func TestExportServiceImpl_export(t *testing.T) {
@@ -92,7 +93,7 @@ func TestExportServiceImpl_export(t *testing.T) {
 				Conf:  tt.fields.Conf,
 				DBMgr: tt.fields.DBMgr,
 			}
-			m.export(tt.args.fn)
+			m.Export(tt.args.fn)
 		})
 	}
 }

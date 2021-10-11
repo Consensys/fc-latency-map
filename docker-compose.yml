@@ -8,6 +8,7 @@ services:
     ports:
       - 3001:3000
     volumes:
+      - ./manager/constants/airport-codes.json:/constants/airport-codes.json
       - ./manager/data/database.db:/data/database.db
       - ./exports:/data/exports
     env_file:

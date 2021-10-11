@@ -4,7 +4,6 @@ package restapi
 
 import (
 	"crypto/tls"
-	"log"
 	"net/http"
 	"time"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/robfig/cron"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/internal/handlers"
@@ -58,17 +58,24 @@ func configureAPI(api *operations.ManagerAPI) http.Handler {
 
 	createSchdl := conf.GetString("CRON_SCHEDULE_CREATE_MESURES")
 	log.Printf("Scheduling CreateMeasures task: %s\n", createSchdl)
-	scheduler.AddFunc(createSchdl, func() {
+	err := scheduler.AddFunc(createSchdl, func() {
 		log.Printf("CreateMeasures task started at %s\n", time.Now())
 		jobs.RunTaskCreateMeasures()
 	})
+	if err != nil {
+		log.Errorf("Error: %s\n", err)
+	}
 
 	importSchdl := conf.GetString("CRON_SCHEDULE_IMPORT_MESURES")
 	log.Printf("Scheduling ImportMeasures task: %s\n", importSchdl)
-	scheduler.AddFunc(importSchdl, func() {
+	err = scheduler.AddFunc(importSchdl, func() {
 		log.Printf("ImportMeasures task started at %s\n", time.Now())
 		jobs.RunTaskImportMeasures()
 	})
+	if err != nil {
+		log.Errorf("Error: %s\n", err)
+	}
+
 	scheduler.Start()
 
 	api.PreServerShutdown = func() {}

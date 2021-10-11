@@ -15,6 +15,8 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 )
 
+const rights = 0770
+
 type ExportServiceImpl struct {
 	Conf  *viper.Viper
 	DBMgr db.DatabaseMgr
@@ -38,8 +40,8 @@ func (m *ExportServiceImpl) Export(fn string) {
 
 		return
 	}
-	if err := os.MkdirAll(filepath.Dir(fn), 0770); err != nil {
-		log.Printf("Directory path not created: %s\n")
+	if err := os.MkdirAll(filepath.Dir(fn), rights); err != nil {
+		log.Printf("Directory path not created: %s\n", err)
 		return
 	}
 	file.Create(fn, fullJSON)

@@ -2,8 +2,9 @@ package jobs
 
 import (
 	"fmt"
-	"log"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/constants"
 	"github.com/ConsenSys/fc-latency-map/manager/export"
@@ -15,7 +16,11 @@ import (
 
 func RunTaskCreateMeasures() {
 	log.Println("Update locations ...")
-	locations.NewLocationHandler().UpdateLocations(constants.AirportTypeLarge)
+	err := locations.NewLocationHandler().UpdateLocations(constants.AirportTypeLarge)
+	if err != nil {
+		log.Errorf("Error: %s\n", err)
+	}
+
 	log.Println("Parse miners ...")
 	miners.NewMinerHandler().MinersParseStateMarket()
 
