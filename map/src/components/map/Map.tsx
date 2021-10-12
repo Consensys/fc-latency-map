@@ -4,7 +4,7 @@ import * as am4core from "@amcharts/amcharts4/core";
 import * as am4maps from "@amcharts/amcharts4/maps";
 import am4geodata_worldLow from "@amcharts/amcharts4-geodata/worldLow";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-
+import moment, { Moment } from "moment";
 import { Button } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
@@ -13,12 +13,6 @@ import Location from "./Location";
 import Miner from "./Miner";
 
 am4core.useTheme(am4themes_animated);
-
-interface Props {
-  data: any;
-  height: any;
-  width: any;
-}
 
 interface Miner {
   address: string;
@@ -56,11 +50,20 @@ interface LatencyMeasureData {
   latency: [];
 }
 
+interface Props {
+  data: any;
+  date: string;
+  dates: string[];
+  height: any;
+  width: any;
+}
+
 const Map = (props: Props) => {
-  const { data, height, width } = props;
+  const { data, date, dates, width } = props;
+
   const dataJson = JSON.parse(data);
-  const locations = dataJson.locations;
-  const miners = dataJson.miners;
+  const locations = dataJson.locations ? dataJson.locations : [];
+  const miners = dataJson.miners ? dataJson.miners : [];
 
   const chart = useRef(null);
 
@@ -159,7 +162,6 @@ const Map = (props: Props) => {
       animateBullet(chart, event.target);
     });
 
-    // imageSeries.data = minersList;
     imageSeries.data = minersList.map((miner: MinerLatency) => {
       let color = "#ff0000";
 
@@ -309,12 +311,34 @@ const Map = (props: Props) => {
     };
   }, []);
 
-  const previousDateHandler = () => {
-    console.log("previousDateHandler");
+  const isPrevious = () => {
+    let index = dates.findIndex((dateElt) => dateElt == date);
+
+    return (
+      <Button
+        shape="circle"
+        type="link"
+        icon={<LeftOutlined />}
+        href={`/date/${dates[index - 1] && dates[index - 1]}`}
+        className={styles.dateButton}
+        disabled={index == 0}
+      />
+    );
   };
 
-  const nextDateHandler = () => {
-    console.log("nextDateHandler");
+  const isNext = () => {
+    let index = dates.findIndex((dateElt) => dateElt == date);
+
+    return (
+      <Button
+        shape="circle"
+        type="link"
+        icon={<RightOutlined />}
+        href={`/date/${dates[index + 1] && dates[index + 1]}`}
+        className={styles.dateButton}
+        disabled={index + 1 == dates.length}
+      />
+    );
   };
 
   return (
@@ -328,21 +352,9 @@ const Map = (props: Props) => {
         }}
       ></div>
       <div className={styles.dates}>
-        <Button
-          shape="circle"
-          type="link"
-          icon={<LeftOutlined />}
-          onClick={previousDateHandler}
-          className={styles.dateButton}
-        />
-        <div className={styles.date}>2021/12/10</div>
-        <Button
-          shape="circle"
-          type="link"
-          icon={<RightOutlined />}
-          onClick={nextDateHandler}
-          className={styles.dateButton}
-        />
+        {isPrevious()}
+        <div className={styles.date}>{date}</div>
+        {isNext()}
       </div>
 
       <Row gutter={[16, 16]} className={styles.informations}>

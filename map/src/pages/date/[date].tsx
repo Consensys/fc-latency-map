@@ -17,7 +17,7 @@ interface Props {
   dates: string[];
 }
 
-const Home = (props: Props) => {
+const Date = (props: Props) => {
   const { data, date, dates } = props;
   const MapWithNoSSR = dynamic(() => import("@src/components/map/Map"), {
     ssr: false,
@@ -73,29 +73,23 @@ const Home = (props: Props) => {
   );
 };
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ query }) {
   let data = JSON.stringify({
     locations: [],
     miners: [],
   });
-  let date = "";
+  let date = query.date;
   let dates: string[] = [];
 
   const files = fs.readdirSync(serverRuntimeConfig.path.exportsMeasures);
   if (files && files.length > 0) {
-    const filesSorted = files.sort();
-    const latest = filesSorted[filesSorted.length - 1];
-
-    const datesFound = latest.match(/\d+-\d+-\d+/g);
-    if (datesFound) {
-      date = datesFound[0];
-    }
     const filename = path.join(
       serverRuntimeConfig.path.exportsMeasures,
-      latest
+      `export_${date}.json`
     );
 
     data = await fs.readFileSync(filename, "utf-8");
+
     dates = files.map((file) => {
       const datesFound = file.match(/\d+-\d+-\d+/g);
       if (datesFound) {
@@ -114,4 +108,4 @@ export async function getServerSideProps() {
   };
 }
 
-export default Home;
+export default Date;
