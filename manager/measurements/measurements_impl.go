@@ -1,7 +1,6 @@
 package measurements
 
 import (
-	"strconv"
 	"time"
 
 	"gorm.io/gorm/clause"
@@ -143,35 +142,23 @@ func (m *measurementServiceImpl) getProbIDs(places []Place, lat, long float64) [
 	}
 
 	ripeProbeIDs := []string{}
-	var nearestLocations []*models.Location
 
-	if err := m.DBMgr.GetDB().Model(models.Location{}).
-		Preload(clause.Associations).
-		Find(&nearestLocations, "id in ?", nearestLocationsIDs).
-		Error; err != nil {
+	dbc := m.DBMgr.GetDB()
+	if err := dbc.Model(models.Probe{}).
+		Distinct().
+		Where("id in (?)",
+			dbc.Select("probe_id").
+				Table("locations_probes").
+				Where("location_id in (?)", nearestLocationsIDs)).
+		Pluck("probe_id", &ripeProbeIDs).Error; err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
 		}).Error("get probeId from locations")
 
 		return []string{}
 	}
-	for _, location := range nearestLocations {
-		for _, probe := range location.Probes {
-			ripeProbeIDs = add(ripeProbeIDs, strconv.Itoa(probe.ProbeID))
-		}
-	}
 
 	return ripeProbeIDs
-}
-
-func add(s []string, str string) []string {
-	for _, v := range s {
-		if v == str {
-			return s
-		}
-	}
-
-	return append(s, str)
 }
 
 func (m *measurementServiceImpl) getLocationsAsPlaces() ([]Place, error) {
