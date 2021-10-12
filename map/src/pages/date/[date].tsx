@@ -73,7 +73,7 @@ const Date = (props: Props) => {
   );
 };
 
-export async function getServerSideProps({ query }) {
+export async function getServerSideProps({ query }: any) {
   let data = JSON.stringify({
     locations: [],
     miners: [],
