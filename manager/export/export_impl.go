@@ -26,7 +26,8 @@ func newExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) Service {
 	}
 }
 
-func (m *ExportServiceImpl) export() {
+func (m *ExportServiceImpl) export() *[]string {
+	files := []string{}
 	dates := m.getDates()
 
 	if len(dates) == 0 {
@@ -52,8 +53,10 @@ func (m *ExportServiceImpl) export() {
 		measurements := m.getLatencyMeasurementsStored(date)
 		j := m.marshalJSON(measurements)
 		file.Create(fn, j)
+		files = append(files, fn)
 	}
 	fmt.Println("Main: Completed")
+	return &files
 }
 
 func (m *ExportServiceImpl) marshalJSON(measurements *Result) []byte {

@@ -5,5 +5,5 @@ package export
 type Service interface {
 
 	// export from db to json file
-	export()
+	export() *[]string
 }
