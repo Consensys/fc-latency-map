@@ -123,9 +123,9 @@ func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult)
 
 func (m *measurementServiceImpl) getMeasurementsRunning() []*models.Measurement {
 	var measurements []*models.Measurement
-	dbc := (m.DBMgr).GetDB()
+	dbc := (m.DBMgr).GetDB().Debug()
 	dbc.Model(&models.Measurement{}).
-		Find(&measurements, "status is null or status in ('running', 'Specified', 'Scheduled', 'Ongoing')")
+		Find(&measurements, "status in ('', 'running', 'Specified', 'Scheduled', 'Ongoing')")
 
 	return measurements
 }
