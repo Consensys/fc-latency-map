@@ -147,8 +147,11 @@ func (m *ExportServiceImpl) getMeasureResults(date, ip string, locationID int) [
 		Where(where).
 		Where("probe_id in (?)",
 			dbc.Select("probe_id").
-				Table("locations_probes").
-				Where("location_id in (?)", locationID)).
+				Table("probes").
+				Where("id in (?)",
+					dbc.Select("probe_id").
+						Table("locations_probes").
+						Where("location_id in (?)", locationID))).
 		Group("ip, measurement_date").
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "measurement_date"}, Desc: true}).
 		Find(&meas).Error
