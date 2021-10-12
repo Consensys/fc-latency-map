@@ -13,7 +13,7 @@ const { publicRuntimeConfig, serverRuntimeConfig } = getConfig();
 
 interface Props {
   data: any;
-  date: Moment;
+  date: string;
   dates: string[];
 }
 
