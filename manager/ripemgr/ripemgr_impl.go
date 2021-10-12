@@ -6,10 +6,9 @@ import (
 	"strings"
 	"time"
 
+	atlas "github.com/keltia/ripe-atlas"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-
-	atlas "github.com/keltia/ripe-atlas"
 
 	"github.com/ConsenSys/fc-latency-map/manager/addresses"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
@@ -35,7 +34,7 @@ func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
 		return nil, err
 	}
 	ver := atlas.GetVersion()
-	log.Println("api version ", ver)
+	log.Println("api version", ver)
 
 	return &RipeMgrImpl{
 		c:    c,

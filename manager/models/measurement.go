@@ -17,7 +17,7 @@ type Measurement struct {
 type MeasurementResult struct {
 	gorm.Model
 	ProbeID              int         `gorm:"foreignKey:probe_id;index:idx_name,unique"`
-	Probe                Probe       `gorm:"foreignkey:ProbeID;references:probe_id"`
+	Probe                Probe       `gorm:"foreignkey:ProbeID;references:probe_id;index:idx_measurement_probe_id"`
 	MeasurementID        int         `gorm:"foreignKey:measurement_id;index:idx_name,unique"`
 	Measurement          Measurement `gorm:"foreignkey:MeasurementID;references:measurement_id"`
 	MeasurementTimestamp int         `gorm:"index:idx_name,unique"`

@@ -13,7 +13,7 @@ const { publicRuntimeConfig, serverRuntimeConfig } = getConfig();
 
 interface Props {
   data: any;
-  date: Moment;
+  date: string;
   dates: string[];
 }
 
@@ -73,7 +73,7 @@ const Date = (props: Props) => {
   );
 };
 
-export async function getServerSideProps({ query }) {
+export async function getServerSideProps({ query }: any) {
   let data = JSON.stringify({
     locations: [],
     miners: [],

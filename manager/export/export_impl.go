@@ -28,6 +28,11 @@ func newExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) Service {
 
 func (m *ExportServiceImpl) export() {
 	dates := m.getDates()
+
+	if len(dates) == 0 {
+		log.Warn("No dates to generate exports")
+	}
+
 	for _, date := range dates {
 		fn := fmt.Sprintf("export_%s.json", date)
 		if file.IsUpdated(fn, date) {
@@ -129,10 +134,12 @@ func (m *ExportServiceImpl) getMeasureResults(date, ip string, locationID int) *
 		Where(where).
 		Where("probe_id in (?)",
 			dbc.Select("probe_id").
-				Table("locations_probes").
-				Where("location_id in (?)", locationID)).
+				Table("probes").
+				Where("id in (?)",
+					dbc.Select("probe_id").
+						Table("locations_probes").
+						Where("location_id in (?)", locationID))).
 		Group("ip, measurement_date").
-		Order(clause.OrderByColumn{Column: clause.Column{Name: "measurement_date"}, Desc: true}).
 		First(&meas).Error
 	if err != nil {
 		return nil
@@ -193,7 +200,11 @@ func (m *ExportServiceImpl) getLocationsFromIata(codes []string) []*models.Locat
 
 func (m *ExportServiceImpl) getDates() []string {
 	var dates []string
-	m.DBMgr.GetDB().Model(&models.MeasurementResult{}).Distinct().Order("measurement_date").Pluck("measurement_date", &dates)
+	m.DBMgr.GetDB().
+		Model(&models.MeasurementResult{}).
+		Distinct().
+		Order("measurement_date desc").
+		Pluck("measurement_date", &dates)
 	return dates
 }
 
