@@ -17,8 +17,10 @@ func NewDatabaseMgrImpl(conf *viper.Viper) (DatabaseMgr, error) {
 	dbName := conf.GetString("DB_CONNECTION")
 	const sqliteMaxVariables = 999
 	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{
-		CreateBatchSize: sqliteMaxVariables,
-		Logger:          logger.Default.LogMode(logger.Silent),
+		CreateBatchSize:        sqliteMaxVariables,
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
+		Logger:                 logger.Default.LogMode(logger.Silent),
 	})
 	if err != nil {
 		panic("failed to connect database")
@@ -40,6 +42,10 @@ func migrate(db *gorm.DB) {
 	_ = db.AutoMigrate(&models.Measurement{})
 	_ = db.AutoMigrate(&models.MeasurementResult{})
 	_ = db.AutoMigrate(&models.Probe{})
+
+	// create indexes in many2many tables
+	_ = db.Exec("create index IF NOT EXISTS locations_probes_location_id_index on locations_probes (location_id)")
+	_ = db.Exec("create index IF NOT EXISTS locations_probes_probe_id_index on locations_probes (probe_id)")
 }
 
 func (dbMgr *DatabaseMgrImpl) GetDB() *gorm.DB {

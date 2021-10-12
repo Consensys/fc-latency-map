@@ -17,8 +17,6 @@ COPY src src
 COPY next-env.d.ts next-env.d.ts
 COPY next.config.js next.config.js
 COPY tsconfig.json tsconfig.json
-# TODO: remove this line
-COPY data data
 RUN npm run build
 
 FROM node:lts-alpine AS runner

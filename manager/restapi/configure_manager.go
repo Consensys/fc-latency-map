@@ -5,17 +5,25 @@ package restapi
 import (
 	"crypto/tls"
 	"net/http"
+	"time"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/robfig/cron"
+	log "github.com/sirupsen/logrus"
 
+	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/internal/handlers"
+	"github.com/ConsenSys/fc-latency-map/manager/jobs"
 	"github.com/ConsenSys/fc-latency-map/manager/restapi/operations"
 	"github.com/ConsenSys/fc-latency-map/manager/restapi/operations/check"
 )
 
 //go:generate swagger generate server --target ../../manager --name Manager --spec ../swagger.yml --principal interface{}
+
+var conf = config.NewConfig()
+var scheduler = cron.New()
 
 func configureFlags(_ *operations.ManagerAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -48,9 +56,33 @@ func configureAPI(api *operations.ManagerAPI) http.Handler {
 		return check.NewGetMetricsOK().WithPayload(&payload)
 	})
 
+	createSchdl := conf.GetString("CRON_SCHEDULE_CREATE_MESURES")
+	log.Printf("Scheduling CreateMeasures task: %s\n", createSchdl)
+	err := scheduler.AddFunc(createSchdl, func() {
+		log.Printf("CreateMeasures task started at %s\n", time.Now())
+		jobs.RunTaskCreateMeasures()
+	})
+	if err != nil {
+		log.Errorf("Error: %s\n", err)
+	}
+
+	importSchdl := conf.GetString("CRON_SCHEDULE_IMPORT_MESURES")
+	log.Printf("Scheduling ImportMeasures task: %s\n", importSchdl)
+	err = scheduler.AddFunc(importSchdl, func() {
+		log.Printf("ImportMeasures task started at %s\n", time.Now())
+		jobs.RunTaskImportMeasures()
+	})
+	if err != nil {
+		log.Errorf("Error: %s\n", err)
+	}
+
+	scheduler.Start()
+
 	api.PreServerShutdown = func() {}
 
-	api.ServerShutdown = func() {}
+	api.ServerShutdown = func() {
+		scheduler.Stop()
+	}
 
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
 }

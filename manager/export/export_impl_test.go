@@ -1,11 +1,13 @@
 package export
 
 import (
+	"testing"
+
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
 	"github.com/spf13/viper"
-	"testing"
+	"gorm.io/gorm"
 )
 
 func TestExportServiceImpl_export(t *testing.T) {
@@ -33,7 +35,7 @@ func TestExportServiceImpl_export(t *testing.T) {
 				DBMgr: db.NewMockDatabaseMgr(),
 			},
 			createMiners:  []*models.Miner{{Address: "f11111", IP: "1.1.1.1"}},
-			createResults: []*models.MeasurementResult{{MeasurementID: 1, ProbeID: 1, IP: "1.1.1.1"}},
+			createResults: []*models.MeasurementResult{{Model: gorm.Model{ID: 1}, MeasurementID: 1, ProbeID: 1, IP: "1.1.1.1"}},
 			createLocations: []*models.Location{
 				{IataCode: "iata",
 					Latitude:  1,
@@ -82,17 +84,17 @@ func TestExportServiceImpl_export(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			dbc := tt.fields.DBMgr.GetDB()
+			dbc.Create(tt.createResults)
 			for _, l := range tt.createLocations {
 				dbc.Create(l.Probes)
 			}
-			dbc.Create(tt.createResults)
 			dbc.Create(tt.createLocations)
 			dbc.Create(tt.createMiners)
 			m := &ExportServiceImpl{
 				Conf:  tt.fields.Conf,
 				DBMgr: tt.fields.DBMgr,
 			}
-			m.export(tt.args.fn)
+			m.export()
 		})
 	}
 }
