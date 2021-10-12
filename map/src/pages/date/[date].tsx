@@ -88,7 +88,6 @@ export async function getServerSideProps({ query }) {
       `export_${date}.json`
     );
 
-    console.log("jajaja", filename);
     data = await fs.readFileSync(filename, "utf-8");
 
     dates = files.map((file) => {

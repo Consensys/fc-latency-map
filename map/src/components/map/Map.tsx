@@ -61,9 +61,6 @@ interface Props {
 const Map = (props: Props) => {
   const { data, date, dates, width } = props;
 
-  console.log("DATE::>>", date);
-  console.log("DATEs::>>", dates);
-
   const dataJson = JSON.parse(data);
   const locations = dataJson.locations ? dataJson.locations : [];
   const miners = dataJson.miners ? dataJson.miners : [];
@@ -165,7 +162,6 @@ const Map = (props: Props) => {
       animateBullet(chart, event.target);
     });
 
-    // imageSeries.data = minersList;
     imageSeries.data = minersList.map((miner: MinerLatency) => {
       let color = "#ff0000";
 
