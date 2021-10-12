@@ -12,29 +12,29 @@ import (
 )
 
 func RunTaskCreateMeasures() {
-	log.Println("Update locations ...")
+	log.Println("Update locations...")
 	err := locations.NewLocationHandler().UpdateLocations(constants.AirportTypeLarge)
 	if err != nil {
 		log.Errorf("Error: %s\n", err)
 	}
 
-	log.Println("Parse miners ...")
+	log.Println("Parse miners...")
 	miners.NewMinerHandler().MinersParseStateMarket()
 
 	probeHdlr := probes.NewProbeHandler()
-	log.Println("Import probes ...")
+	log.Println("Import probes...")
 	probeHdlr.Import()
-	log.Println("Update probes ...")
+	log.Println("Update probes...")
 	probeHdlr.Update()
 
-	log.Println("Create measurements ...")
+	log.Println("Create measurements...")
 	measurements.NewHandler().CreateMeasurements([]string{})
 }
 
 func RunTaskImportMeasures() {
-	log.Println("Import measurements ...")
+	log.Println("Import measurements...")
 	measurements.NewHandler().ImportMeasures()
 
-	log.Println("Export data ...")
+	log.Println("Export data...")
 	export.NewExportHandler().Export()
 }
