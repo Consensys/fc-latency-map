@@ -28,6 +28,11 @@ func newExportServiceImpl(conf *viper.Viper, dbMgr db.DatabaseMgr) Service {
 
 func (m *ExportServiceImpl) export() {
 	dates := m.getDates()
+
+	if len(dates) == 0 {
+		log.Warn("No dates to generate exports")
+	}
+
 	for _, date := range dates {
 		fn := fmt.Sprintf("export_%s.json", date)
 		if file.IsUpdated(fn, date) {
