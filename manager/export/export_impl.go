@@ -78,14 +78,15 @@ func (m *ExportServiceImpl) getLatencyMeasurementsStored(date string) *Result {
 				continue
 			}
 
-			latency = m.getLatency(latency, int(l.Model.ID), miner.IP, date)
-			if len(latency.Measures) > 0 {
-				iataCodes = addNewString(iataCodes, l.IataCode)
-				if _, found := results.Measurements[l.Country]; !found {
-					results.Measurements[l.Country] = make(map[string][]*Miner)
-				}
-				results.Measurements[l.Country][l.IataCode] = append(results.Measurements[l.Country][l.IataCode], latency)
+			latency = m.appendLatency(latency, int(l.Model.ID), miner.IP, date)
+			if len(latency.Measures) == 0 {
+				continue
 			}
+			iataCodes = addNewString(iataCodes, l.IataCode)
+			if _, found := results.Measurements[l.Country]; !found {
+				results.Measurements[l.Country] = make(map[string][]*Miner)
+			}
+			results.Measurements[l.Country][l.IataCode] = append(results.Measurements[l.Country][l.IataCode], latency)
 		}
 	}
 
@@ -98,44 +99,30 @@ func (m *ExportServiceImpl) addRootData(results *Result, miners []*models.Miner,
 	results.Miners = miners
 	results.Dates = m.getDates()
 	results.Locations = m.getLocationsFromIata(iataCodes)
-	for _, location := range results.Locations {
-		results.Probes = appendNewProbe(results.Probes, location.Probes)
-	}
 }
 
-func (m *ExportServiceImpl) getLatency(latency *Miner, locationID int, ip, date string) *Miner {
+func (m *ExportServiceImpl) appendLatency(latency *Miner, locationID int, ip, date string) *Miner {
 	for _, ip := range strings.Split(ip, ",") {
-		measure := &MeasureIP{IP: ip}
 		meas := m.getMeasureResults(date, ip, locationID)
-		if len(meas) > 0 {
-			latency.Measures = append(latency.Measures, measure)
+		if meas == nil {
+			continue
 		}
-
-		for _, m := range meas {
-			measure.Latency = append(measure.Latency, &Latency{
-				Avg:  m.TimeAverage,
-				Min:  m.TimeMin,
-				Max:  m.TimeMax,
-				Date: m.MeasurementDate,
-			})
-		}
+		latency.Measures = append(latency.Measures, meas)
 	}
 
 	return latency
 }
 
-func (m *ExportServiceImpl) getMeasureResults(date, ip string, locationID int) []*models.MeasurementResult {
-	var meas []*models.MeasurementResult
-	where := &models.MeasurementResult{
-		IP: ip,
+func (m *ExportServiceImpl) getMeasureResults(date, ip string, locationID int) *MeasureIP {
+	var meas *MeasureIP
+	where := &MeasureIP{
+		IP:              ip,
+		MeasurementDate: date,
 	}
-	if date != "" {
-		where.MeasurementDate = date
-	}
+
 	dbc := m.DBMgr.GetDB()
-	err := dbc.Select(
+	err := dbc.Model(&models.MeasurementResult{}).Select(
 		"ip,"+
-			"measurement_date,"+
 			"avg(time_average) time_average,"+
 			"max(time_max) time_max,"+
 			"min(time_min) time_min").
@@ -146,12 +133,8 @@ func (m *ExportServiceImpl) getMeasureResults(date, ip string, locationID int) [
 				Where("location_id in (?)", locationID)).
 		Group("ip, measurement_date").
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "measurement_date"}, Desc: true}).
-		Find(&meas).Error
+		First(&meas).Error
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error("getMeasureResults")
-
 		return nil
 	}
 
@@ -222,19 +205,4 @@ func addNewString(s []string, str string) []string {
 	}
 
 	return append(s, str)
-}
-
-func appendNewProbe(probes, probes2Append []*models.Probe) []*models.Probe {
-	for _, m := range probes2Append {
-		found := false
-		for _, probe := range probes {
-			if found = probe.ProbeID == m.ProbeID; found {
-				break
-			}
-		}
-		if !found {
-			probes = append(probes, m)
-		}
-	}
-	return probes
 }
