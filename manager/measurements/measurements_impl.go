@@ -123,7 +123,7 @@ func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult)
 
 func (m *measurementServiceImpl) getMeasurementsRunning() []*models.Measurement {
 	var measurements []*models.Measurement
-	dbc := (m.DBMgr).GetDB().Debug()
+	dbc := (m.DBMgr).GetDB()
 	dbc.Model(&models.Measurement{}).
 		Find(&measurements, "status in ('', 'running', 'Specified', 'Scheduled', 'Ongoing')")
 
