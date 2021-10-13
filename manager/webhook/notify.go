@@ -43,7 +43,7 @@ func (n *Notifier) Notify(files *[]string) bool {
 	}
 	for _, url := range urls {
 		log.Printf("Request POST: url=%s, body=%s\n", url, payload)
-		// nolint: G107: Potential HTTP request made with variable url
+		// nolint // G107: Potential HTTP request made with variable url
 		resp, err := http.Post(
 			url,
 			"application/json; charset=utf-8",
