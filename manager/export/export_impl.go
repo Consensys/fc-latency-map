@@ -167,7 +167,7 @@ func (m *ExportServiceImpl) getLocations() []*models.Location {
 	var loc []*models.Location
 	err := m.DBMgr.GetDB().
 		Preload(clause.Associations).
-		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: false}).
+		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}}).
 		Find(&loc).Error
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -185,7 +185,7 @@ func (m *ExportServiceImpl) getLocationsFromIata(codes []string) []*models.Locat
 	err := m.DBMgr.GetDB().
 		Preload(clause.Associations).
 		Where("iata_code in ?", codes).
-		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}, Desc: false}).
+		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}}).
 		Find(&loc).Error
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -203,7 +203,7 @@ func (m *ExportServiceImpl) getDates() []string {
 	m.DBMgr.GetDB().
 		Model(&models.MeasurementResult{}).
 		Distinct().
-		Order("measurement_date desc").
+		Order(clause.OrderByColumn{Column: clause.Column{Name: "measurement_date"}}).
 		Pluck("measurement_date", &dates)
 	return dates
 }

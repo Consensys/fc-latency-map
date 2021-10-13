@@ -11,3 +11,9 @@ type GeoIP struct {
 	GeopluginLongitude string `json:"geoplugin_longitude"`
 	GeopluginTimezone  string `json:"geoplugin_timezone"`
 }
+
+type Location struct {
+	GeopluginCountryCode string `json:"geoplugin_countryCode"` //nolint:tagliatelle
+	GeopluginLatitude    string `json:"geoplugin_latitude"`
+	GeopluginLongitude   string `json:"geoplugin_longitude"`
+}

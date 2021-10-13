@@ -4,7 +4,7 @@ CREATE INDEX `idx_miners_deleted_at` ON `miners`(`deleted_at`);
 CREATE TABLE `locations` (`id` integer,`created_at` datetime,`updated_at` datetime,`deleted_at` datetime,`name` text,`country` text,`iata_code` text,`latitude` real,`longitude` real,`type` text,PRIMARY KEY (`id`));
 CREATE UNIQUE INDEX `idx_locations_iata_code` ON `locations`(`iata_code`);
 CREATE INDEX `idx_locations_deleted_at` ON `locations`(`deleted_at`);
-CREATE TABLE `probes` (`id` integer,`created_at` datetime,`updated_at` datetime,`deleted_at` datetime,`probe_id` integer,`country_code` text,`status` text,`latitude` real,`longitude` real,PRIMARY KEY (`id`));
+CREATE TABLE `probes` (`id` integer,`created_at` datetime,`updated_at` datetime,`deleted_at` datetime,`probe_id` integer,`country_code` text,`status` text,`latitude` real,`longitude` real, `is_anchor` numeric, `is_public` numeric, `swap_coordinates` numeric,PRIMARY KEY (`id`));
 CREATE UNIQUE INDEX `idx_probes_probe_id` ON `probes`(`probe_id`);
 CREATE INDEX `idx_probes_deleted_at` ON `probes`(`deleted_at`);
 CREATE TABLE `locations_probes` (`location_id` integer,`probe_id` integer,PRIMARY KEY (`location_id`,`probe_id`),CONSTRAINT `fk_locations_probes_location` FOREIGN KEY (`location_id`) REFERENCES `locations`(`id`),CONSTRAINT `fk_locations_probes_probe` FOREIGN KEY (`probe_id`) REFERENCES `probes`(`id`));
