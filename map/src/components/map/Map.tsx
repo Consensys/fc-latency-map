@@ -84,7 +84,7 @@ const Map = (props: Props) => {
     legend.padding(5, 10, 5, 10);
     legend.data = [
       {
-        name: "Probes",
+        name: "Locations",
         fill: "#C0C0C0",
       },
       {
@@ -263,7 +263,7 @@ const Map = (props: Props) => {
         if (existsLatency) {
           const minerLatency = {
             ...miners[index],
-            latency: existsLatency.measures[0].latency[0],
+            latency: existsLatency.measures[0],
           };
           minersLatency.push(minerLatency);
         } else {
