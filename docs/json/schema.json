@@ -13,12 +13,6 @@
         }
       }
     },
-    "probes": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/Probe"
-      }
-    },
     "miners": {
       "type": "array",
       "items": {
@@ -88,23 +82,6 @@
         "ip": {
           "type": "string"
         },
-        "latency": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Latency"
-          }
-        }
-      },
-      "required": [
-        "ip",
-        "latency"
-      ]
-    },
-    "Latency": {
-      "title": "Latency",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
         "avg": {
           "type": "number"
         },
@@ -113,15 +90,12 @@
         },
         "min": {
           "type": "number"
-        },
-        "date": {
-          "type": "string",
-          "format": "date"
         }
       },
       "required": [
+        "ip",
+        "latency",
         "avg",
-        "date",
         "max",
         "min"
       ]

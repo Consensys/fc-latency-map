@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   manager:
+    user: "${UID}:${GID}"
     image: fc-latency-manager
     container_name: fc-latency-manager
     network_mode: "bridge"
@@ -14,7 +15,7 @@ services:
     env_file:
       - ./manager/.env
     restart: unless-stopped
-  
+
   map:
     image: fc-latency-map
     container_name: fc-latency-map

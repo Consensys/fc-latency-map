@@ -63,7 +63,9 @@ const Map = (props: Props) => {
 
   const dataJson = JSON.parse(data);
   const locations = dataJson.locations ? dataJson.locations : [];
-  const miners = dataJson.miners ? dataJson.miners : [];
+  const miners = dataJson.miners
+    ? dataJson.miners.filter((miner: any) => miner.latitude && miner.longitude)
+    : [];
 
   const chart = useRef(null);
 
@@ -76,13 +78,13 @@ const Map = (props: Props) => {
     legend.parent = chart.chartContainer;
     legend.background.fill = am4core.color("#000");
     legend.background.fillOpacity = 0.05;
-    legend.width = 190;
+    legend.width = 210;
     legend.align = "right";
     legend.fontSize = 11;
     legend.padding(5, 10, 5, 10);
     legend.data = [
       {
-        name: "Probes",
+        name: "Locations",
         fill: "#C0C0C0",
       },
       {
@@ -90,19 +92,19 @@ const Map = (props: Props) => {
         fill: "#4169E1",
       },
       {
-        name: "Low Latency Miners",
+        name: "Low Latency Miners <= 50",
         fill: "#00FF00",
       },
       {
-        name: "Medium Latency Miners",
+        name: "Medium Latency Miners <= 100",
         fill: "#FFFF00",
       },
       {
-        name: "High Latency Miners",
+        name: "High Latency Miners > 100",
         fill: "#FF0000",
       },
       {
-        name: "Timeout Miners",
+        name: "Not responding Miners",
         fill: "#000000",
       },
     ];
@@ -128,9 +130,10 @@ const Map = (props: Props) => {
 
     imageSeries.data = minersList.map((miner: Miner) => {
       return {
+        title: miner.address,
+        ip: miner.ip,
         latitude: miner.latitude,
         longitude: miner.longitude,
-        title: miner.address,
         color: "#4169E1",
       };
     });
@@ -176,9 +179,10 @@ const Map = (props: Props) => {
       }
 
       return {
+        title: miner.address,
+        ip: miner.ip,
         latitude: miner.latitude,
         longitude: miner.longitude,
-        title: miner.address,
         color,
         latency: miner.latency,
       };
@@ -259,7 +263,7 @@ const Map = (props: Props) => {
         if (existsLatency) {
           const minerLatency = {
             ...miners[index],
-            latency: existsLatency.measures[0].latency[0],
+            latency: existsLatency.measures[0],
           };
           minersLatency.push(minerLatency);
         } else {

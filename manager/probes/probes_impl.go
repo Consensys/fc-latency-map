@@ -66,6 +66,12 @@ func (srv *ProbeServiceImpl) RequestProbes() error {
 
 		location.Probes = probes
 		dbc.Updates(location)
+		err = dbc.Model(location).
+			Association("Probes").
+			Replace(location.Probes)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

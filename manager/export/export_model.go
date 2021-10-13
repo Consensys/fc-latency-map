@@ -7,7 +7,6 @@ import (
 type Result struct {
 	Locations    []*models.Location             `json:"locations,omitempty"`
 	Miners       []*models.Miner                `json:"miners,omitempty"`
-	Probes       []*models.Probe                `json:"probes,omitempty"`
 	Dates        []string                       `json:"dates,omitempty"`
 	Measurements map[string]map[string][]*Miner `json:"measurements,omitempty"`
 }
@@ -18,15 +17,9 @@ type Miner struct {
 }
 
 type MeasureIP struct {
-	IP      string     `json:"ip"`
-	Latency []*Latency `json:"latency,omitempty"`
-}
-
-type Latency struct {
-	Avg  float64 `json:"avg,omitempty"`
-	Lts  int     `json:"lts,omitempty"`
-	Max  float64 `json:"max,omitempty"`
-	Min  float64 `json:"min,omitempty"`
-	Date string  `json:"date,omitempty"`
-	IP   string  `json:"ip,omitempty"`
+	IP              string  `json:"ip"`
+	Avg             float64 `gorm:"column:time_average" json:"avg,omitempty"`
+	Max             float64 `gorm:"column:time_max" json:"max,omitempty"`
+	Min             float64 `gorm:"column:time_min" json:"min,omitempty"`
+	MeasurementDate string  `json:"-"`
 }

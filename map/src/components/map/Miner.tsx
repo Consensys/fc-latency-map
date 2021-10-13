@@ -17,6 +17,7 @@ const Miner = (props: Props) => {
     miner && (
       <Card title="Miner" className={styles.information}>
         <p>Name: {miner.title}</p>
+        <p>IP: {miner.ip}</p>
         <p>Latitude: {miner.latitude}</p>
         <p>Longitude: {miner.longitude}</p>
 
