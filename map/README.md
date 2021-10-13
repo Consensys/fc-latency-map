@@ -10,11 +10,23 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the map.
 
+## Notification
+
+To send exports notifications to the Map, send a Post request on [http://localhost:3000/api/notify](http://localhost:3000/api/notify)
+
+It should respond:
+
+```
+{
+"success": true
+}
+```
+
 ## Health Check
 
 Open [http://localhost:3000/api/health-check](http://localhost:3000/api/health-check)
 
-Example:
+It should respond:
 
 ```
 {
@@ -26,7 +38,7 @@ Example:
 
 Open [http://localhost:3000/api/metrics](http://localhost:3000/api/metrics)
 
-Example:
+It should respond:
 
 ```
 {
@@ -36,3 +48,7 @@ Example:
 "externalMemory": "358.41 MB"
 }
 ```
+
+## Swagger
+
+[./swagger.yml](./swagger.yml)
