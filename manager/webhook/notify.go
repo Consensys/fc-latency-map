@@ -16,8 +16,8 @@ type Notifier struct {
 }
 
 type Payload struct {
-	Datetime  string   `json:datetime`
-	Filenames []string `json:filenames`
+	Datetime  string   `json:"datetime"`
+	Filenames []string `json:"filenames"`
 }
 
 func NewNotifier(conf *viper.Viper) *Notifier {
@@ -42,8 +42,9 @@ func (n *Notifier) Notify(files *[]string) bool {
 		return false
 	}
 	for _, url := range urls {
-		log.Printf("Send POST: url=%s, body=%s\n", url, payload)
-		_, err = http.Post(
+		log.Printf("Request POST: url=%s, body=%s\n", url, payload)
+		// nolint: G107: Potential HTTP request made with variable url
+		resp, err := http.Post(
 			url,
 			"application/json; charset=utf-8",
 			bytes.NewBuffer(body),
@@ -52,6 +53,7 @@ func (n *Notifier) Notify(files *[]string) bool {
 			log.Errorf("Error: %s\n", err)
 			continue
 		}
+		log.Println("Response Status:", resp.Status)
 		log.Println("Notification sent!")
 	}
 	return true
