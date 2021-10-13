@@ -2,7 +2,8 @@ package jobs
 
 import (
 	log "github.com/sirupsen/logrus"
-	
+
+	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/constants"
 	"github.com/ConsenSys/fc-latency-map/manager/export"
 	"github.com/ConsenSys/fc-latency-map/manager/locations"
@@ -33,10 +34,15 @@ func RunTaskCreateMeasures() {
 }
 
 func RunTaskImportMeasures() {
+	conf := config.NewConfig()
+
 	log.Println("Import measurements...")
 	measurements.NewHandler().ImportMeasures()
 
 	log.Println("Export data...")
 	files := export.NewExportHandler().Export()
-	webhook.Notify(files)
+
+	log.Println("Notify...")
+	notif := webhook.NewNotifier(conf)
+	notif.Notify(files)
 }
