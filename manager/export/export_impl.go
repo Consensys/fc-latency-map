@@ -130,10 +130,7 @@ func (m *ExportServiceImpl) getMeasureResults(date, ip string, locationID int) *
 
 	dbc := m.DBMgr.GetDB()
 	err := dbc.Model(&models.MeasurementResult{}).Select(
-		"ip,"+
-			"avg(time_average) time_average,"+
-			"max(time_max) time_max,"+
-			"min(time_min) time_min").
+		"ip, avg(rtt) time_average").
 		Where(where).
 		Where("probe_id in (?)",
 			dbc.Select("probe_id").

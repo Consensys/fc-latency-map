@@ -88,15 +88,21 @@ func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult)
 	for _, result := range mr { //nolint:gocritic
 		t := time.Unix(int64(result.Timestamp), 0)
 
+		var rtt float64
+		rtt = -1
+		if len(result.Result) > 0 {
+			rtt = result.Result[0].Rtt
+			if len(result.Result[0].Result) > 0 {
+				rtt = result.Result[0].Result[0].Rtt
+			}
+		}
 		insert = append(insert, &models.MeasurementResult{
 			IP:                   result.DstAddr,
 			MeasurementID:        result.MsmID,
 			ProbeID:              result.PrbID,
 			MeasurementTimestamp: result.Timestamp,
 			MeasurementDate:      t.Format("2006-01-02"),
-			TimeAverage:          result.Avg,
-			TimeMax:              result.Max,
-			TimeMin:              result.Min,
+			Rtt:                  rtt,
 		})
 	}
 

@@ -108,7 +108,7 @@ func (srv *MinerServiceImpl) getGeolocation(ip string) (lat, long float64) {
 	return 0, 0
 }
 
-func getMinerIPPort(minerInfo *miner.MinerInfo) (ips, port string) {
+func getMinerIPPort(minerInfo *miner.MinerInfo) (ips string, port int) {
 	log.Printf("minerInfo.Multiaddrs: %s", minerInfo.Multiaddrs)
 	ip, port := addresses.IPAddress(addresses.MultiAddrs(minerInfo.Multiaddrs))
 	ips = strings.Join(ip, ",")

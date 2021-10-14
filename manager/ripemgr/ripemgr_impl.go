@@ -116,14 +116,12 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 	var d []atlas.Definition
 
 	isOneOff := rMgr.conf.GetBool("RIPE_ONE_OFF")
-	pingInterval := rMgr.conf.GetInt("RIPE_PING_INTERVAL")
-	packets := rMgr.conf.GetInt("RIPE_PACKETS")
 
 	for _, miner := range miners {
 		if miner.IP == "" || (miner.Latitude == 0 && miner.Longitude == 0) {
 			continue
 		}
-		d = rMgr.getDefinitions(miner, packets, pingInterval, d)
+		d = rMgr.getDefinitions(miner, d)
 	}
 
 	mr := rMgr.getMeasurementRequest(d, isOneOff, probes, t)
@@ -144,10 +142,9 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 	}
 
 	log.WithFields(log.Fields{
-		"id":           p,
-		"isOneOff":     isOneOff,
-		"pingInterval": pingInterval,
-		"measurement":  fmt.Sprintf("%#v\n", d),
+		"id":          p,
+		"isOneOff":    isOneOff,
+		"measurement": fmt.Sprintf("%#v\n", d),
 	}).Info("creat newMeasurement")
 
 	var measurement []*atlas.Measurement
@@ -172,14 +169,19 @@ func (rMgr *RipeMgrImpl) getMeasurementRequest(d []atlas.Definition, isOneOff bo
 	}
 }
 
-func (rMgr *RipeMgrImpl) getDefinitions(miner *models.Miner, packets, pingInterval int, d []atlas.Definition) []atlas.Definition {
+func (rMgr *RipeMgrImpl) getDefinitions(miner *models.Miner, d []atlas.Definition) []atlas.Definition {
 	isOneOff := rMgr.conf.GetBool("RIPE_ONE_OFF")
+	packets := rMgr.conf.GetInt("RIPE_PACKETS")
+	pingInterval := rMgr.conf.GetInt("RIPE_PING_INTERVAL")
+
 	for _, ip := range strings.Split(miner.IP, ",") {
 		ipAdd := net.ParseIP(ip)
 		if ipAdd.IsPrivate() {
 			continue
 		}
 
+		const defaultSize = 48
+		const hops = 32
 		definition := atlas.Definition{
 			Description: fmt.Sprintf("%s ping to %s", miner.Address, ip),
 			AF:          addresses.GetIPVersion(ipAdd),
@@ -188,7 +190,15 @@ func (rMgr *RipeMgrImpl) getDefinitions(miner *models.Miner, packets, pingInterv
 			Tags: []string{
 				miner.Address,
 			},
-			Type: "ping",
+			Size:                  defaultSize,
+			Protocol:              "TCP",
+			Type:                  "traceroute",
+			FirstHop:              hops,
+			MaxHops:               hops,
+			Port:                  miner.Port,
+			DestinationOptionSize: 0,
+			HopByHopOptionSize:    0,
+			DontFragment:          false,
 		}
 		if !isOneOff {
 			definition.Interval = pingInterval

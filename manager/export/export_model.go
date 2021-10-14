@@ -18,8 +18,6 @@ type Miner struct {
 
 type MeasureIP struct {
 	IP              string  `json:"ip"`
-	Avg             float64 `gorm:"column:time_average" json:"avg,omitempty"`
-	Max             float64 `gorm:"column:time_max" json:"max,omitempty"`
-	Min             float64 `gorm:"column:time_min" json:"min,omitempty"`
+	Avg             float64 `gorm:"column:time_average" json:"avg"`
 	MeasurementDate string  `json:"-"`
 }
