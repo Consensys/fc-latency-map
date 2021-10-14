@@ -1,4 +1,4 @@
-CREATE TABLE `miners` (`id` integer,`created_at` datetime,`updated_at` datetime,`deleted_at` datetime,`address` text,`ip` text,`latitude` real,`longitude` real,PRIMARY KEY (`id`));
+CREATE TABLE `miners` (`id` integer,`created_at` datetime,`updated_at` datetime,`deleted_at` datetime,`address` text,`ip` text,`latitude` real,`longitude` real, `port` text,PRIMARY KEY (`id`));
 CREATE UNIQUE INDEX `idx_address` ON `miners`(`address`);
 CREATE INDEX `idx_miners_deleted_at` ON `miners`(`deleted_at`);
 CREATE TABLE `locations` (`id` integer,`created_at` datetime,`updated_at` datetime,`deleted_at` datetime,`name` text,`country` text,`iata_code` text,`latitude` real,`longitude` real,`type` text,PRIMARY KEY (`id`));
