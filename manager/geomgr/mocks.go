@@ -33,6 +33,20 @@ func (m *MockGeoMgr) EXPECT() *MockGeoMgrMockRecorder {
 	return m.recorder
 }
 
+// FindCountry mocks base method.
+func (m *MockGeoMgr) FindCountry(arg0, arg1 float64) string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindCountry", arg0, arg1)
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// FindCountry indicates an expected call of FindCountry.
+func (mr *MockGeoMgrMockRecorder) FindCountry(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindCountry", reflect.TypeOf((*MockGeoMgr)(nil).FindCountry), arg0, arg1)
+}
+
 // IPGeolocation mocks base method.
 func (m *MockGeoMgr) IPGeolocation(arg0 string) (float64, float64) {
 	m.ctrl.T.Helper()

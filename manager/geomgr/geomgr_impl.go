@@ -16,6 +16,8 @@ type GeoMgrImpl struct {
 	conf *viper.Viper
 }
 
+const sleepTime = 510 * time.Millisecond
+
 func NewGeoMgrImpl(v *viper.Viper) GeoMgr {
 	return &GeoMgrImpl{
 		conf: v,
@@ -25,7 +27,7 @@ func NewGeoMgrImpl(v *viper.Viper) GeoMgr {
 func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 	// to free use of api
 	// you can check you ip status https://www.geoplugin.com/ip_status.php?ip=xx.xx.xx.xx
-	const sleepTime = 200 * time.Millisecond
+
 	time.Sleep(sleepTime)
 	response, err := http.Get(g.ipgeoURL(ip)) //nolint:noctx
 	if err != nil {
@@ -69,13 +71,57 @@ func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 	return toFloat(geo.GeopluginLatitude), toFloat(geo.GeopluginLongitude)
 }
 
-func (g *GeoMgrImpl) ipgeoURL(ip string) string {
-	return fmt.Sprintf("http://www.geoplugin.net/json.gp?ip=%s", ip)
-}
-
 func toFloat(s string) float64 {
 	if f, err := strconv.ParseFloat(s, 32); err == nil {
 		return f
 	}
 	return 0
+}
+
+func (g *GeoMgrImpl) FindCountry(lat, long float64) string {
+	time.Sleep(sleepTime)
+	response, err := http.Get(g.ipgeoLocationURL(lat, long)) //nolint:noctx
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("ipgeolocation country")
+
+		return ""
+	}
+	defer response.Body.Close()
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("ipgeolocation country")
+
+		return ""
+	}
+
+	var l Location
+	err = json.Unmarshal(body, &l)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("ipgeolocation country")
+
+		return ""
+	}
+
+	log.WithFields(log.Fields{
+		"long":        lat,
+		"lat":         long,
+		"countryCode": l.GeopluginCountryCode,
+	}).Info("ipgeolocation country")
+
+	return l.GeopluginCountryCode
+}
+
+func (g *GeoMgrImpl) ipgeoLocationURL(lat, long float64) string {
+	return fmt.Sprintf("http://www.geoplugin.net/extras/location.gp?lat=%v&long=%v&format=json", lat, long)
+}
+
+func (g *GeoMgrImpl) ipgeoURL(ip string) string {
+	return fmt.Sprintf("http://www.geoplugin.net/json.gp?ip=%s", ip)
 }

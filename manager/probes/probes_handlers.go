@@ -3,6 +3,8 @@ package probes
 import (
 	log "github.com/sirupsen/logrus"
 
+	"github.com/ConsenSys/fc-latency-map/manager/geomgr"
+
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
@@ -23,7 +25,8 @@ func NewProbeHandler() *ProbeHandler {
 	if err != nil {
 		log.Fatalf("connecting with lotus failed: %s", err)
 	}
-	pSer, err := NewProbeServiceImpl(dbMgr, ripeMgr)
+	geo := geomgr.NewGeoMgrImpl(config.NewConfig())
+	pSer, err := NewProbeServiceImpl(dbMgr, ripeMgr, geo)
 	if err != nil {
 		panic("failed to start probe service")
 	}

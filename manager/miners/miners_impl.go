@@ -76,11 +76,12 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 
 			continue
 		}
-		ip := getMinerIP(&minerInfo)
+		ip, port := getMinerIPPort(&minerInfo)
 		lat, long := srv.getGeolocation(ip)
 		miners = append(miners, &models.Miner{
 			Address:   address,
 			IP:        ip,
+			Port:      port,
 			Latitude:  lat,
 			Longitude: long,
 		})
@@ -107,16 +108,17 @@ func (srv *MinerServiceImpl) getGeolocation(ip string) (lat, long float64) {
 	return 0, 0
 }
 
-func getMinerIP(minerInfo *miner.MinerInfo) string {
+func getMinerIPPort(minerInfo *miner.MinerInfo) (ips, port string) {
 	log.Printf("minerInfo.Multiaddrs: %s", minerInfo.Multiaddrs)
-	ips := addresses.IPAddress(addresses.MultiAddrs(minerInfo.Multiaddrs))
-	return strings.Join(ips, ",")
+	ip, port := addresses.IPAddress(addresses.MultiAddrs(minerInfo.Multiaddrs))
+	ips = strings.Join(ip, ",")
+	return ips, port
 }
 
 func (srv *MinerServiceImpl) upsertMinersInDB(miners []*models.Miner) {
 	err := srv.DBMgr.GetDB().Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "address"}},
-		DoUpdates: clause.AssignmentColumns([]string{"ip", "latitude", "longitude"}),
+		DoUpdates: clause.AssignmentColumns([]string{"ip", "latitude", "longitude", "port"}),
 	}).Create(&miners).Error
 	if err != nil {
 		log.WithFields(log.Fields{

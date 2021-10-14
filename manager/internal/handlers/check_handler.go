@@ -47,7 +47,7 @@ func GetMetricsHandler() models.Metrics {
 	if err != nil {
 		log.Fatalf("connecting with lotus failed: %s", err)
 	}
-	pSer, err := probes.NewProbeServiceImpl(dbMgr, ripeMgr)
+	pSer, err := probes.NewProbeServiceImpl(dbMgr, ripeMgr, nil)
 	if err != nil {
 		panic("failed to start probe service")
 	}

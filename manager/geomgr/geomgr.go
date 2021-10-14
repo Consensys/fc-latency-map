@@ -4,4 +4,5 @@ package geomgr
 
 type GeoMgr interface {
 	IPGeolocation(ip string) (float64, float64)
+	FindCountry(lat, long float64) string
 }

@@ -42,7 +42,7 @@ func Test_GetTotalProbes_OK(t *testing.T) {
 	if err != nil {
 		log.Fatalf("connecting with lotus failed: %s", err)
 	}
-	srv, _ := NewProbeServiceImpl(mockDbMgr, ripeMgr)
+	srv, _ := NewProbeServiceImpl(mockDbMgr, ripeMgr, nil)
 
 	// Act
 	mockDbMgr.GetDB().Create(&([]*models.Probe{&dummyProbe}))
