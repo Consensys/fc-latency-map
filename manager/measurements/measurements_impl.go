@@ -144,13 +144,15 @@ func (m *measurementServiceImpl) getProbIDs(places []Place, lat, long float64) [
 	ripeProbeIDs := []string{}
 
 	dbc := m.DBMgr.GetDB()
-	if err := dbc.Model(models.Probe{}).
+	err := dbc.Model(models.Probe{}).
 		Distinct().
-		Where("id in (?)",
+		Where(&models.Probe{Status: "Connected"}).
+		Where("status='Connected' and id in (?)",
 			dbc.Select("probe_id").
 				Table("locations_probes").
 				Where("location_id in (?)", nearestLocationsIDs)).
-		Pluck("probe_id", &ripeProbeIDs).Error; err != nil {
+		Pluck("probe_id", &ripeProbeIDs).Error
+	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
 		}).Error("get probeId from locations")

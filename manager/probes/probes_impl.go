@@ -1,7 +1,6 @@
 package probes
 
 import (
-	atlas "github.com/keltia/ripe-atlas"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -22,7 +21,9 @@ type ProbeServiceImpl struct {
 	GeoMgr  geomgr.GeoMgr
 }
 
-const point = "Point"
+const (
+	point = "Point"
+)
 
 func NewProbeServiceImpl(dbMgr db.DatabaseMgr, ripeMgr ripemgr.RipeMgr, geo geomgr.GeoMgr) (ProbeService, error) {
 	return &ProbeServiceImpl{
@@ -35,11 +36,11 @@ func NewProbeServiceImpl(dbMgr db.DatabaseMgr, ripeMgr ripemgr.RipeMgr, geo geom
 func (srv *ProbeServiceImpl) RequestProbes() error {
 	dbc := srv.DBMgr.GetDB()
 
-	places, err := srv.findProbes(false)
+	places, err := srv.findProbesAsPlaces(&models.Probe{IsAnchor: false, Status: "Connected"})
 	if err != nil {
 		return err
 	}
-	placesAnchors, err := srv.findProbes(false)
+	placesAnchors, err := srv.findProbesAsPlaces(&models.Probe{IsAnchor: true, Status: "Connected"})
 	if err != nil {
 		return err
 	}
@@ -83,10 +84,12 @@ func (srv *ProbeServiceImpl) RequestProbes() error {
 	return nil
 }
 
-func (srv *ProbeServiceImpl) findProbes(isAnchor bool) ([]measurements.Place, error) {
+func (srv *ProbeServiceImpl) findProbesAsPlaces(query interface{}) ([]measurements.Place, error) {
 	var places []measurements.Place
-	err := srv.DBMgr.GetDB().Model(&models.Probe{}).
-		Where(&models.Probe{IsAnchor: isAnchor, Status: "Connected"}).Find(&places).Error
+	err := srv.DBMgr.GetDB().
+		Model(&models.Probe{}).
+		Where(query).
+		Find(&places).Error
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -95,6 +98,21 @@ func (srv *ProbeServiceImpl) findProbes(isAnchor bool) ([]measurements.Place, er
 		return nil, err
 	}
 	return places, nil
+}
+func (srv *ProbeServiceImpl) findProbes(query interface{}) ([]*models.Probe, error) {
+	var ps []*models.Probe
+	err := srv.DBMgr.GetDB().
+		Model(&models.Probe{}).
+		Where(query).
+		Find(&ps).Error
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("get places from db")
+
+		return nil, err
+	}
+	return ps, nil
 }
 
 func (srv *ProbeServiceImpl) ListProbes() []*models.Probe {
@@ -140,36 +158,45 @@ func (srv *ProbeServiceImpl) ImportProbes() {
 		return
 	}
 
-	probesDB := []*models.Probe{}
+	probesToSave := []*models.Probe{}
 	for _, v := range probes { //nolint:gocritic
 		newProbe := &models.Probe{
 			ProbeID:     v.ID,
 			CountryCode: v.CountryCode,
-			Status:      v.Status.Name,
+			Status:      models.Status(v.Status.Name),
 			IsAnchor:    v.IsAnchor,
 			IsPublic:    v.IsPublic,
 		}
 
-		srv.fillCoordinates(v, newProbe)
-		probesDB = append(probesDB, newProbe)
+		if v.Geometry.Type == point {
+			newProbe.RipeLatitude = v.Geometry.Coordinates[0]
+			newProbe.RipeLongitude = v.Geometry.Coordinates[1]
+		}
+		probesToSave = append(probesToSave, newProbe)
 	}
+
 	dbc := srv.DBMgr.GetDB()
 
 	// update all the rows
 	err = dbc.Session(&gorm.Session{AllowGlobalUpdate: true}).
 		Model(&models.Probe{}).
-		Updates(models.Probe{Status: "Disconnected"}).Error
+		Updates(models.Probe{Status: models.StatusDisconnected}).Error
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
-		}).Error("unable to delete deprecated probes")
+		}).Error("unable to update deprecated probes")
 	}
 
-	// upsert to new values from ripe
-	err = dbc.Model(&models.Probe{}).
+	srv.upsertProbes(dbc, probesToSave, []string{"status", "is_anchor", "is_public"})
+
+	srv.upsertProbesCoordinates()
+}
+
+func (srv *ProbeServiceImpl) upsertProbes(dbc *gorm.DB, probesDB []*models.Probe, updtColumns []string) {
+	err := dbc.Model(&models.Probe{}).
 		Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "probe_id"}},
-			DoUpdates: clause.AssignmentColumns([]string{"latitude", "longitude", "status", "swap_coordinates", "is_anchor", "is_public"}),
+			DoUpdates: clause.AssignmentColumns(updtColumns),
 		}).Create(probesDB).Error
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -178,24 +205,35 @@ func (srv *ProbeServiceImpl) ImportProbes() {
 	}
 }
 
-func (srv *ProbeServiceImpl) fillCoordinates(v atlas.Probe, newProbe *models.Probe) { // nolint:gocritic
-	if v.Geometry.Type == point {
-		newProbe.Latitude = v.Geometry.Coordinates[0]
-		newProbe.Longitude = v.Geometry.Coordinates[1]
-		codeCountry := srv.GeoMgr.FindCountry(newProbe.Latitude, newProbe.Longitude)
-		if codeCountry != v.CountryCode {
-			codeCountry = srv.GeoMgr.FindCountry(newProbe.Longitude, newProbe.Latitude)
-			if codeCountry == v.CountryCode {
-				newProbe.Latitude = v.Geometry.Coordinates[1]
-				newProbe.Longitude = v.Geometry.Coordinates[0]
-				newProbe.SwapCoordinates = true
-				log.WithFields(log.Fields{
-					"CountryCode": v.CountryCode,
-					"Latitude":    newProbe.Latitude,
-					"Longitude":   newProbe.Longitude,
-					"order:":      "wrong",
-				}).Warn("coordinates was in wrong order")
-			}
-		}
+func (srv *ProbeServiceImpl) fixCoordinates(p *models.Probe) {
+	codeCountry := srv.GeoMgr.FindCountry(p.RipeLatitude, p.RipeLongitude)
+	if codeCountry == p.CountryCode {
+		p.CoordinatesStatus = models.CoordinatesStatusOk
+		p.Longitude = p.RipeLongitude
+		p.Latitude = p.RipeLatitude
+		return
 	}
+	codeCountry = srv.GeoMgr.FindCountry(p.Longitude, p.Latitude)
+	if codeCountry == p.CountryCode {
+		p.Longitude = p.RipeLatitude
+		p.Latitude = p.RipeLongitude
+		p.CoordinatesStatus = models.CoordinatesStatusFixed
+		log.WithFields(log.Fields{
+			"CountryCode": p.CountryCode,
+			"Latitude":    p.Latitude,
+			"Longitude":   p.Longitude,
+			"order:":      "wrong",
+		}).Warn("coordinates was in wrong order")
+	}
+}
+
+func (srv *ProbeServiceImpl) upsertProbesCoordinates() {
+	p, _ := srv.findProbes(&models.Probe{
+		Status:            models.StatusConnected,
+		CoordinatesStatus: models.CoordinatesStatusUnknown,
+	})
+	for _, probe := range p {
+		srv.fixCoordinates(probe)
+	}
+	srv.upsertProbes(srv.DBMgr.GetDB(), p, []string{"latitude", "longitude", "coordinates_status"})
 }
