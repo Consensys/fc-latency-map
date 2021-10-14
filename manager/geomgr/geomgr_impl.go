@@ -71,10 +71,6 @@ func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 	return toFloat(geo.GeopluginLatitude), toFloat(geo.GeopluginLongitude)
 }
 
-func (g *GeoMgrImpl) ipgeoURL(ip string) string {
-	return fmt.Sprintf("http://www.geoplugin.net/json.gp?ip=%s", ip)
-}
-
 func toFloat(s string) float64 {
 	if f, err := strconv.ParseFloat(s, 32); err == nil {
 		return f
@@ -124,4 +120,8 @@ func (g *GeoMgrImpl) FindCountry(lat, long float64) string {
 
 func (g *GeoMgrImpl) ipgeoLocationURL(lat, long float64) string {
 	return fmt.Sprintf("http://www.geoplugin.net/extras/location.gp?lat=%v&long=%v&format=json", lat, long)
+}
+
+func (g *GeoMgrImpl) ipgeoURL(ip string) string {
+	return fmt.Sprintf("http://www.geoplugin.net/json.gp?ip=%s", ip)
 }

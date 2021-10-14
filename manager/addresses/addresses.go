@@ -18,17 +18,20 @@ func MultiAddrs(addr []abi.Multiaddrs) []ma.Multiaddr {
 	return m
 }
 
-func IPAddress(a []ma.Multiaddr) []string {
-	var ips []string
+func IPAddress(a []ma.Multiaddr) (ips []string, tcpPort string) {
 	for _, v := range a {
+		if port, err := v.ValueForProtocol(ma.P_TCP); err == nil {
+			tcpPort = port
+		}
 		if ip, err := v.ValueForProtocol(ma.P_IP4); err == nil {
 			ips = append(ips, ip)
-		} else if ip, err := v.ValueForProtocol(ma.P_IP6); err == nil {
+		}
+		if ip, err := v.ValueForProtocol(ma.P_IP6); err == nil {
 			ips = append(ips, ip)
 		}
 	}
 
-	return ips
+	return ips, tcpPort
 }
 
 func GetIPVersion(ipAdd net.IP) int {
