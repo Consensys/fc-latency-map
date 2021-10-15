@@ -91,7 +91,6 @@ func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult)
 		var rtt float64
 		rtt = -1
 		if len(result.Result) > 0 {
-			rtt = result.Result[0].Rtt
 			if len(result.Result[0].Result) > 0 {
 				rtt = result.Result[0].Result[0].Rtt
 			}
