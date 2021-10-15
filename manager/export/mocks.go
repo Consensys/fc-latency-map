@@ -34,9 +34,11 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // export mocks base method.
-func (m *MockService) export() {
+func (m *MockService) export() *[]string {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "export")
+	ret := m.ctrl.Call(m, "export")
+	ret0, _ := ret[0].(*[]string)
+	return ret0
 }
 
 // export indicates an expected call of export.
