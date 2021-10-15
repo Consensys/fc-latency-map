@@ -58,7 +58,6 @@ func Execute(dbc *gorm.DB) error {
 			Migrate: func(tx *gorm.DB) error {
 				locs := []models.Probe{
 					{ProbeID: 1001079},
-					{ProbeID: 1000555},
 					{ProbeID: 1000916},
 					{ProbeID: 1001066},
 					{ProbeID: 1000555},
