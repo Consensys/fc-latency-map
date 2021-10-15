@@ -2,7 +2,6 @@ package measurements
 
 import (
 	"strings"
-	"time"
 
 	atlas "github.com/keltia/ripe-atlas"
 
@@ -108,7 +107,5 @@ func (h *Handler) CreateMeasurements(parameters []string) {
 		}
 
 		h.Service.UpsertMeasurements(measures)
-		const waitTime = 5 * time.Second
-		time.Sleep(waitTime)
 	}
 }

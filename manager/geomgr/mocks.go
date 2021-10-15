@@ -48,12 +48,13 @@ func (mr *MockGeoMgrMockRecorder) FindCountry(arg0, arg1 interface{}) *gomock.Ca
 }
 
 // IPGeolocation mocks base method.
-func (m *MockGeoMgr) IPGeolocation(arg0 string) (float64, float64) {
+func (m *MockGeoMgr) IPGeolocation(arg0 string) (float64, float64, string) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "IPGeolocation", arg0)
 	ret0, _ := ret[0].(float64)
 	ret1, _ := ret[1].(float64)
-	return ret0, ret1
+	ret2, _ := ret[2].(string)
+	return ret0, ret1, ret2
 }
 
 // IPGeolocation indicates an expected call of IPGeolocation.

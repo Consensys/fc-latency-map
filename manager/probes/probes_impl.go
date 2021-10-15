@@ -5,9 +5,10 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
+	"github.com/ConsenSys/fc-latency-map/manager/config"
+
 	"github.com/ConsenSys/fc-latency-map/manager/geomgr"
 
-	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/measurements"
 
 	"github.com/ConsenSys/fc-latency-map/manager/db"
@@ -40,7 +41,7 @@ func (srv *ProbeServiceImpl) RequestProbes() error {
 	if err != nil {
 		return err
 	}
-	placesAnchors, err := srv.findProbesAsPlaces(&models.Probe{IsAnchor: true, Status: "Connected"})
+	placesAnchors, err := srv.findProbesAsPlaces(&models.Probe{IsAnchor: true, Status: models.StatusConnected})
 	if err != nil {
 		return err
 	}
@@ -52,7 +53,7 @@ func (srv *ProbeServiceImpl) RequestProbes() error {
 		log.WithFields(log.Fields{
 			"country": location.Country,
 			"iata":    location.IataCode,
-		}).Info("Get probes for airport")
+		}).Info("get probes for location")
 
 		nearestAnchorProbeIDs := measurements.FindNearest(placesAnchors,
 			measurements.Place{Latitude: location.Latitude, Longitude: location.Longitude},
@@ -166,6 +167,8 @@ func (srv *ProbeServiceImpl) ImportProbes() {
 			Status:      models.Status(v.Status.Name),
 			IsAnchor:    v.IsAnchor,
 			IsPublic:    v.IsPublic,
+			AddressV4:   v.AddressV4,
+			AddressV6:   v.AddressV6,
 		}
 
 		if v.Geometry.Type == point {
@@ -187,7 +190,7 @@ func (srv *ProbeServiceImpl) ImportProbes() {
 		}).Error("unable to update deprecated probes")
 	}
 
-	srv.upsertProbes(dbc, probesToSave, []string{"status", "is_anchor", "is_public"})
+	srv.upsertProbes(dbc, probesToSave, []string{"status", "is_anchor", "is_public", "address_v4", "address_v6"})
 
 	srv.upsertProbesCoordinates()
 }
@@ -206,24 +209,36 @@ func (srv *ProbeServiceImpl) upsertProbes(dbc *gorm.DB, probesDB []*models.Probe
 }
 
 func (srv *ProbeServiceImpl) fixCoordinates(p *models.Probe) {
-	codeCountry := srv.GeoMgr.FindCountry(p.RipeLatitude, p.RipeLongitude)
-	if codeCountry == p.CountryCode {
+	countryCode := srv.GeoMgr.FindCountry(p.RipeLatitude, p.RipeLongitude)
+	if countryCode == p.CountryCode {
 		p.CoordinatesStatus = models.CoordinatesStatusOk
 		p.Longitude = p.RipeLongitude
 		p.Latitude = p.RipeLatitude
 		return
 	}
-	codeCountry = srv.GeoMgr.FindCountry(p.Longitude, p.Latitude)
-	if codeCountry == p.CountryCode {
+	countryCode = srv.GeoMgr.FindCountry(p.Longitude, p.Latitude)
+	if countryCode == p.CountryCode {
 		p.Longitude = p.RipeLatitude
 		p.Latitude = p.RipeLongitude
-		p.CoordinatesStatus = models.CoordinatesStatusFixed
+		p.CoordinatesStatus = models.CoordinatesStatusOk
 		log.WithFields(log.Fields{
 			"CountryCode": p.CountryCode,
 			"Latitude":    p.Latitude,
 			"Longitude":   p.Longitude,
 			"order:":      "wrong",
 		}).Warn("coordinates was in wrong order")
+	} else {
+		ip := p.AddressV4
+		if ip == "" {
+			ip = p.AddressV6
+		}
+		lat, long, countryCode := srv.GeoMgr.IPGeolocation(ip)
+		if countryCode != "" {
+			p.CountryCode = countryCode
+			p.Longitude = lat
+			p.Latitude = long
+			p.CoordinatesStatus = models.CoordinatesStatusOk
+		}
 	}
 }
 

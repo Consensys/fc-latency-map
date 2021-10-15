@@ -24,7 +24,7 @@ func NewGeoMgrImpl(v *viper.Viper) GeoMgr {
 	}
 }
 
-func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
+func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64, code string) {
 	// to free use of api
 	// you can check you ip status https://www.geoplugin.com/ip_status.php?ip=xx.xx.xx.xx
 
@@ -35,7 +35,7 @@ func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 			"error": err,
 		}).Error("ipgeolocation")
 
-		return 0, 0
+		return 0, 0, code
 	}
 	defer response.Body.Close()
 
@@ -45,7 +45,7 @@ func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 			"error": err,
 		}).Error("ipgeolocation")
 
-		return 0, 0
+		return 0, 0, code
 	}
 
 	var geo GeoIP
@@ -55,12 +55,13 @@ func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 			"error": err,
 		}).Error("ipgeolocation")
 
-		return 0, 0
+		return 0, 0, code
 	}
 
 	log.WithFields(log.Fields{
 		"ip":        ip,
 		"region":    geo.GeopluginRegion,
+		"country":   geo.GeopluginCountryCode,
 		"city":      geo.GeopluginCity,
 		"latitude":  geo.GeopluginLatitude,
 		"longitude": geo.GeopluginLongitude,
@@ -68,7 +69,7 @@ func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64) {
 		"timezone":  geo.GeopluginTimezone,
 	}).Info("ipgeolocation")
 
-	return toFloat(geo.GeopluginLatitude), toFloat(geo.GeopluginLongitude)
+	return toFloat(geo.GeopluginLatitude), toFloat(geo.GeopluginLongitude), geo.GeopluginCountryCode
 }
 
 func toFloat(s string) float64 {
@@ -84,7 +85,7 @@ func (g *GeoMgrImpl) FindCountry(lat, long float64) string {
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
-		}).Error("ipgeolocation country")
+		}).Warn("ipgeolocation country")
 
 		return ""
 	}
@@ -94,17 +95,17 @@ func (g *GeoMgrImpl) FindCountry(lat, long float64) string {
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
-		}).Error("ipgeolocation country")
+		}).Warn("ipgeolocation country")
 
 		return ""
 	}
 
-	var l Location
+	var l GeoIP
 	err = json.Unmarshal(body, &l)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
-		}).Error("ipgeolocation country")
+		}).Warn("ipgeolocation country")
 
 		return ""
 	}

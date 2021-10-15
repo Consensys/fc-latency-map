@@ -9,7 +9,6 @@ type Status string
 
 const (
 	CoordinatesStatusUnknown CoordinatesStatus = "Unknown"
-	CoordinatesStatusFixed   CoordinatesStatus = "Fixed"
 	CoordinatesStatusOk      CoordinatesStatus = "Ok"
 
 	StatusConnected    Status = "Connected"
@@ -28,4 +27,7 @@ type Probe struct {
 	IsAnchor          bool              `gorm:"column:is_anchor" json:"is_anchor"`
 	IsPublic          bool              `gorm:"column:is_public" json:"is_public"`
 	CoordinatesStatus CoordinatesStatus `gorm:"column:coordinates_status;index:idx_probes_coord_status;default:Unknown" json:"coordinates_status"`
+	Locations         []*Location       `gorm:"many2many:locations_probes;" json:"-"`
+	AddressV4         string
+	AddressV6         string
 }

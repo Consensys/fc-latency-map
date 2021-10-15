@@ -19,8 +19,12 @@ type RipeMgrImpl struct {
 	c    *atlas.Client
 }
 
-const StartTimeDelay = 50
-const DelayBetweenMeasurements = 0
+const (
+	startTimeDelay                = 10
+	delayBetweenBatchMeasurements = 600
+	// atlas not permitted run more than 100 concurrent measurements
+	maxRunningConcurrentMeasurements = 100
+)
 
 func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
 	cfgs := []atlas.Config{}
@@ -43,6 +47,9 @@ func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
 }
 
 func (rMgr *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error) {
+	log.WithFields(log.Fields{
+		"filters": opts,
+	}).Error("started get probes from Atlas Ripe")
 	probes, err := rMgr.c.GetProbes(opts)
 	if err != nil {
 		return nil, err
@@ -161,9 +168,14 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 }
 
 func (rMgr *RipeMgrImpl) getMeasurementRequest(d []atlas.Definition, isOneOff bool, probes []atlas.ProbeSet, t int) *atlas.MeasurementRequest {
+	startTime := int(time.Now().Unix()) + startTimeDelay
+
+	if t >= maxRunningConcurrentMeasurements {
+		startTime = +delayBetweenBatchMeasurements * t / maxRunningConcurrentMeasurements
+	}
 	return &atlas.MeasurementRequest{
 		Definitions: d,
-		StartTime:   int(time.Now().Unix()) + StartTimeDelay + DelayBetweenMeasurements*t,
+		StartTime:   startTime,
 		IsOneoff:    isOneOff,
 		Probes:      probes,
 	}
@@ -183,7 +195,7 @@ func (rMgr *RipeMgrImpl) getDefinitions(miner *models.Miner, d []atlas.Definitio
 		const defaultSize = 48
 		const hops = 32
 		definition := atlas.Definition{
-			Description: fmt.Sprintf("%s ping to %s", miner.Address, ip),
+			Description: fmt.Sprintf("%s traceroute to %s", miner.Address, ip),
 			AF:          addresses.GetIPVersion(ipAdd),
 			Target:      ip,
 			Packets:     packets,
