@@ -7,6 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
 	"github.com/ConsenSys/fc-latency-map/manager/db"
@@ -112,7 +113,7 @@ func (m *ExportServiceImpl) addRootData(results *Result, miners []*models.Miner,
 func (m *ExportServiceImpl) appendLatency(latency *Miner, locationID int, ip, date string) *Miner {
 	for _, ip := range strings.Split(ip, ",") {
 		meas := m.getMeasureResults(date, ip, locationID)
-		if meas == nil {
+		if meas == nil || meas.IP == "" {
 			continue
 		}
 		latency.Measures = append(latency.Measures, meas)
@@ -142,6 +143,12 @@ func (m *ExportServiceImpl) getMeasureResults(date, ip string, locationID int) *
 		Group("ip, measurement_date").
 		First(&meas).Error
 	if err != nil {
+		if err != gorm.ErrRecordNotFound {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Error("measurement result")
+		}
+
 		return nil
 	}
 

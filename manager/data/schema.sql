@@ -53,5 +53,5 @@ CREATE INDEX idx_probes_status
 CREATE TABLE `measurement_results` (`id` integer,`created_at` datetime,`updated_at` datetime,`deleted_at` datetime,`probe_id` integer,`measurement_id` integer,`measurement_timestamp` integer,`ip` text,`measurement_date` text,`rtt` real,PRIMARY KEY (`id`),CONSTRAINT `fk_measurement_results_probe` FOREIGN KEY (`probe_id`) REFERENCES `probes`(`probe_id`),CONSTRAINT `fk_measurement_results_measurement` FOREIGN KEY (`measurement_id`) REFERENCES `measurements`(`measurement_id`));
 CREATE INDEX `idx_measurement_date` ON `measurement_results`(`measurement_date`);
 CREATE INDEX `idx_measurement_ip` ON `measurement_results`(`ip`);
-CREATE UNIQUE INDEX `idx_name` ON `measurement_results`(`probe_id`,`measurement_id`,`measurement_timestamp`,`ip`);
 CREATE INDEX `idx_measurement_results_deleted_at` ON `measurement_results`(`deleted_at`);
+CREATE UNIQUE INDEX `idx_name` ON `measurement_results`(`probe_id`,`measurement_id`,`measurement_timestamp`,`ip`);
