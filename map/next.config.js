@@ -8,6 +8,10 @@ module.exports = {
     path: {
       exportsMeasures: process.env.PATH_EXPORTS_MEASURES,
     },
+    latency: {
+      low: process.env.LATENCY_LOW_LIMIT,
+      medium: process.env.LATENCY_MEDIUM_LIMIT,
+    },
   },
   serverRuntimeConfig: {
     path: {
