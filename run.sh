@@ -25,7 +25,10 @@ else
 fi
 
 # Check if url and api key are provided
+#...
 
-
+# Create exports folder
 mkdir -p exports
+
+# Start services
 docker-compose up
