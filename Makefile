@@ -2,9 +2,8 @@
 .DEFAULT_GOAL := default
 
 default: manager map
-	mkdir -p exports
-	docker-compose up
-
+	./run.sh
+	
 manager:
 	docker build -f manager/Dockerfile -t fc-latency-manager .
 
