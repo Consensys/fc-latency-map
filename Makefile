@@ -1,7 +1,10 @@
 .PHONY: default manager map
 .DEFAULT_GOAL := default
 
-default: manager map
+default: 
+	# ./scripts/db-restore.sh
+	# docker build -f manager/Dockerfile -t fc-latency-manager .
+	# docker build -f map/Dockerfile -t fc-latency-map ./map
 	./run.sh
 	
 manager:
