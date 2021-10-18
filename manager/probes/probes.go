@@ -26,5 +26,5 @@ type ProbeService interface {
 	Update() bool
 
 	// ImportProbes from ripe
-	ImportProbes()
+	ImportProbes() bool
 }

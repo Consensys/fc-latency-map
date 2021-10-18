@@ -3,15 +3,15 @@ package probes
 import (
 	"testing"
 
+	gomock "github.com/golang/mock/gomock"
+	atlas "github.com/keltia/ripe-atlas"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
+	"github.com/ConsenSys/fc-latency-map/manager/geomgr"
 	"github.com/ConsenSys/fc-latency-map/manager/models"
-
-	gomock "github.com/golang/mock/gomock"
-
 	"github.com/ConsenSys/fc-latency-map/manager/ripemgr"
 )
 
@@ -25,6 +25,12 @@ var dummyProbe = models.Probe{
 	CountryCode: dummyCountryCode,
 	Latitude:    dummyLatitude,
 	Longitude:   dummyLongitude,
+}
+
+var mockOpts = map[string]string{
+	"status_name": "Connected",
+	"is_public":   "true",
+	"sort":        "id",
 }
 
 func Test_ListProbes_OK(t *testing.T) {
@@ -123,4 +129,25 @@ func Test_Update_OK(t *testing.T) {
 
 	// Assert
 	assert.True(t, updated)
+}
+
+func Test_ImportProbes_OK(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockDbMgr := db.NewMockDatabaseMgr()
+	mockRipeMgr := ripemgr.NewMockRipeMgr(ctrl)
+	mockGeoMgr := geomgr.NewMockGeoMgr(ctrl)
+	mockProbes := make([]atlas.Probe, 0)
+	srv, _ := NewProbeServiceImpl(mockDbMgr, mockRipeMgr, mockGeoMgr)
+	sqlDB, _ := mockDbMgr.GetDB().DB()
+	defer sqlDB.Close()
+
+	// Act
+	mockRipeMgr.EXPECT().GetProbes(mockOpts).Return(mockProbes, nil)
+	imported := srv.ImportProbes()
+
+	// Assert
+	assert.True(t, imported)
 }

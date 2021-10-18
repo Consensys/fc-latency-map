@@ -126,7 +126,7 @@ func (srv *ProbeServiceImpl) Update() bool {
 	return true
 }
 
-func (srv *ProbeServiceImpl) ImportProbes() {
+func (srv *ProbeServiceImpl) ImportProbes() bool {
 	opts := make(map[string]string)
 	opts["status_name"] = "Connected"
 	opts["is_public"] = "true"
@@ -137,7 +137,7 @@ func (srv *ProbeServiceImpl) ImportProbes() {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("get all probes from ripe")
-		return
+		return false
 	}
 
 	probesDB := []*models.Probe{}
@@ -176,6 +176,8 @@ func (srv *ProbeServiceImpl) ImportProbes() {
 			"error": err,
 		}).Error("unable to insert probes")
 	}
+
+	return true
 }
 
 func (srv *ProbeServiceImpl) fillCoordinates(v atlas.Probe, newProbe *models.Probe) { // nolint:gocritic
