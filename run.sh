@@ -26,12 +26,12 @@ fi
 
 # Check if url and api key are provided
 ERROR=false
-if grep -Fxq "FILECOIN_NODE_URL=changeme" $ENV_FILE_MANAGER_EXAMPLE; then
+if grep -Fxq "FILECOIN_NODE_URL=changeme" $ENV_FILE_MANAGER; then
     echo "Error: please add a valid FILECOIN_NODE_URL in $ENV_FILE_MANAGER"
     ERROR=true
 fi
 
-if grep -Fxq "RIPE_API_KEY=changeme" $ENV_FILE_MANAGER_EXAMPLE; then
+if grep -Fxq "RIPE_API_KEY=changeme" $ENV_FILE_MANAGER; then
     echo "Error: please add a valid RIPE_API_KEY in $ENV_FILE_MANAGER"
     ERROR=true
 fi
