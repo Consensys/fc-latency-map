@@ -1,4 +1,4 @@
-.PHONY: default manager map
+.PHONY: default run manager map
 .DEFAULT_GOAL := default
 
 default: 
@@ -6,7 +6,10 @@ default:
 	docker build -f manager/Dockerfile -t fc-latency-manager .
 	docker build -f map/Dockerfile -t fc-latency-map ./map
 	./run.sh
-	
+
+run:
+	./run.sh
+
 manager:
 	docker build -f manager/Dockerfile -t fc-latency-manager .
 
