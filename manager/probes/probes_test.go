@@ -27,6 +27,31 @@ var dummyProbe = models.Probe{
 	Longitude:   dummyLongitude,
 }
 
+func Test_ListProbes_OK(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+
+	sqlDB, _ := mockDbMgr.GetDB().DB()
+	defer sqlDB.Close()
+
+	ripeMgr, err := ripemgr.NewRipeImpl(mockConfig)
+	if err != nil {
+		log.Fatalf("connecting with lotus failed: %s", err)
+	}
+	srv, _ := NewProbeServiceImpl(mockDbMgr, ripeMgr, nil)
+
+	// Act
+	mockDbMgr.GetDB().Create(&([]*models.Probe{&dummyProbe}))
+	probes := srv.ListProbes()
+
+	// Assert
+	assert.Equal(t, 1, len(probes))
+}
+
 func Test_GetTotalProbes_OK(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

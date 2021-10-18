@@ -113,17 +113,17 @@ func (srv *ProbeServiceImpl) GetTotalProbes() int64 {
 	return count
 }
 
-func (srv *ProbeServiceImpl) Update() {
+func (srv *ProbeServiceImpl) Update() bool {
 	err := srv.RequestProbes()
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("Update")
 
-		return
+		return false
 	}
-
 	log.Println("Probes successfully updated")
+	return true
 }
 
 func (srv *ProbeServiceImpl) ImportProbes() {

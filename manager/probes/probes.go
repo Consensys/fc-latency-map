@@ -23,7 +23,7 @@ type ProbeService interface {
 	GetTotalProbes() int64
 
 	// Update handle refresh probes list
-	Update()
+	Update() bool
 
 	// ImportProbes from ripe
 	ImportProbes()
