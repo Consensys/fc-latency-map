@@ -73,7 +73,6 @@ func (m *ExportServiceImpl) marshalJSON(measurements *Result) []byte {
 }
 
 func (m *ExportServiceImpl) getLatencyMeasurementsStored(date string) *Result {
-	var iataCodes []string
 	results := &Result{Measurements: map[string]map[string][]*Miner{}}
 	loc := m.getLocations()
 	miners := m.getMiners()
@@ -91,7 +90,6 @@ func (m *ExportServiceImpl) getLatencyMeasurementsStored(date string) *Result {
 			if len(latency.Measures) == 0 {
 				continue
 			}
-			iataCodes = addNewString(iataCodes, l.IataCode)
 			if _, found := results.Measurements[l.Country]; !found {
 				results.Measurements[l.Country] = make(map[string][]*Miner)
 			}
@@ -99,15 +97,11 @@ func (m *ExportServiceImpl) getLatencyMeasurementsStored(date string) *Result {
 		}
 	}
 
-	m.addRootData(results, miners, iataCodes)
-
-	return results
-}
-
-func (m *ExportServiceImpl) addRootData(results *Result, miners []*models.Miner, iataCodes []string) {
+	results.Locations = loc
 	results.Miners = miners
 	results.Dates = m.getDates()
-	results.Locations = m.getLocationsFromIata(iataCodes)
+
+	return results
 }
 
 func (m *ExportServiceImpl) appendLatency(latency *Miner, locationID int, ip, date string) *Miner {
@@ -187,24 +181,6 @@ func (m *ExportServiceImpl) getLocations() []*models.Location {
 	return loc
 }
 
-func (m *ExportServiceImpl) getLocationsFromIata(codes []string) []*models.Location {
-	var loc []*models.Location
-	err := m.DBMgr.GetDB().
-		Preload(clause.Associations).
-		Where("iata_code in ?", codes).
-		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}}).
-		Find(&loc).Error
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error("GetAllLocations")
-
-		return nil
-	}
-
-	return loc
-}
-
 func (m *ExportServiceImpl) getDates() []string {
 	var dates []string
 	m.DBMgr.GetDB().
@@ -213,14 +189,4 @@ func (m *ExportServiceImpl) getDates() []string {
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "measurement_date"}}).
 		Pluck("measurement_date", &dates)
 	return dates
-}
-
-func addNewString(s []string, str string) []string {
-	for _, v := range s {
-		if v == str {
-			return s
-		}
-	}
-
-	return append(s, str)
 }
