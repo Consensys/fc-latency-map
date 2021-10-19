@@ -171,7 +171,7 @@ func (rMgr *RipeMgrImpl) getMeasurementRequest(d []atlas.Definition, isOneOff bo
 	startTime := int(time.Now().Unix()) + startTimeDelay
 
 	if t >= maxRunningConcurrentMeasurements {
-		startTime = +delayBetweenBatchMeasurements * t / maxRunningConcurrentMeasurements
+		startTime += delayBetweenBatchMeasurements * t / maxRunningConcurrentMeasurements
 	}
 	return &atlas.MeasurementRequest{
 		Definitions: d,
