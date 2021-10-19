@@ -1,6 +1,31 @@
-## Getting Started
+# Filecoin Latency Map
 
-First, run the development server:
+## Config
+
+Create an `.env` file:
+
+```
+cp .env.example .env
+```
+
+Config file values are:
+
+| Key                   | Value type | Description              |
+| --------------------- | ---------- | ------------------------ |
+| SERVICE_NAME          | string     | The service name         |
+| PATH_EXPORTS_MEASURES | string     | Json export directory    |
+| LATENCY_LOW_LIMIT     | number     | Limit for low latency    |
+| LATENCY_MEDIUM_LIMIT  | number     | Limit for medium latency |
+
+## Run for development
+
+Get packages:
+
+```
+npm i
+```
+
+Run the development server:
 
 ```bash
 npm run dev

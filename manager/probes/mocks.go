@@ -49,9 +49,11 @@ func (mr *MockProbeServiceMockRecorder) GetTotalProbes() *gomock.Call {
 }
 
 // ImportProbes mocks base method.
-func (m *MockProbeService) ImportProbes() {
+func (m *MockProbeService) ImportProbes() bool {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "ImportProbes")
+	ret := m.ctrl.Call(m, "ImportProbes")
+	ret0, _ := ret[0].(bool)
+	return ret0
 }
 
 // ImportProbes indicates an expected call of ImportProbes.
@@ -89,9 +91,11 @@ func (mr *MockProbeServiceMockRecorder) RequestProbes() *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockProbeService) Update() {
+func (m *MockProbeService) Update() bool {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Update")
+	ret := m.ctrl.Call(m, "Update")
+	ret0, _ := ret[0].(bool)
+	return ret0
 }
 
 // Update indicates an expected call of Update.

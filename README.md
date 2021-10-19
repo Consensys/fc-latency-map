@@ -8,74 +8,57 @@
 
 ## Description
 
-FC Latency Map are services for [Filecoin](https://filecoin.io/) blockchain to get latencies of active miners.
+FC Latency Map is a service for [Filecoin](https://filecoin.io/) decentralized storage network to obtain latencies of all active miners.
 
-It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of every active miners from relevant location on
-the world.
+It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of active miners from relevant locations in the world.
 
-Get the project:
+## Quickstart
+
+### Get the project
+
+Clone the project locally:
 
 ```shell
 git clone https://github.com/ConsenSys/fc-latency-map.git
 ```
 
-## Manager
+### Build the project
 
-### Quickstart
-
-Start the Manager cli:
+Build all the Docker images required to start the project:
 
 ```shell
-cd manager
-cp .env.example .env
+make
 ```
 
-| Key | Value type | Description |
-| --- | --- | --- |
-| RIPE_API_KEY| string | [Ripe Atlas key management](https://atlas.ripe.net/keys/)       |
-| RIPE_PING_INTERVAL| number  | Interval between ping to get miners latency |
-| RIPE_PING_RUNNING_TIME| number | Running period get latency|
-| RIPE_ONE_OFF | boolean | On ping only to get latency. When is 'true' the RIPE_PING_INTERVAL and RIPE_PING_RUNNING_TIME are ignored|
-| RIPE_REQUESTED_PROBES | number | Max number of probes to call miners |
-| RIPE_PACKETS | number | Amount of packets to ping miners. |
-| NEAREST_AIRPORTS | number | Amount of airports miner to test latency. |
-| RIPE_PROBES_PER_AIRPORT | number | Amount of probes near to miner to airport. |
+### Change default config
 
-Edit .env to add a valid Ripe Atlas API Key
+During build phase, `.env` config files were generated in `/manager` and `/map`. To start the services, change the 2 default values on the manager config file.
 
-After update the .env file execute:
+Edit `/manager/.env` and change:
+
+```
+[...]
+FILECOIN_NODE_URL=changeme
+[...]
+RIPE_API_KEY=changeme
+```
+
+### Start the project
+
+Finally, start the services:
 
 ```shell
-go run cmd/cli/cli.go
+make run
 ```
 
-### Diagrams
+The Fc Latency Map should be available at: [https://localhost:3000](https://localhost:3000)
 
-Get miners
+### Examples
 
-![get-miners](./docs/diagrams/get-miners.png)
+Example of Filecoin Latency Map:
 
-Get probes
+<img src="./docs/images/filecoin-map.png" width="800">
 
-![get-probes](./docs/diagrams/get-probes.png)
+Example of Filecoin Latency Map with Location and Miner selected:
 
-Create measurements
-
-![get-measurements](./docs/diagrams/get-measurements.png)
-
-Export reasults
-
-![export-measurements](./docs/diagrams/export-measurements.png)
-
-### Documentation
-
-[./manager/README.md](./manager/README.md)
-
-[JSON Schema for data](./docs/json/schema.json)
-
-### License
-
-The code is licensed under:
-
-* [Apache v2.0 license](./LICENSE-APACHE).
-* [MIT license](./LICENSE-MIT).
+<img src="./docs/images/filecoin-map-miner-selected.png" width="800">

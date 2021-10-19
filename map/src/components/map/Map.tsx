@@ -81,7 +81,7 @@ const Map = (props: Props) => {
     legend.parent = chart.chartContainer;
     legend.background.fill = am4core.color("#000");
     legend.background.fillOpacity = 0.05;
-    legend.width = 210;
+    legend.width = 230;
     legend.align = "right";
     legend.fontSize = 11;
     legend.padding(5, 10, 5, 10);

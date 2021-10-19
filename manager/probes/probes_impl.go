@@ -132,20 +132,20 @@ func (srv *ProbeServiceImpl) GetTotalProbes() int64 {
 	return count
 }
 
-func (srv *ProbeServiceImpl) Update() {
+func (srv *ProbeServiceImpl) Update() bool {
 	err := srv.RequestProbes()
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("Update")
 
-		return
+		return false
 	}
-
 	log.Println("Probes successfully updated")
+	return true
 }
 
-func (srv *ProbeServiceImpl) ImportProbes() {
+func (srv *ProbeServiceImpl) ImportProbes() bool {
 	opts := make(map[string]string)
 	opts["status_name"] = "Connected"
 	opts["is_public"] = "true"
@@ -156,7 +156,7 @@ func (srv *ProbeServiceImpl) ImportProbes() {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("get all probes from ripe")
-		return
+		return false
 	}
 
 	probesToSave := []*models.Probe{}
@@ -193,6 +193,8 @@ func (srv *ProbeServiceImpl) ImportProbes() {
 	srv.upsertProbes(dbc, probesToSave, []string{"status", "is_anchor", "is_public", "address_v4", "address_v6"})
 
 	srv.upsertProbesCoordinates()
+
+	return true
 }
 
 func (srv *ProbeServiceImpl) upsertProbes(dbc *gorm.DB, probesDB []*models.Probe, updtColumns []string) {
