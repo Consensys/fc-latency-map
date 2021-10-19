@@ -8,74 +8,43 @@
 
 ## Description
 
-FC Latency Map are services for [Filecoin](https://filecoin.io/) blockchain to get latencies of active miners.
+FC Latency Map is a service for [Filecoin](https://filecoin.io/) blockchain to obtain the latencies of active miners.
 
-It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of every active miners from relevant location on
-the world.
+It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of all active miners from a relevant location in the world.
 
-Get the project:
+## Quickstart
+
+### Get the project
 
 ```shell
 git clone https://github.com/ConsenSys/fc-latency-map.git
 ```
 
-## Manager
+### Build the project
 
-### Quickstart
-
-Start the Manager cli:
+To build all the Docker images required to start the project, execute:
 
 ```shell
-cd manager
-cp .env.example .env
+make
 ```
 
-| Key | Value type | Description |
-| --- | --- | --- |
-| RIPE_API_KEY| string | [Ripe Atlas key management](https://atlas.ripe.net/keys/)       |
-| RIPE_PING_INTERVAL| number  | Interval between ping to get miners latency |
-| RIPE_PING_RUNNING_TIME| number | Running period get latency|
-| RIPE_ONE_OFF | boolean | On ping only to get latency. When is 'true' the RIPE_PING_INTERVAL and RIPE_PING_RUNNING_TIME are ignored|
-| RIPE_REQUESTED_PROBES | number | Max number of probes to call miners |
-| RIPE_PACKETS | number | Amount of packets to ping miners. |
-| NEAREST_AIRPORTS | number | Amount of airports miner to test latency. |
-| RIPE_PROBES_PER_AIRPORT | number | Amount of probes near to miner to airport. |
+### Change default config
 
-Edit .env to add a valid Ripe Atlas API Key
+During build phase, `.env` config files were generated in `/manager` and `/map`. To start the services, 2 default values has to be changed on the manager config file.
 
-After update the .env file execute:
+Edit `/manager/.env` and change;
+
+| Key               | Value type | Description             |
+| ----------------- | ---------- | ----------------------- |
+| FILECOIN_NODE_URL | string     | Lotus Filecoin node url |
+| RIPE_API_KEY      | string     | Ripe Atlas API Key      |
+
+### Start the project
+
+Finally, to start the services, execute:
 
 ```shell
-go run cmd/cli/cli.go
+make run
 ```
 
-### Diagrams
-
-Get miners
-
-![get-miners](./docs/diagrams/get-miners.png)
-
-Get probes
-
-![get-probes](./docs/diagrams/get-probes.png)
-
-Create measurements
-
-![get-measurements](./docs/diagrams/get-measurements.png)
-
-Export reasults
-
-![export-measurements](./docs/diagrams/export-measurements.png)
-
-### Documentation
-
-[./manager/README.md](./manager/README.md)
-
-[JSON Schema for data](./docs/json/schema.json)
-
-### License
-
-The code is licensed under:
-
-* [Apache v2.0 license](./LICENSE-APACHE).
-* [MIT license](./LICENSE-MIT).
+The Fc Latency Map should be available at: [https://localhost:3000](https://localhost:3000)
