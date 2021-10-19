@@ -20,6 +20,7 @@ am4core.useTheme(am4themes_animated);
 interface Miner {
   address: string;
   ip: string;
+  port: string;
   latitude: number;
   longitude: number;
 }
@@ -36,6 +37,7 @@ interface Location {
 interface MinerLatency {
   address: string;
   ip: string;
+  port: string;
   latitude: number;
   longitude: number;
   latency: {
@@ -135,6 +137,7 @@ const Map = (props: Props) => {
       return {
         title: miner.address,
         ip: miner.ip,
+        port: miner.port,
         latitude: miner.latitude,
         longitude: miner.longitude,
         color: "#4169E1",
@@ -184,6 +187,7 @@ const Map = (props: Props) => {
       return {
         title: miner.address,
         ip: miner.ip,
+        port: miner.port,
         latitude: miner.latitude,
         longitude: miner.longitude,
         color,

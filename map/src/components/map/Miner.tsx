@@ -37,18 +37,13 @@ const Miner = (props: Props) => {
             <p>
               Address: <strong>{miner.title}</strong>
             </p>
-            <p>IP: {miner.ip}</p>
+            <p>
+              IP: {miner.ip} / Port: {miner.port}
+            </p>
             <p>Latitude: {miner.latitude}</p>
             <p>Longitude: {miner.longitude}</p>
-            {/* <p>
-          Latency:
-          {miner.latency ? <>{miner.latency.avg}</> : <> N/A</>}
-        </p> */}
           </Col>
           <Col span={12}>
-            {/* <p> */}
-            {/* Latency:
-          {miner.latency ? <>{miner.latency.avg}</> : <> N/A</>} */}
             <Statistic
               title="Latency"
               value={
@@ -57,15 +52,11 @@ const Miner = (props: Props) => {
                   : "N/A"
               }
               precision={2}
-              // valueStyle={{ color }}
               style={{
                 borderColor: color,
               }}
               className={styles.latencyStat}
-              // prefix={<ArrowUpOutlined />}
-              // suffix="%"
             />
-            {/* </p> */}
           </Col>
         </Row>
       </Card>
