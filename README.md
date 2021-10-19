@@ -8,13 +8,15 @@
 
 ## Description
 
-FC Latency Map is a service for [Filecoin](https://filecoin.io/) blockchain to obtain the latencies of active miners.
+FC Latency Map is a service for [Filecoin](https://filecoin.io/) decentralized storage network to obtain latencies of all active miners.
 
-It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of all active miners from a relevant location in the world.
+It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of active miners from relevant locations in the world.
 
 ## Quickstart
 
 ### Get the project
+
+Clone the project locally:
 
 ```shell
 git clone https://github.com/ConsenSys/fc-latency-map.git
@@ -22,7 +24,7 @@ git clone https://github.com/ConsenSys/fc-latency-map.git
 
 ### Build the project
 
-To build all the Docker images required to start the project, execute:
+Build all the Docker images required to start the project:
 
 ```shell
 make
@@ -30,21 +32,33 @@ make
 
 ### Change default config
 
-During build phase, `.env` config files were generated in `/manager` and `/map`. To start the services, 2 default values has to be changed on the manager config file.
+During build phase, `.env` config files were generated in `/manager` and `/map`. To start the services, change the 2 default values on the manager config file.
 
-Edit `/manager/.env` and change;
+Edit `/manager/.env` and change:
 
-| Key               | Value type | Description             |
-| ----------------- | ---------- | ----------------------- |
-| FILECOIN_NODE_URL | string     | Lotus Filecoin node url |
-| RIPE_API_KEY      | string     | Ripe Atlas API Key      |
+```
+[...]
+FILECOIN_NODE_URL=changeme
+[...]
+RIPE_API_KEY=changeme
+```
 
 ### Start the project
 
-Finally, to start the services, execute:
+Finally, start the services:
 
 ```shell
 make run
 ```
 
 The Fc Latency Map should be available at: [https://localhost:3000](https://localhost:3000)
+
+### Examples
+
+Example of Filecoin Latency Map:
+
+<img src="./docs/images/filecoin-map.png" width="800">
+
+Example of Filecoin Latency Map with Location and Miner selected:
+
+<img src="./docs/images/filecoin-map-miner-selected.png" width="800">
