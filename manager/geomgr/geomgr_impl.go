@@ -73,7 +73,7 @@ func (g *GeoMgrImpl) IPGeolocation(ip string) (lat, long float64, code string) {
 }
 
 func toFloat(s string) float64 {
-	if f, err := strconv.ParseFloat(s, 32); err == nil {
+	if f, err := strconv.ParseFloat(s, 64); err == nil {
 		return f
 	}
 	return 0
