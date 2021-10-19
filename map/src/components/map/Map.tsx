@@ -20,6 +20,7 @@ am4core.useTheme(am4themes_animated);
 interface Miner {
   address: string;
   ip: string;
+  port: string;
   latitude: number;
   longitude: number;
 }
@@ -36,6 +37,7 @@ interface Location {
 interface MinerLatency {
   address: string;
   ip: string;
+  port: string;
   latitude: number;
   longitude: number;
   latency: {
@@ -81,7 +83,7 @@ const Map = (props: Props) => {
     legend.parent = chart.chartContainer;
     legend.background.fill = am4core.color("#000");
     legend.background.fillOpacity = 0.05;
-    legend.width = 210;
+    legend.width = 230;
     legend.align = "right";
     legend.fontSize = 11;
     legend.padding(5, 10, 5, 10);
@@ -135,6 +137,7 @@ const Map = (props: Props) => {
       return {
         title: miner.address,
         ip: miner.ip,
+        port: miner.port,
         latitude: miner.latitude,
         longitude: miner.longitude,
         color: "#4169E1",
@@ -184,6 +187,7 @@ const Map = (props: Props) => {
       return {
         title: miner.address,
         ip: miner.ip,
+        port: miner.port,
         latitude: miner.latitude,
         longitude: miner.longitude,
         color,
@@ -246,15 +250,16 @@ const Map = (props: Props) => {
       };
     });
 
+    // Location clicked
     series.mapImages.template.events.on(`hit`, (ev: any) => {
       const location = ev.target.dataItem.dataContext;
       setLocation(location);
 
-      const latenciesList = dataJson.measurements[location.country][
-        location.iataCode
-      ]
-        ? dataJson.measurements[location.country][location.iataCode]
-        : [];
+      const latenciesList =
+        dataJson.measurements[location.country] &&
+        dataJson.measurements[location.country][location.iataCode]
+          ? dataJson.measurements[location.country][location.iataCode]
+          : [];
 
       let minersLatency: MinerLatency[] = [];
       let minersNoLatency: MinerLatency[] = [];

@@ -2,7 +2,6 @@ package measurements
 
 import (
 	"strings"
-	"time"
 
 	atlas "github.com/keltia/ripe-atlas"
 
@@ -77,6 +76,8 @@ func (h *Handler) ImportMeasures() {
 	}
 }
 
+const oneMinerMeasurement = 1
+
 func (h *Handler) CreateMeasurements(parameters []string) {
 	places, err := h.Service.getLocationsAsPlaces()
 	if err != nil {
@@ -89,8 +90,12 @@ func (h *Handler) CreateMeasurements(parameters []string) {
 
 	miners := h.Service.GetMinersWithGeolocation()
 	for i, v := range miners {
-		if len(parameters) > 1 && parameters[1] != v.Address {
-			continue
+		counter := i
+		if len(parameters) > 1 {
+			if parameters[1] != v.Address {
+				continue
+			}
+			counter = oneMinerMeasurement
 		}
 		pIDs := strings.Join(h.Service.getProbIDs(places, v.Latitude, v.Longitude), ",")
 		log.WithFields(log.Fields{
@@ -98,7 +103,7 @@ func (h *Handler) CreateMeasurements(parameters []string) {
 			"probeId":       pIDs,
 		}).Info("locations Measurements")
 
-		measures, err := h.ripeMgr.CreateMeasurements([]*models.Miner{v}, pIDs, i)
+		measures, err := h.ripeMgr.CreateMeasurements([]*models.Miner{v}, pIDs, counter)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"err": err,
@@ -108,7 +113,5 @@ func (h *Handler) CreateMeasurements(parameters []string) {
 		}
 
 		h.Service.UpsertMeasurements(measures)
-		const waitTime = 5 * time.Second
-		time.Sleep(waitTime)
 	}
 }

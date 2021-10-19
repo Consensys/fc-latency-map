@@ -26,4 +26,6 @@ services:
       - ./exports:/opt/app/data
     env_file:
       - ./map/.env
+    environment:
+      - PATH_EXPORTS_MEASURES=/opt/app/data/
     restart: unless-stopped
