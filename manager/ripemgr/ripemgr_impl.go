@@ -2,6 +2,7 @@ package ripemgr
 
 import (
 	"fmt"
+	"math"
 	"net"
 	"strings"
 	"time"
@@ -23,7 +24,7 @@ const (
 	startTimeDelay                = 10
 	delayBetweenBatchMeasurements = 600
 	// atlas not permitted run more than 100 concurrent measurements
-	maxRunningConcurrentMeasurements = 100
+	maxRunningConcurrentMeasurements = 100.0
 )
 
 func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
@@ -171,7 +172,7 @@ func (rMgr *RipeMgrImpl) getMeasurementRequest(d []atlas.Definition, isOneOff bo
 	startTime := int(time.Now().Unix()) + startTimeDelay
 
 	if t >= maxRunningConcurrentMeasurements {
-		startTime += delayBetweenBatchMeasurements * t / maxRunningConcurrentMeasurements
+		startTime += int(delayBetweenBatchMeasurements * math.Ceil(float64(t)/maxRunningConcurrentMeasurements))
 	}
 	return &atlas.MeasurementRequest{
 		Definitions: d,
