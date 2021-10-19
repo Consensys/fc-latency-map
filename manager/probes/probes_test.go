@@ -1,6 +1,7 @@
 package probes
 
 import (
+	"errors"
 	"testing"
 
 	gomock "github.com/golang/mock/gomock"
@@ -33,6 +34,30 @@ var mockOpts = map[string]string{
 	"sort":        "id",
 }
 
+func Test_ListProbes_Empty(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+
+	sqlDB, _ := mockDbMgr.GetDB().DB()
+	defer sqlDB.Close()
+
+	ripeMgr, err := ripemgr.NewRipeImpl(mockConfig)
+	if err != nil {
+		log.Fatalf("connecting with lotus failed: %s", err)
+	}
+	srv, _ := NewProbeServiceImpl(mockDbMgr, ripeMgr, nil)
+
+	// Act
+	probes := srv.ListProbes()
+
+	// Assert
+	assert.Equal(t, 0, len(probes))
+}
+
 func Test_ListProbes_OK(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -56,6 +81,30 @@ func Test_ListProbes_OK(t *testing.T) {
 
 	// Assert
 	assert.Equal(t, 1, len(probes))
+}
+
+func Test_GetTotalProbes_Empty(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockDbMgr := db.NewMockDatabaseMgr()
+
+	sqlDB, _ := mockDbMgr.GetDB().DB()
+	defer sqlDB.Close()
+
+	ripeMgr, err := ripemgr.NewRipeImpl(mockConfig)
+	if err != nil {
+		log.Fatalf("connecting with lotus failed: %s", err)
+	}
+	srv, _ := NewProbeServiceImpl(mockDbMgr, ripeMgr, nil)
+
+	// Act
+	count := srv.GetTotalProbes()
+
+	// Assert
+	assert.Equal(t, int64(0), count)
 }
 
 func Test_GetTotalProbes_OK(t *testing.T) {
@@ -129,6 +178,26 @@ func Test_Update_OK(t *testing.T) {
 
 	// Assert
 	assert.True(t, updated)
+}
+
+func Test_ImportProbes_Fail_ProbesError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockDbMgr := db.NewMockDatabaseMgr()
+	mockRipeMgr := ripemgr.NewMockRipeMgr(ctrl)
+	mockGeoMgr := geomgr.NewMockGeoMgr(ctrl)
+	srv, _ := NewProbeServiceImpl(mockDbMgr, mockRipeMgr, mockGeoMgr)
+	sqlDB, _ := mockDbMgr.GetDB().DB()
+	defer sqlDB.Close()
+
+	// Act
+	mockRipeMgr.EXPECT().GetProbes(mockOpts).Return(nil, errors.New(""))
+	imported := srv.ImportProbes()
+
+	// Assert
+	assert.False(t, imported)
 }
 
 func Test_ImportProbes_OK(t *testing.T) {

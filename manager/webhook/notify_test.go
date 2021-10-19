@@ -35,7 +35,7 @@ func Test_Notify_Fail_FilesIsEmpty(t *testing.T) {
 }
 
 func Test_Notify_OK_One(t *testing.T) {
-	defer gock.Off() // Flush pending mocks after test execution
+	defer gock.Off()
 
 	// Arrange
 	mockConfig := config.NewMockConfig()
@@ -55,6 +55,8 @@ func Test_Notify_OK_One(t *testing.T) {
 }
 
 func Test_Notify_OK_Many(t *testing.T) {
+	defer gock.Off()
+
 	// Arrange
 	mockConfig := config.NewMockConfig()
 	notif := NewNotifier(mockConfig)
