@@ -32,9 +32,9 @@ make
 
 ### Change default config
 
-During build phase, `.env` config files were generated in `/manager` and `/map`. To start the services, change the 2 default values on the manager config file.
+During build phase, `.env` config files were generated in `./manager/` and `./map/`. To start the services, change the 2 default values on the manager config file.
 
-Edit `/manager/.env` and change:
+Edit `./manager/.env` and change:
 
 ```
 [...]
