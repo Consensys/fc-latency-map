@@ -21,6 +21,7 @@ func Test_IPGeolocation_Fail_BadRequest(t *testing.T) {
 	mockConfig := config.NewMockConfig()
 	geo := NewGeoMgrImpl(mockConfig)
 	gock.New("http://www.geoplugin.net").
+		Get("/json.gp").
 		Reply(400)
 
 	// Act
@@ -40,6 +41,7 @@ func Test_IPGeolocation_Fail_EmptyResponse(t *testing.T) {
 	mockConfig := config.NewMockConfig()
 	geo := NewGeoMgrImpl(mockConfig)
 	gock.New("http://www.geoplugin.net").
+		Get("/json.gp").
 		Reply(200)
 
 	// Act
@@ -59,6 +61,7 @@ func Test_IPGeolocation_Fail_WrongJSON(t *testing.T) {
 	mockConfig := config.NewMockConfig()
 	geo := NewGeoMgrImpl(mockConfig)
 	gock.New("http://www.geoplugin.net").
+		Get("/json.gp").
 		Reply(200).
 		JSON(map[string]interface{}{
 			"status": 200,
@@ -81,6 +84,7 @@ func Test_IPGeolocation_OK(t *testing.T) {
 	mockConfig := config.NewMockConfig()
 	geo := NewGeoMgrImpl(mockConfig)
 	gock.New("http://www.geoplugin.net").
+		Get("/json.gp").
 		Reply(200).
 		JSON(map[string]interface{}{
 			"geoplugin_status":    200,
@@ -99,10 +103,4 @@ func Test_IPGeolocation_OK(t *testing.T) {
 	assert.NotNil(t, long)
 	assert.Equal(t, dummyLatitude, lat)
 	assert.Equal(t, dummyLongitude, long)
-}
-
-func Test_FindCountry_Empty(t *testing.T) {
-}
-
-func Test_FindCountry_OK(t *testing.T) {
 }
