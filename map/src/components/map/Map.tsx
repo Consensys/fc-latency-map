@@ -250,15 +250,16 @@ const Map = (props: Props) => {
       };
     });
 
+    // Location clicked
     series.mapImages.template.events.on(`hit`, (ev: any) => {
       const location = ev.target.dataItem.dataContext;
       setLocation(location);
 
-      const latenciesList = dataJson.measurements[location.country][
-        location.iataCode
-      ]
-        ? dataJson.measurements[location.country][location.iataCode]
-        : [];
+      const latenciesList =
+        dataJson.measurements[location.country] &&
+        dataJson.measurements[location.country][location.iataCode]
+          ? dataJson.measurements[location.country][location.iataCode]
+          : [];
 
       let minersLatency: MinerLatency[] = [];
       let minersNoLatency: MinerLatency[] = [];
