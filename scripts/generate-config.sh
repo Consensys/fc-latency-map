@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Export host UID and GID
-export FC_UID=$(id -u)
-export FC_GID=$(id -g)
-
 # Create manager env
 ENV_FILE_MANAGER=./manager/.env
 ENV_FILE_MANAGER_EXAMPLE=./manager/.env.example
