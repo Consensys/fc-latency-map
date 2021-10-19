@@ -58,7 +58,7 @@ const Home = (props: Props) => {
         id="map"
         style={{
           width: "100%",
-          minHeight: "600px",
+          minHeight: "500px",
         }}
       >
         <MapWithNoSSR

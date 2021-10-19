@@ -1,5 +1,6 @@
 import React, { useRef, useState, useLayoutEffect } from "react";
 import { Row, Col } from "antd";
+import getConfig from "next/config";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4maps from "@amcharts/amcharts4/maps";
 import am4geodata_worldLow from "@amcharts/amcharts4-geodata/worldLow";
@@ -11,6 +12,8 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import styles from "@src/styles/Global.module.css";
 import Location from "./Location";
 import Miner from "./Miner";
+
+const { publicRuntimeConfig } = getConfig();
 
 am4core.useTheme(am4themes_animated);
 
@@ -78,7 +81,7 @@ const Map = (props: Props) => {
     legend.parent = chart.chartContainer;
     legend.background.fill = am4core.color("#000");
     legend.background.fillOpacity = 0.05;
-    legend.width = 210;
+    legend.width = 230;
     legend.align = "right";
     legend.fontSize = 11;
     legend.padding(5, 10, 5, 10);
@@ -92,15 +95,15 @@ const Map = (props: Props) => {
         fill: "#4169E1",
       },
       {
-        name: "Low Latency Miners <= 50",
+        name: `Low Latency Miners <= ${publicRuntimeConfig.latency.low}`,
         fill: "#00FF00",
       },
       {
-        name: "Medium Latency Miners <= 100",
+        name: `Medium Latency Miners <= ${publicRuntimeConfig.latency.medium}`,
         fill: "#FFFF00",
       },
       {
-        name: "High Latency Miners > 100",
+        name: `High Latency Miners > ${publicRuntimeConfig.latency.medium}`,
         fill: "#FF0000",
       },
       {
@@ -170,9 +173,9 @@ const Map = (props: Props) => {
 
       if (miner.latency.avg == -1) {
         color = "#000000";
-      } else if (miner.latency.avg < 50) {
+      } else if (miner.latency.avg < publicRuntimeConfig.latency.low) {
         color = "#00ff00";
-      } else if (miner.latency.avg < 100) {
+      } else if (miner.latency.avg < publicRuntimeConfig.latency.medium) {
         color = "#ffff00";
       } else {
         color = "#ff0000";
@@ -352,7 +355,7 @@ const Map = (props: Props) => {
         style={{
           width: "100%",
           height: width / 1.7,
-          minHeight: "600px",
+          minHeight: "500px",
         }}
       ></div>
       <div className={styles.dates}>

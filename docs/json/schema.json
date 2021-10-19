@@ -84,20 +84,12 @@
         },
         "avg": {
           "type": "number"
-        },
-        "max": {
-          "type": "number"
-        },
-        "min": {
-          "type": "number"
         }
       },
       "required": [
         "ip",
         "latency",
-        "avg",
-        "max",
-        "min"
+        "avg"
       ]
     },
     "Probe": {

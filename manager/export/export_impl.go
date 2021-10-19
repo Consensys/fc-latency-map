@@ -7,6 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
 	"github.com/ConsenSys/fc-latency-map/manager/db"
@@ -72,7 +73,6 @@ func (m *ExportServiceImpl) marshalJSON(measurements *Result) []byte {
 }
 
 func (m *ExportServiceImpl) getLatencyMeasurementsStored(date string) *Result {
-	var iataCodes []string
 	results := &Result{Measurements: map[string]map[string][]*Miner{}}
 	loc := m.getLocations()
 	miners := m.getMiners()
@@ -90,7 +90,6 @@ func (m *ExportServiceImpl) getLatencyMeasurementsStored(date string) *Result {
 			if len(latency.Measures) == 0 {
 				continue
 			}
-			iataCodes = addNewString(iataCodes, l.IataCode)
 			if _, found := results.Measurements[l.Country]; !found {
 				results.Measurements[l.Country] = make(map[string][]*Miner)
 			}
@@ -98,21 +97,17 @@ func (m *ExportServiceImpl) getLatencyMeasurementsStored(date string) *Result {
 		}
 	}
 
-	m.addRootData(results, miners, iataCodes)
-
-	return results
-}
-
-func (m *ExportServiceImpl) addRootData(results *Result, miners []*models.Miner, iataCodes []string) {
+	results.Locations = loc
 	results.Miners = miners
 	results.Dates = m.getDates()
-	results.Locations = m.getLocationsFromIata(iataCodes)
+
+	return results
 }
 
 func (m *ExportServiceImpl) appendLatency(latency *Miner, locationID int, ip, date string) *Miner {
 	for _, ip := range strings.Split(ip, ",") {
 		meas := m.getMeasureResults(date, ip, locationID)
-		if meas == nil {
+		if meas == nil || meas.IP == "" {
 			continue
 		}
 		latency.Measures = append(latency.Measures, meas)
@@ -130,10 +125,7 @@ func (m *ExportServiceImpl) getMeasureResults(date, ip string, locationID int) *
 
 	dbc := m.DBMgr.GetDB()
 	err := dbc.Model(&models.MeasurementResult{}).Select(
-		"ip,"+
-			"avg(time_average) time_average,"+
-			"max(time_max) time_max,"+
-			"min(time_min) time_min").
+		"ip, avg(rtt) time_average").
 		Where(where).
 		Where("probe_id in (?)",
 			dbc.Select("probe_id").
@@ -145,6 +137,12 @@ func (m *ExportServiceImpl) getMeasureResults(date, ip string, locationID int) *
 		Group("ip, measurement_date").
 		First(&meas).Error
 	if err != nil {
+		if err != gorm.ErrRecordNotFound {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Error("measurement result")
+		}
+
 		return nil
 	}
 
@@ -183,24 +181,6 @@ func (m *ExportServiceImpl) getLocations() []*models.Location {
 	return loc
 }
 
-func (m *ExportServiceImpl) getLocationsFromIata(codes []string) []*models.Location {
-	var loc []*models.Location
-	err := m.DBMgr.GetDB().
-		Preload(clause.Associations).
-		Where("iata_code in ?", codes).
-		Order(clause.OrderByColumn{Column: clause.Column{Name: "country"}}).
-		Find(&loc).Error
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error("GetAllLocations")
-
-		return nil
-	}
-
-	return loc
-}
-
 func (m *ExportServiceImpl) getDates() []string {
 	var dates []string
 	m.DBMgr.GetDB().
@@ -209,14 +189,4 @@ func (m *ExportServiceImpl) getDates() []string {
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "measurement_date"}}).
 		Pluck("measurement_date", &dates)
 	return dates
-}
-
-func addNewString(s []string, str string) []string {
-	for _, v := range s {
-		if v == str {
-			return s
-		}
-	}
-
-	return append(s, str)
 }

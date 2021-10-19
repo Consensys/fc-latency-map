@@ -77,7 +77,7 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 			continue
 		}
 		ip, port := getMinerIPPort(&minerInfo)
-		lat, long := srv.getGeolocation(ip)
+		lat, long, _ := srv.getGeolocation(ip)
 		miners = append(miners, &models.Miner{
 			Address:   address,
 			IP:        ip,
@@ -98,17 +98,21 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 	return miners
 }
 
-func (srv *MinerServiceImpl) getGeolocation(ip string) (lat, long float64) {
-	if ip != "" {
-		split := strings.Split(ip, ",")
-
-		return srv.GMgr.IPGeolocation(split[0])
+func (srv *MinerServiceImpl) getGeolocation(ips string) (lat, long float64, countryCode string) {
+	if ips != "" {
+		ip := strings.Split(ips, ",")
+		for _, address := range ip {
+			lat, long, countryCode = srv.GMgr.IPGeolocation(address)
+			if countryCode != "" {
+				return lat, long, countryCode
+			}
+		}
 	}
 
-	return 0, 0
+	return 0, 0, countryCode
 }
 
-func getMinerIPPort(minerInfo *miner.MinerInfo) (ips, port string) {
+func getMinerIPPort(minerInfo *miner.MinerInfo) (ips string, port int) {
 	log.Printf("minerInfo.Multiaddrs: %s", minerInfo.Multiaddrs)
 	ip, port := addresses.IPAddress(addresses.MultiAddrs(minerInfo.Multiaddrs))
 	ips = strings.Join(ip, ",")

@@ -42,7 +42,7 @@ func FindNearest(places []Place, q Place, amount int) []int {
 		"lat":    q.Latitude,
 		"lon":    q.Longitude,
 		"amount": amount,
-	}).Info("FindNearest locations")
+	}).Debug("FindNearest locations")
 
 	return ids
 }

@@ -2,6 +2,7 @@ package addresses
 
 import (
 	"net"
+	"strconv"
 
 	"github.com/filecoin-project/go-state-types/abi"
 	ma "github.com/multiformats/go-multiaddr"
@@ -18,10 +19,10 @@ func MultiAddrs(addr []abi.Multiaddrs) []ma.Multiaddr {
 	return m
 }
 
-func IPAddress(a []ma.Multiaddr) (ips []string, tcpPort string) {
+func IPAddress(a []ma.Multiaddr) (ips []string, tcpPort int) {
 	for _, v := range a {
 		if port, err := v.ValueForProtocol(ma.P_TCP); err == nil {
-			tcpPort = port
+			tcpPort, _ = strconv.Atoi(port)
 		}
 		if ip, err := v.ValueForProtocol(ma.P_IP4); err == nil {
 			ips = append(ips, ip)

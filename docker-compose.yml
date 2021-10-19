@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   manager:
-    user: "${UID}:${GID}"
+    user: "${FC_UID}:${FC_GID}"
     image: fc-latency-manager
     container_name: fc-latency-manager
     network_mode: "bridge"
@@ -26,4 +26,6 @@ services:
       - ./exports:/opt/app/data
     env_file:
       - ./map/.env
+    environment:
+      - PATH_EXPORTS_MEASURES=/opt/app/data/
     restart: unless-stopped

@@ -88,15 +88,20 @@ func (m *measurementServiceImpl) ImportMeasurement(mr []atlas.MeasurementResult)
 	for _, result := range mr { //nolint:gocritic
 		t := time.Unix(int64(result.Timestamp), 0)
 
+		var rtt float64
+		rtt = -1
+		if len(result.Result) > 0 {
+			if len(result.Result[0].Result) > 0 && result.Result[0].Result[0].From != "" {
+				rtt = result.Result[0].Result[0].Rtt
+			}
+		}
 		insert = append(insert, &models.MeasurementResult{
 			IP:                   result.DstAddr,
 			MeasurementID:        result.MsmID,
 			ProbeID:              result.PrbID,
 			MeasurementTimestamp: result.Timestamp,
 			MeasurementDate:      t.Format("2006-01-02"),
-			TimeAverage:          result.Avg,
-			TimeMax:              result.Max,
-			TimeMin:              result.Min,
+			Rtt:                  rtt,
 		})
 	}
 
@@ -144,13 +149,15 @@ func (m *measurementServiceImpl) getProbIDs(places []Place, lat, long float64) [
 	ripeProbeIDs := []string{}
 
 	dbc := m.DBMgr.GetDB()
-	if err := dbc.Model(models.Probe{}).
+	err := dbc.Model(models.Probe{}).
 		Distinct().
-		Where("id in (?)",
+		Where(&models.Probe{Status: "Connected"}).
+		Where("status='Connected' and id in (?)",
 			dbc.Select("probe_id").
 				Table("locations_probes").
 				Where("location_id in (?)", nearestLocationsIDs)).
-		Pluck("probe_id", &ripeProbeIDs).Error; err != nil {
+		Pluck("probe_id", &ripeProbeIDs).Error
+	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
 		}).Error("get probeId from locations")
