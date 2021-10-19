@@ -13,6 +13,7 @@ import (
 var dummyIpAddress = "8.8.8.8"
 var dummyLatitude = float64(37.6597400)
 var dummyLongitude = float64(-97.5753300)
+var dummyCountry = "US"
 
 func Test_IPGeolocation_Fail_BadRequest(t *testing.T) {
 	defer gock.Off()
@@ -25,13 +26,15 @@ func Test_IPGeolocation_Fail_BadRequest(t *testing.T) {
 		Reply(400)
 
 	// Act
-	lat, long := geo.IPGeolocation(dummyIpAddress)
+	lat, long, cntry := geo.IPGeolocation(dummyIpAddress)
 
 	// Assert
 	assert.NotNil(t, lat)
 	assert.NotNil(t, long)
+	assert.NotNil(t, cntry)
 	assert.Equal(t, float64(0), lat)
 	assert.Equal(t, float64(0), long)
+	assert.Equal(t, "", cntry)
 }
 
 func Test_IPGeolocation_Fail_EmptyResponse(t *testing.T) {
@@ -45,13 +48,14 @@ func Test_IPGeolocation_Fail_EmptyResponse(t *testing.T) {
 		Reply(200)
 
 	// Act
-	lat, long := geo.IPGeolocation(dummyIpAddress)
+	lat, long, cntry := geo.IPGeolocation(dummyIpAddress)
 
 	// Assert
 	assert.NotNil(t, lat)
 	assert.NotNil(t, long)
 	assert.Equal(t, float64(0), lat)
 	assert.Equal(t, float64(0), long)
+	assert.Equal(t, "", cntry)
 }
 
 func Test_IPGeolocation_Fail_WrongJSON(t *testing.T) {
@@ -68,13 +72,14 @@ func Test_IPGeolocation_Fail_WrongJSON(t *testing.T) {
 		})
 
 	// Act
-	lat, long := geo.IPGeolocation(dummyIpAddress)
+	lat, long, cntry := geo.IPGeolocation(dummyIpAddress)
 
 	// Assert
 	assert.NotNil(t, lat)
 	assert.NotNil(t, long)
 	assert.Equal(t, float64(0), lat)
 	assert.Equal(t, float64(0), long)
+	assert.Equal(t, "", cntry)
 }
 
 func Test_IPGeolocation_OK(t *testing.T) {
@@ -87,20 +92,22 @@ func Test_IPGeolocation_OK(t *testing.T) {
 		Get("/json.gp").
 		Reply(200).
 		JSON(map[string]interface{}{
-			"geoplugin_status":    200,
-			"geoplugin_city":      "Unknown",
-			"geoplugin_region":    "Kansas",
-			"geoplugin_latitude":  fmt.Sprintf("%f", dummyLatitude),
-			"geoplugin_longitude": fmt.Sprintf("%f", dummyLongitude),
-			"geoplugin_timezone":  "America/Chicago",
+			"geoplugin_status":      200,
+			"geoplugin_city":        "Unknown",
+			"geoplugin_region":      "Kansas",
+			"geoplugin_countryCode": dummyCountry,
+			"geoplugin_latitude":    fmt.Sprintf("%f", dummyLatitude),
+			"geoplugin_longitude":   fmt.Sprintf("%f", dummyLongitude),
+			"geoplugin_timezone":    "America/Chicago",
 		})
 
 	// Act
-	lat, long := geo.IPGeolocation(dummyIpAddress)
+	lat, long, cntry := geo.IPGeolocation(dummyIpAddress)
 
 	// Assert
 	assert.NotNil(t, lat)
 	assert.NotNil(t, long)
 	assert.Equal(t, dummyLatitude, lat)
 	assert.Equal(t, dummyLongitude, long)
+	assert.Equal(t, dummyCountry, cntry)
 }

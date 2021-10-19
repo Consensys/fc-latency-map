@@ -1,6 +1,7 @@
 package addresses
 
 import (
+	"fmt"
 	"net"
 	"testing"
 
@@ -11,9 +12,9 @@ import (
 
 var dummyIpAddressV4 = "127.0.0.1"
 var dummyIpAddressV6 = "::1"
-var dummyPort = "1234"
-var dummyMultiAddressV4, _ = ma.NewMultiaddr("/ip4/" + dummyIpAddressV4 + "/tcp/" + dummyPort)
-var dummyMultiAddressV6, _ = ma.NewMultiaddr("/ip6/" + dummyIpAddressV6 + "/tcp/" + dummyPort)
+var dummyPort = 1234
+var dummyMultiAddressV4, _ = ma.NewMultiaddr("/ip4/" + dummyIpAddressV4 + "/tcp/" + fmt.Sprintf("%d", dummyPort))
+var dummyMultiAddressV6, _ = ma.NewMultiaddr("/ip6/" + dummyIpAddressV6 + "/tcp/" + fmt.Sprintf("%d", dummyPort))
 
 func Test_MultiAddrs_Nil(t *testing.T) {
 	addrs := MultiAddrs(nil)

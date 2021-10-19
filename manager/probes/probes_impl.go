@@ -193,6 +193,8 @@ func (srv *ProbeServiceImpl) ImportProbes() bool {
 	srv.upsertProbes(dbc, probesToSave, []string{"status", "is_anchor", "is_public", "address_v4", "address_v6"})
 
 	srv.upsertProbesCoordinates()
+
+	return true
 }
 
 func (srv *ProbeServiceImpl) upsertProbes(dbc *gorm.DB, probesDB []*models.Probe, updtColumns []string) {
@@ -206,8 +208,6 @@ func (srv *ProbeServiceImpl) upsertProbes(dbc *gorm.DB, probesDB []*models.Probe
 			"error": err,
 		}).Error("unable to insert probes")
 	}
-
-	return true
 }
 
 func (srv *ProbeServiceImpl) fixCoordinates(p *models.Probe) {
