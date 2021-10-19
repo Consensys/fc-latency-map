@@ -17,5 +17,7 @@
 # Config
 .env
 
+.vscode
+
 main
 coverage.txt

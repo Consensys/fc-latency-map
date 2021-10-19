@@ -6,7 +6,6 @@ default:
 	./scripts/generate-config.sh
 	docker build -f manager/Dockerfile -t fc-latency-manager .
 	docker build -f map/Dockerfile -t fc-latency-map ./map
-	./run.sh
 
 run:
 	./run.sh

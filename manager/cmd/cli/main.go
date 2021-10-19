@@ -15,7 +15,6 @@ import (
 	"github.com/ConsenSys/fc-latency-map/manager/measurements"
 	"github.com/ConsenSys/fc-latency-map/manager/miners"
 	"github.com/ConsenSys/fc-latency-map/manager/probes"
-	"github.com/ConsenSys/fc-latency-map/manager/seeds"
 )
 
 type LatencyMapCLI struct {
@@ -33,13 +32,12 @@ func main() {
 	})
 
 	c := &LatencyMapCLI{
-		Commands: []string{"locations", "measures", "miners", "probes", "seed"},
+		Commands: []string{"locations", "measures", "miners", "probes"},
 		Commanders: map[string]cli.Commander{
 			"locations": locations.NewLocationCommander(),
 			"measures":  measurements.NewMesuresCommander(),
 			"miners":    miners.NewMinerCommander(),
 			"probes":    probes.NewProbeCommander(),
-			"seed":      seeds.NewSeederCommander(),
 		},
 	}
 
