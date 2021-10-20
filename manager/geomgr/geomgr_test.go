@@ -53,6 +53,7 @@ func Test_IPGeolocation_Fail_EmptyResponse(t *testing.T) {
 	// Assert
 	assert.NotNil(t, lat)
 	assert.NotNil(t, long)
+	assert.NotNil(t, cntry)
 	assert.Equal(t, float64(0), lat)
 	assert.Equal(t, float64(0), long)
 	assert.Equal(t, "", cntry)
@@ -77,6 +78,7 @@ func Test_IPGeolocation_Fail_WrongJSON(t *testing.T) {
 	// Assert
 	assert.NotNil(t, lat)
 	assert.NotNil(t, long)
+	assert.NotNil(t, cntry)
 	assert.Equal(t, float64(0), lat)
 	assert.Equal(t, float64(0), long)
 	assert.Equal(t, "", cntry)
@@ -107,7 +109,92 @@ func Test_IPGeolocation_OK(t *testing.T) {
 	// Assert
 	assert.NotNil(t, lat)
 	assert.NotNil(t, long)
+	assert.NotNil(t, cntry)
 	assert.Equal(t, dummyLatitude, lat)
 	assert.Equal(t, dummyLongitude, long)
+	assert.Equal(t, dummyCountry, cntry)
+}
+
+func Test_FindCountry_Fail_BadRequest(t *testing.T) {
+	defer gock.Off()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	geo := NewGeoMgrImpl(mockConfig)
+	gock.New("http://www.geoplugin.net").
+		Get("/extras/location.gp").
+		Reply(400)
+
+	// Act
+	cntry := geo.FindCountry(dummyLatitude, dummyLongitude)
+
+	// Assert
+	assert.NotNil(t, cntry)
+	assert.Equal(t, "", cntry)
+}
+
+func Test_FindCountry_Fail_EmptyResponse(t *testing.T) {
+	defer gock.Off()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	geo := NewGeoMgrImpl(mockConfig)
+	gock.New("http://www.geoplugin.net").
+		Get("/extras/location.gp").
+		Reply(200)
+
+	// Act
+	cntry := geo.FindCountry(dummyLatitude, dummyLongitude)
+
+	// Assert
+	assert.NotNil(t, cntry)
+	assert.Equal(t, "", cntry)
+}
+
+func Test_FindCountry_Fail_WrongJSON(t *testing.T) {
+	defer gock.Off()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	geo := NewGeoMgrImpl(mockConfig)
+	gock.New("http://www.geoplugin.net").
+		Get("/extras/location.gp").
+		Reply(200).
+		JSON(map[string]interface{}{
+			"status": 200,
+		})
+
+	// Act
+	cntry := geo.FindCountry(dummyLatitude, dummyLongitude)
+
+	// Assert
+	assert.NotNil(t, cntry)
+	assert.Equal(t, "", cntry)
+}
+
+func Test_FindCountry_OK(t *testing.T) {
+	defer gock.Off()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	geo := NewGeoMgrImpl(mockConfig)
+	gock.New("http://www.geoplugin.net").
+		Get("/extras/location.gp").
+		Reply(200).
+		JSON(map[string]interface{}{
+			"geoplugin_status":      200,
+			"geoplugin_city":        "Unknown",
+			"geoplugin_region":      "Kansas",
+			"geoplugin_countryCode": dummyCountry,
+			"geoplugin_latitude":    fmt.Sprintf("%f", dummyLatitude),
+			"geoplugin_longitude":   fmt.Sprintf("%f", dummyLongitude),
+			"geoplugin_timezone":    "America/Chicago",
+		})
+
+	// Act
+	cntry := geo.FindCountry(dummyLatitude, dummyLongitude)
+
+	// Assert
+	assert.NotNil(t, cntry)
 	assert.Equal(t, dummyCountry, cntry)
 }
