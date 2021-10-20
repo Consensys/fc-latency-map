@@ -96,6 +96,8 @@ sqlite> ^C^C^C
 
 ## Command-line Interface
 
+### Usage
+
 1. Run CLI
 
 ```bash
@@ -133,7 +135,7 @@ or with an offset of 10 (latest block heights)
 >>> miners-parse-state-market
 ```
 
-## Demo
+### Demo
 
 ```shell
 ## use case - from scratch
