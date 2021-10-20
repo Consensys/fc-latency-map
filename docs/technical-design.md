@@ -38,7 +38,7 @@ Then active deals are parsed to get miners info, and store them in the database.
 
 #### Diagram
 
-<img src="./images/diagrams/get-miners.png" width="70%">
+<img src="./images/diagrams/get-miners.png" width="60%">
 
 ### Get locations
 
@@ -50,7 +50,7 @@ They are imported from [https://datahub.io/core/airport-codes#data](https://data
 
 #### Diagram
 
-<img src="./images/diagrams/get-locations.png" width="50%">
+<img src="./images/diagrams/get-locations.png" width="40%">
 
 ### Get probes
 
@@ -60,7 +60,7 @@ Get probes
 
 #### Diagram
 
-<img src="./images/diagrams/get-probes.png" width="70%">
+<img src="./images/diagrams/get-probes.png" width="60%">
 
 ### Create measures
 
@@ -70,7 +70,7 @@ Create measures
 
 #### Diagram
 
-<img src="./images/diagrams/get-measurements.png" width="70%">
+<img src="./images/diagrams/get-measurements.png" width="60%">
 
 ### Export measures
 
@@ -80,7 +80,7 @@ Export reasults
 
 #### Diagram
 
-<img src="./images/diagrams/export-measurements.png" width="50%">
+<img src="./images/diagrams/export-measurements.png" width="40%">
 
 ## JSON schema
 
