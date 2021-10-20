@@ -24,13 +24,33 @@ Database [dbdiagram model file](./filecoin_latency_map_dbdiagram)
 
 ## Sequence diagrams
 
+[Mermaid models file](./diagrams_mermaid.mmd)
+
 ### Get miners
+
+Get miners
+
+![get-miners](./images/diagrams/get-miners.png)
 
 ### Get locations
 
 ### Get probes
 
-### Get measures
+Get probes
+
+![get-probes](./images/diagrams/get-probes.png)
+
+### Create measures
+
+Create measures
+
+![get-measurements](./images/diagrams/get-measurements.png)
+
+### Export measures
+
+Export reasults
+
+![export-measurements](./images/diagrams/export-measurements.png)
 
 ## JSON schema
 

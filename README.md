@@ -14,13 +14,17 @@ It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of active 
 
 ## Requirement
 
-- [Docker](https://docs.docker.com/get-docker/) is installed.
+- [Docker](https://docs.docker.com/get-docker/) installed.
 
 - 10Gb of free disk space.
 
 ## How it works
 
-See [technical design](./docs/technical-design.md) documentation.
+See [technical design](./docs/technical-design.md) documentation for details on how the FC Latency Map works.
+
+See [Manager](./manager/README.md) documentation for details on starting the manager.
+
+See [Map](./map/README.md) documentation for details on starting the map.
 
 ## Quickstart
 
