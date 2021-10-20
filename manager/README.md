@@ -31,6 +31,20 @@ Is available an example of configuration on [.env.example](./.env.example)
 cp .env.example .env
 ```
 
+| Key | Value type | Description |
+| --- | --- | --- |
+| FILECOIN_NODE_URL | string     | Lotus Filecoin node url |
+| RIPE_API_KEY| string | [Ripe Atlas API Key](https://atlas.ripe.net/keys/)       |
+| RIPE_TRACEROUTE_INTERVAL| number  | Interval between ping to get miners latency |
+| RIPE_TRACEROUTE_RUNNING_TIME| number | Running period get latency|
+| RIPE_ONE_OFF | boolean | On ping only to get latency. When is 'true' the RIPE_TRACEROUTE_INTERVAL and RIPE_TRACEROUTE_RUNNING_TIME are ignored|
+| RIPE_REQUESTED_PROBES | number | Max number of probes to call miners |
+| RIPE_PACKETS | number | Amount of packets to ping miners. |
+| NEAREST_AIRPORTS | number | Amount of airports miner to test latency. |
+| RIPE_PROBES_PER_AIRPORT | number | Amount of probes near to miner to airport. |
+| NEAREST_AIRPORTS | number | Amount of airports miner to test latency. |
+| RIPE_PROBES_PER_AIRPORT | number | Amount of probes near to miner to airport. |
+
 ## Development
 
 * Run golangci
@@ -129,31 +143,14 @@ or with an offset of 10 (latest block heights)
 ## Demo
 
 ```shell
-## use case - from scratch
 rm data/database.db
-
-go run cmd/cli/main.go miners-parse-block 1109742
-go run cmd/cli/main.go locations-add ORY
-go run cmd/cli/main.go locations-add JFK
-go run cmd/cli/main.go locations-add OPO
-
+go run cmd/cli/main.go miners-parse-state-market
+go run cmd/cli/main.go locations-update large
+go run cmd/cli/main.go probes-import
+go run cmd/cli/main.go probes-update
 
 go run cmd/cli/main.go measures-create
 #   wait until have ripe results
 go run cmd/cli/main.go measures-get
 go run cmd/cli/main.go measures-export
-
-
-## use case 2 - from seed data
-#rm data/database.db
-go run cmd/cli/main.go seed-data
-go run cmd/cli/main.go probes-update
-
-go run cmd/cli/main.go measures-get
-go run cmd/cli/main.go measures-export
-
-##
-go run cmd/cli/main.go locations-update large
-go run cmd/cli/main.go probes-import
-go run cmd/cli/main.go probes-update
 ```
