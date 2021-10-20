@@ -28,27 +28,57 @@ Database [dbdiagram model file](./filecoin_latency_map_dbdiagram)
 
 ### Get miners
 
-Get miners
+#### Description
+
+Active miners are retrieved from Filecoin Lotus node.
+
+First, the current active deals are retrieved.
+
+Then active deals are parsed to get miners info, and store them in the database.
+
+#### Diagram
 
 ![get-miners](./images/diagrams/get-miners.png)
 
 ### Get locations
 
+#### Description
+
+Large airports are used to get relevant locations in the world.
+
+They are imported from [https://datahub.io/core/airport-codes#data](https://datahub.io/core/airport-codes#data) and stored in the database.
+
+#### Diagram
+
+![get-probes](./images/diagrams/get-locations.png)
+
 ### Get probes
 
+#### Description
+
 Get probes
+
+#### Diagram
 
 ![get-probes](./images/diagrams/get-probes.png)
 
 ### Create measures
 
+#### Description
+
 Create measures
+
+#### Diagram
 
 ![get-measurements](./images/diagrams/get-measurements.png)
 
 ### Export measures
 
+#### Description
+
 Export reasults
+
+#### Diagram
 
 ![export-measurements](./images/diagrams/export-measurements.png)
 

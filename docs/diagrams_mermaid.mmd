@@ -6,6 +6,21 @@ sequenceDiagram
 
     Manager->>+Database: Store miners
 
+# Get locations
+sequenceDiagram
+    Manager->>+Manager: Parse airports JSON file
+    Manager->>+Database: Insert locations list
+    
+# Get probes
+sequenceDiagram
+    Manager->>+Database: Insert locations list
+    Database-->>-Manager: Get locations list
+
+    Manager->>+Ripe Atlas: Request probes
+    Ripe Atlas-->>-Manager: Returns probes list
+
+    Manager->>+Database: Store probes
+
 # Get measurements
 sequenceDiagram
 
@@ -24,16 +39,6 @@ sequenceDiagram
     Ripe Atlas-->>-Manager: Returns measurement data
 
     Manager->>+Database: Store measurements
-
-# Get probes
-sequenceDiagram
-    Manager->>+Database: Insert locations list
-    Database-->>-Manager: Get locations list
-
-    Manager->>+Ripe Atlas: Request probes
-    Ripe Atlas-->>-Manager: Returns probes list
-
-    Manager->>+Database: Store probes
 
 # Export measurements
 sequenceDiagram
