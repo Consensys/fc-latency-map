@@ -6,6 +6,8 @@ import (
 	"runtime/debug"
 	"strings"
 
+	"github.com/ConsenSys/fc-latency-map/manager/seeds"
+
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 	_ "gorm.io/driver/sqlite"
@@ -32,12 +34,13 @@ func main() {
 	})
 
 	c := &LatencyMapCLI{
-		Commands: []string{"locations", "measures", "miners", "probes"},
+		Commands: []string{"locations", "measures", "miners", "probes", "seed"},
 		Commanders: map[string]cli.Commander{
 			"locations": locations.NewLocationCommander(),
 			"measures":  measurements.NewMesuresCommander(),
 			"miners":    miners.NewMinerCommander(),
 			"probes":    probes.NewProbeCommander(),
+			"seed":      seeds.NewSeederCommander(),
 		},
 	}
 
