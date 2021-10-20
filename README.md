@@ -18,6 +18,10 @@ It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of active 
 
 - 10Gb of free disk space.
 
+## How it works
+
+See [technical design](./docs/technical-design.md) documentation.
+
 ## Quickstart
 
 ### Get the project
