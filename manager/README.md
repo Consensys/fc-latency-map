@@ -191,10 +191,9 @@ It should respond:
 
 ```
 {
-"rssMemory": "1008.68 MB",
-"heapMemoryTotal": "435.15 MB",
-"heapMemoryUsed": "399.11 MB",
-"externalMemory": "358.41 MB"
+"locations": "606",
+"miners": "140",
+"probes": "1890"
 }
 ```
 
