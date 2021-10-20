@@ -50,7 +50,7 @@ They are imported from [https://datahub.io/core/airport-codes#data](https://data
 
 #### Diagram
 
-<img src="./images/diagrams/get-locations.png" width="50%">
+<img src="./images/diagrams/get-locations.png" width="60%">
 
 ### Get probes
 
