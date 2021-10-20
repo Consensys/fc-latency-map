@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import dynamic from "next/dynamic";
 import getConfig from "next/config";
-import moment, { Moment } from "moment";
 import * as fs from "fs";
 import * as path from "path";
 

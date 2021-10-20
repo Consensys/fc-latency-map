@@ -1,0 +1,79 @@
+// Tables
+Table miners {
+  id          int [pk, increment] // auto-increment
+  address     string [not null, unique]
+  ip          string
+  latitude    float64
+	longitude   float64
+  created_at  timestamp
+  updated_at  timestamp
+}
+
+Table locations {
+  id          int [pk, increment] // auto-increment
+  name        string
+  country     string
+  iata_code   string [not null, unique]
+  type        string
+  latitude    string
+  longitude   string
+  created_at  timestamp
+  updated_at  timestamp
+}
+
+Table probes {
+  id                  int [pk, increment] // auto-increment
+  probe_id            int
+	country_code        string
+	status              Status
+	latitude            float64
+	longitude           float64
+	ripeLatitude        float64
+	ripeLongitude       float64
+	isAnchor            bool
+	isPublic            bool
+	coordinates_status  coordinates_status
+	addressV4           string
+	addressV6           string
+  location_id         int [not null]
+  created_at          timestamp
+  updated_at          timestamp
+}
+
+
+Table measurements {
+  id                int [pk, increment] // auto-increment
+  IsOneOff          bool
+	measurement_id    int
+	start_time        int
+	stop_time         int
+	status            string
+	status_stop_time  int
+  created_at        timestamp
+  updated_at        timestamp
+}
+
+Table measurement_results {
+  id                    int [pk, increment] // auto-increment
+	measurement_id        int
+	probe_id              int
+	measurement_timestamp int
+	ip                    string
+	measurement_date      string
+	rtt                   float64
+  created_at            timestamp
+  updated_at            timestamp
+}
+
+// Enum
+Enum coordinates_status {
+  Unknown
+  Ok
+  Connected
+  Disconnected
+}
+
+// References
+Ref: probes.location_id > locations.id
+Ref: measurement_results.probe_id > probes.id
+Ref: measurement_results.measurement_id > measurements.id
