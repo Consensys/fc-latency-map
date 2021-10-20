@@ -34,7 +34,7 @@ Active miners are retrieved from Filecoin Lotus node.
 
 First, the current active deals are retrieved.
 
-Then active deals are parsed to get miners info, and store them in the database.
+Then, active deals are parsed in order to get miners info that are stored in the database.
 
 #### Diagram
 
@@ -56,7 +56,9 @@ They are imported from [https://datahub.io/core/airport-codes#data](https://data
 
 #### Description
 
-Get probes
+For each airports, a list a relevant probes are retrieved arround them.
+
+They are search at close distance and until the limit is reached, the search is continuously done with increasing distance.
 
 #### Diagram
 
