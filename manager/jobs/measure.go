@@ -21,7 +21,7 @@ func RunTaskCreateMeasures() {
 	}
 
 	log.Println("Parse miners...")
-	miners.NewMinerHandler().MinersParseStateMarket()
+	miners.BuildMinerHandlerInstance().MinersParseStateMarket()
 
 	probeHdlr := probes.NewProbeHandler()
 	log.Println("Import probes...")

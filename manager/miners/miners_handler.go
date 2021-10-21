@@ -20,7 +20,14 @@ type MinerHandler struct {
 	MSer MinerService
 }
 
-func NewMinerHandler() *MinerHandler {
+func NewMinerHandler(conf *viper.Viper, mSer MinerService) *MinerHandler {
+	return &MinerHandler{
+		Conf: *conf,
+		MSer: mSer,
+	}
+}
+
+func BuildMinerHandlerInstance() *MinerHandler {
 	conf := config.NewConfig()
 	dbMgr, err := db.NewDatabaseMgrImpl(conf)
 	if err != nil {
@@ -35,10 +42,7 @@ func NewMinerHandler() *MinerHandler {
 	g := geomgr.NewGeoMgrImpl(conf)
 	mSer := NewMinerServiceImpl(conf, dbMgr, fMgr, g)
 
-	return &MinerHandler{
-		Conf: *conf,
-		MSer: mSer,
-	}
+	return NewMinerHandler(conf, mSer)
 }
 
 func (mHdl *MinerHandler) GetAllMiners() []*models.Miner {

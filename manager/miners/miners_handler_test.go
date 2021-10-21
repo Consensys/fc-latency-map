@@ -46,10 +46,7 @@ func Test_OK_GetAllMiners_Empty(t *testing.T) {
 	// Arrange
 	mockConfig := config.NewMockConfig()
 	mockMinerSrv := NewMockMinerService(ctrl)
-	hdlr := &MinerHandler{
-		Conf: *mockConfig,
-		MSer: mockMinerSrv,
-	}
+	hdlr := NewMinerHandler(mockConfig, mockMinerSrv)
 	mockMinerSrv.EXPECT().GetAllMiners().Return([]*models.Miner{})
 
 	// Act
@@ -67,10 +64,7 @@ func Test_OK_GetAllMiners_NotEmpty(t *testing.T) {
 	// Arrange
 	mockConfig := config.NewMockConfig()
 	mockMinerSrv := NewMockMinerService(ctrl)
-	hdlr := &MinerHandler{
-		Conf: *mockConfig,
-		MSer: mockMinerSrv,
-	}
+	hdlr := NewMinerHandler(mockConfig, mockMinerSrv)
 	mockMinerSrv.EXPECT().GetAllMiners().Return(dummyMiners)
 
 	// Act
@@ -82,66 +76,39 @@ func Test_OK_GetAllMiners_NotEmpty(t *testing.T) {
 	assert.Equal(t, *dummyMiners[0], *miners[0])
 }
 
-// func Test_OK_MinersParseOffset_Empty(t *testing.T) {
-// 	ctrl := gomock.NewController(t)
-// 	defer ctrl.Finish()
+func Test_OK_MinersParseOffset_Empty(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-// 	// Arrange
-// 	mockConfig := config.NewMockConfig()
-// 	mockMinerSrv := NewMockMinerService(ctrl)
-// 	hdlr := &MinerHandler{
-// 		Conf: *mockConfig,
-// 		MSer: mockMinerSrv,
-// 	}
-// 	mSer := hdlr.MSer.(MockMinerService)
-// 	mSer.EXPECT().ParseMinersByBlockOffset(gomock.Any()).Return(dummyMiners)
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockMinerSrv := NewMockMinerService(ctrl)
+	hdlr := NewMinerHandler(mockConfig, mockMinerSrv)
+	mockMinerSrv.EXPECT().ParseMinersByBlockOffset(gomock.Any()).Return(dummyMiners)
 
-// 	// Act
-// 	miners := hdlr.MinersParseOffset("")
+	// Act
+	miners := hdlr.MinersParseOffset("")
 
-// 	// Assert
-// 	assert.Nil(t, miners)
-// }
+	// Assert
+	assert.NotNil(t, miners)
+	assert.Empty(t, miners)
+}
 
-// func Test_OK_MinersParseOffset_Empty(t *testing.T) {
-// 	ctrl := gomock.NewController(t)
-// 	defer ctrl.Finish()
+func Test_OK_MinersParseOffset_NotEmpty(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-// 	// Arrange
-// 	mockConfig := config.NewMockConfig()
-// 	mockMinerSrv := NewMockMinerService(ctrl)
-// 	hdlr := &MinerHandler{
-// 		Conf: *mockConfig,
-// 		MSer: mockMinerSrv,
-// 	}
-// 	mockMinerSrv.EXPECT().MinersParseOffset().Return([]*models.Miner{})
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockMinerSrv := NewMockMinerService(ctrl)
+	hdlr := NewMinerHandler(mockConfig, mockMinerSrv)
+	mockMinerSrv.EXPECT().ParseMinersByBlockOffset(gomock.Any()).Return(dummyMiners)
 
-// 	// Act
-// 	miners := hdlr.MinersParseOffset()
+	// Act
+	miners := hdlr.MinersParseOffset("42")
 
-// 	// Assert
-// 	assert.NotNil(t, miners)
-// 	assert.Empty(t, miners)
-// }
-
-// func Test_OK_MinersParseOffset_NotEmpty(t *testing.T) {
-// 	ctrl := gomock.NewController(t)
-// 	defer ctrl.Finish()
-
-// 	// Arrange
-// 	mockConfig := config.NewMockConfig()
-// 	mockMinerSrv := NewMockMinerService(ctrl)
-// 	hdlr := &MinerHandler{
-// 		Conf: *mockConfig,
-// 		MSer: mockMinerSrv,
-// 	}
-// 	mockMinerSrv.EXPECT().MinersParseOffset().Return(dummyMiners)
-
-// 	// Act
-// 	miners := hdlr.MinersParseOffset()
-
-// 	// Assert
-// 	assert.NotNil(t, miners)
-// 	assert.NotEmpty(t, miners)
-// 	assert.Equal(t, *dummyMiners[0], *miners[0])
-// }
+	// Assert
+	assert.NotNil(t, miners)
+	assert.NotEmpty(t, miners)
+	assert.Equal(t, *dummyMiners[0], *miners[0])
+}
