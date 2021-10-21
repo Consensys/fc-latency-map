@@ -33,21 +33,21 @@ cp .env.example .env
 
 ## Development
 
-* Run golangci
+- Run golangci
 
 ```shell
 # run golint-ci
 golangci-lint run ./... --fix
 ```
 
-* Install pre-commit hooks
+- Install pre-commit hooks
 
 ```shell
 # @ project root
 pre-commit install
 ```
 
-* Execute pre-commit manually
+- Execute pre-commit manually
 
 ```shell
 # @ project root
@@ -87,23 +87,32 @@ sqlite> select * from miners;
 ```bash
 sqlite> .quit
 ```
+
 or
+
 ```bash
 sqlite> ^C^C^C
 ```
 
 ## Command-line Interface
+
+### Usage
+
 1. Run CLI
+
 ```bash
 go run cmd/cli/main.go
 ```
 
 2. Update miners list
-without offset (it will apply by default the offset from the .env file)
+   without offset (it will apply by default the offset from the .env file)
+
 ```bash
 >>> miners-update
 ```
+
 or with an offset of 10 (latest block heights)
+
 ```bash
 >>> miners-update 10
 ```
@@ -126,7 +135,7 @@ or with an offset of 10 (latest block heights)
 >>> miners-parse-state-market
 ```
 
-## Demo
+### Demo
 
 ```shell
 ## use case - from scratch
@@ -157,3 +166,37 @@ go run cmd/cli/main.go locations-update large
 go run cmd/cli/main.go probes-import
 go run cmd/cli/main.go probes-update
 ```
+
+## API
+
+The Manager exposes an API to allow health check and metrics request.
+
+### Health Check
+
+Open [http://localhost:3001/health-check](http://localhost:3001/health-check)
+
+It should respond:
+
+```
+{
+"success": true
+}
+```
+
+### Metrics
+
+Open [http://localhost:3001/metrics](http://localhost:3001/metrics)
+
+It should respond:
+
+```
+{
+"locations": "606",
+"miners": "140",
+"probes": "1890"
+}
+```
+
+### Swagger
+
+[./swagger.yml](./swagger.yml)
