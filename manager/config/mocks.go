@@ -9,7 +9,7 @@ import (
 func NewMockConfig() *viper.Viper {
 	mock := viper.New()
 	mock.Set("SERVICE_NAME", "FC Latency Manage")
-	mock.Set("FILECOIN_NODE_URL", "https://node.glif.io/space07/lotus/rpc/v0")
+	mock.Set("FILECOIN_NODE_URL", "changeme")
 	mock.Set("FILECOIN_BLOCKS_OFFSET", 10)
 	mock.Set("DB_CONNECTION", "data/database.db")
 	mock.Set("RIPE_API_KEY", "changeme")
