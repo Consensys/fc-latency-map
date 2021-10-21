@@ -2,7 +2,7 @@
 
 ## Description
 
-The FC Latency Map is composed of 2 services:
+The FC Latency Map is composed of 2 main services:
 
 - The <strong>Manager</strong> is responsible for getting all active miners and creating a latency metric for each. Manager data is stored in a local PostgreSQL database and each time measurements are made a JSON file is exported.
 
@@ -16,7 +16,11 @@ The FC Latency Map is composed of 2 services:
 
 <strong>Ripe Atlas:</strong> open, distributed Internet measurement platform that measure Internet connectivity in real time.
 
-<strong>Filecoin Node:</strong> node connected to Filecoin blockchain
+<strong>Filecoin Node:</strong> node connected to Filecoin blockchain.
+
+<strong>Datahub:</strong> JSON file with airports list.
+
+<strong>Maxmind:</strong> JSON file with IP geolocations.
 
 <strong>Manager:</strong> Go service to create and export measures in JSON.
 
@@ -82,7 +86,18 @@ To get measurements:
 
 - The probes are first selected from the database.
 - Then, a traceroute measurement is sent to Ripe Atlas.
-- Finally a loop control for updating and completing the measurement.
+
+#### Diagram
+
+<img src="./images/diagrams/create-measurements.png" width="60%">
+
+### Get measures
+
+#### Description
+
+To get measurements:
+
+- Loop control for updating and completing the measurement.
 
 #### Diagram
 
@@ -107,3 +122,28 @@ The JSON file schema is: [./json/schema.json](./json/schema.json)
 The JSON file naming convention is: `export-YYYY-MM-DD.json`
 
 ## Ripe Atlas costs
+
+Costs formula:
+
+`miners x locations x (probres anchor + probes) x traceroute price`
+
+Miner average settings for measurement:
+
+| Entity           | Quantity |
+| ---------------- | -------- |
+| miners           | 1        |
+| locations        | 75       |
+| probes           | 5        |
+| traceroute price | 10       |
+
+Estimations:
+
+<strong>For 1 miner</strong>
+
+1 x 75 x 5 x 10 = 3750 Ripe tokens / each measure
+
+<strong>For all 165 active miners</strong>
+
+Currently on october 2021 there are 165 active miners, so:
+
+3750 x 165 = 618 750 Ripe tokens for the one measure on 165 miners.
