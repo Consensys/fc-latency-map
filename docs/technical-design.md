@@ -1,8 +1,16 @@
 # FC Latency Map Technical Design
 
-## Architecture diagrams
+## Description
 
-### System
+The FC Latency Map is composed of 2 services:
+
+- The <strong>Manager</strong> is responsible for getting all active miners and creating a latency metric for each. Manager data is stored in a local PostgreSQL database and each time measurements are made a JSON file is exported.
+
+- The <strong>Map</strong> is a tool for easily exploring exported JSON files. It imports the JSON files and displays a latency map.
+
+## Architecture
+
+### System diagram
 
 <img src="./images/fc-latency-map-architecture.png" width="800">
 
@@ -16,7 +24,7 @@
 
 <strong>Map:</strong> React application to display measurements.
 
-### Database
+### Database diagram
 
 Database [dbdiagram model file](./filecoin_latency_map_dbdiagram)
 
@@ -34,7 +42,7 @@ Active miners are retrieved from Filecoin Lotus node.
 
 First, the current active deals are retrieved.
 
-Then, active deals are parsed in order to get miners info that are stored in the database.
+Then the active offers are analyzed in order to obtain information about the minors which is stored in the database.
 
 #### Diagram
 
@@ -44,7 +52,7 @@ Then, active deals are parsed in order to get miners info that are stored in the
 
 #### Description
 
-Large airports are used to get relevant locations in the world.
+Large airports are used to obtain relevant locations around the world.
 
 They are imported from [https://datahub.io/core/airport-codes#data](https://datahub.io/core/airport-codes#data) and stored in the database.
 
@@ -56,9 +64,11 @@ They are imported from [https://datahub.io/core/airport-codes#data](https://data
 
 #### Description
 
-For each airports, a list a relevant probes are retrieved arround them.
+For each airport, a list of relevant probes is collected around them.
 
-They are search at close distance and until the limit is reached, the search is continuously done with increasing distance.
+They are searched at close range and until the limit is reached the search is done continuously with increasing distance.
+
+The coordinates of Ripe Atlas probes can be reversed (the latitude is longitube and vice versa), so that each probe location is double-checked with the [Maxmind.com](https://maxmind.com) service.
 
 #### Diagram
 
@@ -68,7 +78,11 @@ They are search at close distance and until the limit is reached, the search is 
 
 #### Description
 
-Create measures
+To get measurements:
+
+- The probes are first selected from the database.
+- Then, a traceroute measurement is sent to Ripe Atlas.
+- Finally a loop control for updating and completing the measurement.
 
 #### Diagram
 
@@ -78,14 +92,18 @@ Create measures
 
 #### Description
 
-Export reasults
+Everytime measures are retrieved results are exported in a JSON file. See <strong>JSON schema</strong> bellow for more details.
 
 #### Diagram
 
 <img src="./images/diagrams/export-measurements.png" width="40%">
 
-## JSON schema
+## JSON export schema
 
-[JSON Schema for exported data](./json/schema.json)
+Each export is represented by a JSON file with all active miners info, selected probes info, airports location info, and the measurements of the day.
+
+The JSON file schema is: [./json/schema.json](./json/schema.json)
+
+The JSON file naming convention is: `export-YYYY-MM-DD.json`
 
 ## Ripe Atlas costs

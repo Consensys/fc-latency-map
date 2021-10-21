@@ -13,17 +13,23 @@ sequenceDiagram
     
 # Get probes
 sequenceDiagram
-    Manager->>+Database: Insert locations list
-    Database-->>-Manager: Get locations list
+    Manager->>+Database: Request airports
+    Database-->>-Manager: Get airports list
 
-    Manager->>+Ripe Atlas: Request probes
-    Ripe Atlas-->>-Manager: Returns probes list
+    loop for each airport
+        loop increase search distance 
+            Manager->>+Ripe Atlas: Request probes
+            Ripe Atlas-->>-Manager: Returns probes list
 
-    Manager->>+Database: Store probes
+            Manager->>+Maxmind.com: Get probes coordinates
+            Maxmind.com-->>-Manager: Returns coordinates
+            Manager->>+Manager: Compare data to fix bad coordinates
+            Manager->>+Database: Store probes
+        end
+    end
 
 # Get measurements
 sequenceDiagram
-
     Manager->>+Database: Get probes
     Database-->>-Manager: Returns probes list
 
@@ -33,12 +39,10 @@ sequenceDiagram
     loop Loop
         Manager->>+Ripe Atlas: Check completion
         Ripe Atlas-->>-Manager: Returns completion status
+        Manager->>+Ripe Atlas: Get measurement
+        Ripe Atlas-->>-Manager: Returns measurement data
+        Manager->>+Database: Store measurements
     end
-
-    Manager->>+Ripe Atlas: Get measurement
-    Ripe Atlas-->>-Manager: Returns measurement data
-
-    Manager->>+Database: Store measurements
 
 # Export measurements
 sequenceDiagram
