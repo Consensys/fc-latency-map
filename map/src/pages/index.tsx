@@ -80,7 +80,11 @@ export async function getServerSideProps() {
   let date = "";
   let dates: string[] = [];
 
-  const files = fs.readdirSync(serverRuntimeConfig.path.exportsMeasures);
+  let files = fs.readdirSync(serverRuntimeConfig.path.exportsMeasures);
+  files = files.filter((file) =>
+    file.match(/export_[0-9]{4}-[0-9]{2}-[0-9]{2}.json/g)
+  );
+
   if (files && files.length > 0) {
     const filesSorted = files.sort();
     const latest = filesSorted[filesSorted.length - 1];
@@ -102,6 +106,8 @@ export async function getServerSideProps() {
       }
       return "error";
     });
+  } else {
+    console.log("no files");
   }
 
   return {
