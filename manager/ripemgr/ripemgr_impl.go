@@ -16,8 +16,8 @@ import (
 )
 
 type RipeMgrImpl struct {
-	conf *viper.Viper
-	c    *atlas.Client
+	conf viper.Viper
+	c    atlas.Client
 }
 
 const (
@@ -42,8 +42,8 @@ func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
 	log.Println("api version", ver)
 
 	return &RipeMgrImpl{
-		c:    c,
-		conf: conf,
+		c:    *c,
+		conf: *conf,
 	}, nil
 }
 
@@ -113,7 +113,7 @@ func (rMgr *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs str
 }
 
 func (rMgr *RipeMgrImpl) getRequestedProbes(probeIDs string) int {
-	requestedProbes := viper.GetInt("RIPE_REQUESTED_PROBES")
+	requestedProbes := rMgr.conf.GetInt("RIPE_REQUESTED_PROBES")
 	if requestedProbes == 0 {
 		return len(strings.Split(probeIDs, ","))
 	}

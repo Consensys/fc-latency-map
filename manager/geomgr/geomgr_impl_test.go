@@ -9,8 +9,8 @@ import (
 
 var dummyIpAddress = "8.8.8.8"
 var dummyPrivateIpAddress = "192.168.89.8"
-var dummyLatitude = float64(37.6597400)
-var dummyLongitude = float64(-97.5753300)
+var dummyLatitude = float64(37.751)
+var dummyLongitude = float64(-97.822)
 var dummyCountry = "US"
 
 func Test_IPGeolocation_OK(t *testing.T) {
@@ -26,9 +26,9 @@ func Test_IPGeolocation_OK(t *testing.T) {
 	assert.NotNil(t, g.Latitude)
 	assert.NotNil(t, g.Longitude)
 	assert.NotNil(t, g.Longitude)
-	assert.Equal(t, (37.751), g.Latitude)
-	assert.Equal(t, (-97.822), g.Longitude)
-	assert.Equal(t, "US", g.Country)
+	assert.Equal(t, dummyLatitude, g.Latitude)
+	assert.Equal(t, dummyLongitude, g.Longitude)
+	assert.Equal(t, dummyCountry, g.Country)
 }
 
 func Test_IPGeolocation_PrivateIP(t *testing.T) {

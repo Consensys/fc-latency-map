@@ -16,11 +16,18 @@ import (
 )
 
 type MinerHandler struct {
-	Conf *viper.Viper
-	MSer *MinerService
+	Conf viper.Viper
+	MSer MinerService
 }
 
-func NewMinerHandler() *MinerHandler {
+func NewMinerHandler(conf *viper.Viper, mSer MinerService) *MinerHandler {
+	return &MinerHandler{
+		Conf: *conf,
+		MSer: mSer,
+	}
+}
+
+func BuildMinerHandlerInstance() *MinerHandler {
 	conf := config.NewConfig()
 	dbMgr, err := db.NewDatabaseMgrImpl(conf)
 	if err != nil {
@@ -35,36 +42,33 @@ func NewMinerHandler() *MinerHandler {
 	g := geomgr.NewGeoMgrImpl(conf)
 	mSer := NewMinerServiceImpl(conf, dbMgr, fMgr, g)
 
-	return &MinerHandler{
-		Conf: conf,
-		MSer: &mSer,
-	}
+	return NewMinerHandler(conf, mSer)
 }
 
 func (mHdl *MinerHandler) GetAllMiners() []*models.Miner {
-	return (*mHdl.MSer).GetAllMiners()
+	return mHdl.MSer.GetAllMiners()
 }
 
-func (mHdl *MinerHandler) MinersParseOffset(offset string) {
+func (mHdl *MinerHandler) MinersParseOffset(offset string) []*models.Miner {
+	miners := make([]*models.Miner, 0)
 	if strings.TrimSpace(offset) == "" {
 		off := mHdl.Conf.GetInt("FILECOIN_BLOCKS_OFFSET")
-		(*mHdl.MSer).ParseMinersByBlockOffset(off)
-
-		return
+		mHdl.MSer.ParseMinersByBlockOffset(off)
+		return miners
 	}
 	off, err := strconv.Atoi(offset)
 	if err != nil {
 		log.Println("Error: provided offset is not a valid integer")
-
-		return
+		return miners
 	}
-	(*mHdl.MSer).ParseMinersByBlockOffset(off)
+	miners = mHdl.MSer.ParseMinersByBlockOffset(off)
+	return miners
 }
 
-func (mHdl *MinerHandler) MinersParseBlock(height int64) {
-	(*mHdl.MSer).ParseMinersByBlockHeight(height)
+func (mHdl *MinerHandler) MinersParseBlock(height int64) []*models.Miner {
+	return mHdl.MSer.ParseMinersByBlockHeight(height)
 }
 
-func (mHdl *MinerHandler) MinersParseStateMarket() {
-	(*mHdl.MSer).ParseMinersByStateMarket()
+func (mHdl *MinerHandler) MinersParseStateMarket() []*models.Miner {
+	return mHdl.MSer.ParseMinersByStateMarket()
 }

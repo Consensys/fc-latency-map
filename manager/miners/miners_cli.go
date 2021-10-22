@@ -23,7 +23,7 @@ type MinerCommander struct {
 
 func NewMinerCommander() cli.Commander {
 	return &MinerCommander{
-		Handler: NewMinerHandler(),
+		Handler: BuildMinerHandlerInstance(),
 	}
 }
 
