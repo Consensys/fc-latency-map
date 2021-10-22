@@ -11,4 +11,5 @@ type Miner struct {
 	Latitude   float64 `json:"latitude,omitempty"`
 	Longitude  float64 `json:"longitude,omitempty"`
 	Port       int     `json:"port,omitempty"`
+	Country    string  `json:"-"`
 }

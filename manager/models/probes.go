@@ -17,7 +17,7 @@ const (
 
 type Probe struct {
 	gorm.Model        `json:"-"`
-	ProbeID           int               `gorm:"column:probe_id;uniqueIndex" json:"probe_id"`
+	ProbeID           int               `gorm:"column:probe_id;index:idx_probes_id,unique" json:"probe_id"`
 	CountryCode       string            `gorm:"column:country_code" json:"country_code"`
 	Status            Status            `gorm:"column:status;index:idx_probes_status" json:"status"`
 	Latitude          float64           `gorm:"column:latitude" json:"latitude,omitempty"`
