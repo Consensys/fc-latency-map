@@ -112,3 +112,41 @@ func Test_OK_MinersParseOffset_NotEmpty(t *testing.T) {
 	assert.NotEmpty(t, miners)
 	assert.Equal(t, *dummyMiners[0], *miners[0])
 }
+
+func Test_OK_MinersParseBlock(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockMinerSrv := NewMockMinerService(ctrl)
+	hdlr := NewMinerHandler(mockConfig, mockMinerSrv)
+	mockMinerSrv.EXPECT().ParseMinersByBlockHeight(gomock.Any()).Return(dummyMiners)
+
+	// Act
+	miners := hdlr.MinersParseBlock(42)
+
+	// Assert
+	assert.NotNil(t, miners)
+	assert.NotEmpty(t, miners)
+	assert.Equal(t, *dummyMiners[0], *miners[0])
+}
+
+func Test_OK_MinersParseStateMarket(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Arrange
+	mockConfig := config.NewMockConfig()
+	mockMinerSrv := NewMockMinerService(ctrl)
+	hdlr := NewMinerHandler(mockConfig, mockMinerSrv)
+	mockMinerSrv.EXPECT().ParseMinersByStateMarket().Return(dummyMiners)
+
+	// Act
+	miners := hdlr.MinersParseStateMarket()
+
+	// Assert
+	assert.NotNil(t, miners)
+	assert.NotEmpty(t, miners)
+	assert.Equal(t, *dummyMiners[0], *miners[0])
+}
