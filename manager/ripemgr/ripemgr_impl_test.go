@@ -1,50 +1,169 @@
 package ripemgr
 
 import (
-	"fmt"
+    "github.com/ConsenSys/fc-latency-map/manager/config"
+    "github.com/ConsenSys/fc-latency-map/manager/models"
+    "github.com/golang/mock/gomock"
 
-	"testing"
-
-	"github.com/golang/mock/gomock"
-	atlas "github.com/keltia/ripe-atlas"
-	"github.com/stretchr/testify/assert"
-
-	"github.com/ConsenSys/fc-latency-map/manager/models"
+    "github.com/stretchr/testify/assert"
+    "gopkg.in/h2non/gock.v1"
+    "testing"
 )
 
-func TestNewRipeImpl2(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+const ourVersion = "0.5.0"
+const apiEndpoint = "https://atlas.ripe.net/api/v2"
 
-	mockIndex := NewMockRipeMgr(ctrl)
-	b := "111"
-	a := []*models.Miner{{
-		Address: "",
-		IP:      "",
-	}}
+func Test_NewRipeImpl(t *testing.T) {
+    ctrl := gomock.NewController(t)
+    defer ctrl.Finish()
 
-	createMeasurements := mockIndex.EXPECT().CreateMeasurements(a, "111", 0)
-	createMeasurements.DoAndReturn(func(_ []*models.Miner, _ string, _ int) ([]*atlas.Measurement, error) {
-		fmt.Print("doo")
-		return []*atlas.Measurement{}, fmt.Errorf("error")
-	})
-	createMeasurements.MaxTimes(5)
-	measurements, err := mockIndex.CreateMeasurements(a, b, 0)
-	assert.NotNil(t, err)
-	assert.NotNil(t, measurements)
-	createMeasurements.Return([]*atlas.Measurement{{
-		Description: "+++++++++++++++++++++++++",
-		FirstHop:    5555,
-		Group:       "sdzfsadf",
-		GroupID:     8880,
-	}}, nil)
+    mockConfig := config.NewMockConfig()
 
-	i, err := mockIndex.CreateMeasurements(a, b, 0)
-	assert.Nil(t, err)
-	assert.Equal(t, []*atlas.Measurement{{
-		Description: "+++++++++++++++++++++++++",
-		FirstHop:    5555,
-		Group:       "sdzfsadf",
-		GroupID:     8880,
-	}}, i)
+    r, err := NewRipeImpl(mockConfig)
+
+    assert.Nil(t, err)
+    assert.NotNil(t, r)
+
+}
+
+func TestRipeMgrImpl_GetMeasurement_MissingAPIKey(t *testing.T) {
+    ctrl := gomock.NewController(t)
+    defer ctrl.Finish()
+
+    mockConfig := config.NewMockConfig()
+
+    r, _ := NewRipeImpl(mockConfig)
+    probes, err := r.GetMeasurement(1)
+
+    assert.NotNil(t, err)
+    assert.Nil(t, probes)
+
+}
+
+func TestRipeMgrImpl_GetProbes_MissingAPIKey(t *testing.T) {
+    ctrl := gomock.NewController(t)
+    defer ctrl.Finish()
+
+    mockConfig := config.NewMockConfig()
+
+    r, _ := NewRipeImpl(mockConfig)
+    probes, err := r.GetProbes(map[string]string{})
+
+    assert.NotNil(t, err)
+    assert.Nil(t, probes)
+
+}
+
+func TestRipeMgrImpl_CreateMeasurementsEmptyMiner(t *testing.T) {
+    ctrl := gomock.NewController(t)
+    defer ctrl.Finish()
+
+    mockConfig := config.NewMockConfig()
+    r, _ := NewRipeImpl(mockConfig)
+    probes, err := r.CreateMeasurements([]*models.Miner{}, "1", 1)
+
+    assert.Nil(t, err)
+    assert.Nil(t, probes)
+}
+
+func TestRipeMgrImpl_CreateMeasurementsMissingProbes(t *testing.T) {
+    ctrl := gomock.NewController(t)
+    defer ctrl.Finish()
+
+    mockConfig := config.NewMockConfig()
+
+    r, _ := NewRipeImpl(mockConfig)
+    m, err := r.CreateMeasurements([]*models.Miner{
+        {
+            Address:   "",
+            IP:        "",
+            Latitude:  0,
+            Longitude: 0,
+            Port:      0,
+        },
+    }, "", 1)
+
+    assert.Nil(t, err)
+    assert.Nil(t, m)
+}
+
+func TestRipeMgrImpl_CreateMeasurements1WithoutNProbesConfigured(t *testing.T) {
+    ctrl := gomock.NewController(t)
+    defer ctrl.Finish()
+
+    mockConfig := config.NewMockConfig()
+    mockConfig.Set("RIPE_REQUESTED_PROBES", "")
+
+    r, _ := NewRipeImpl(mockConfig)
+    m, err := r.CreateMeasurements([]*models.Miner{
+        {
+            Address:   "",
+            IP:        "",
+            Latitude:  0,
+            Longitude: 0,
+            Port:      0,
+        },
+    }, "1", 1)
+
+    assert.NotNil(t, err)
+    assert.Nil(t, m)
+}
+
+func TestRipeMgrImpl_CreateMeasurementsMissingAPIKey(t *testing.T) {
+    ctrl := gomock.NewController(t)
+    defer ctrl.Finish()
+
+    mockConfig := config.NewMockConfig()
+    mockConfig.Set("RIPE_ONE_OFF", "false")
+
+    r, _ := NewRipeImpl(mockConfig)
+    m, err := r.CreateMeasurements([]*models.Miner{
+        {
+            Address:   "",
+            IP:        "1.1.2.3",
+            Latitude:  1,
+            Longitude: 1,
+            Port:      0,
+        },
+    }, "1", 1)
+
+    assert.NotNil(t, err)
+    assert.Nil(t, m)
+}
+
+func TestRipeMgrImpl_CreateMeasurements(t *testing.T) {
+    ctrl := gomock.NewController(t)
+    defer ctrl.Finish()
+
+    mockConfig := config.NewMockConfig()
+    mockConfig.Set("RIPE_ONE_OFF", "false")
+
+    //myurl, _ := url.Parse(apiEndpoint)
+
+    //buf := bytes.NewReader(jr)
+    defer gock.Off()
+    gock.New("https://atlas.ripe.net").
+        Post("/api/v2/measurements/traceroute").
+        //MatchParam("key", "changeme").
+        //MatchHeaders(map[string]string{
+        //    "host":       myurl.Host,
+        //    "user-agent": fmt.Sprintf("ripe-atlas/%s", ourVersion),
+        //}).
+        //  Body(buf).
+        Reply(200).
+        JSON(map[string]string{"foo": "bar"})
+
+    rp, _ := NewRipeImpl(mockConfig)
+    m, err := rp.CreateMeasurements([]*models.Miner{
+        {
+            Address:   "",
+            IP:        "1.1.2.3",
+            Latitude:  1,
+            Longitude: 1,
+            Port:      0,
+        },
+    }, "1", 1)
+
+    assert.NotNil(t, err)
+    assert.Nil(t, m)
 }
