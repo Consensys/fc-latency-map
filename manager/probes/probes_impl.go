@@ -172,8 +172,8 @@ func (srv *ProbeServiceImpl) ImportProbes() bool {
 		}
 
 		if v.Geometry.Type == point {
-			newProbe.RipeLatitude = v.Geometry.Coordinates[0]
-			newProbe.RipeLongitude = v.Geometry.Coordinates[1]
+			newProbe.RipeLatitude = v.Geometry.Coordinates[1]
+			newProbe.RipeLongitude = v.Geometry.Coordinates[0]
 		}
 		probesToSave = append(probesToSave, newProbe)
 	}
@@ -211,36 +211,35 @@ func (srv *ProbeServiceImpl) upsertProbes(dbc *gorm.DB, probesDB []*models.Probe
 }
 
 func (srv *ProbeServiceImpl) fixCoordinates(p *models.Probe) {
-	countryCode := srv.GeoMgr.FindCountry(p.RipeLatitude, p.RipeLongitude)
-	if countryCode == p.CountryCode {
-		p.CoordinatesStatus = models.CoordinatesStatusOk
-		p.Longitude = p.RipeLongitude
-		p.Latitude = p.RipeLatitude
+	ip := p.AddressV4
+	if ip == "" {
+		ip = p.AddressV6
+	}
+
+	p.CoordinatesStatus = models.CoordinatesStatusOk
+	geo, err := srv.GeoMgr.IPGeolocation(ip)
+	if err != nil {
 		return
 	}
-	countryCode = srv.GeoMgr.FindCountry(p.Longitude, p.Latitude)
-	if countryCode == p.CountryCode {
-		p.Longitude = p.RipeLatitude
-		p.Latitude = p.RipeLongitude
-		p.CoordinatesStatus = models.CoordinatesStatusOk
+	distance := measurements.Haversine(p.RipeLatitude, p.RipeLongitude, geo.Latitude, geo.Longitude)
+
+	const distanceBtwCoodinates = 1000
+	if distance > distanceBtwCoodinates {
+		p.Longitude = geo.Longitude
+		p.Latitude = geo.Latitude
 		log.WithFields(log.Fields{
-			"CountryCode": p.CountryCode,
-			"Latitude":    p.Latitude,
-			"Longitude":   p.Longitude,
-			"order:":      "wrong",
-		}).Warn("coordinates was in wrong order")
+			"distance:":       distance,
+			"probe":           p.ProbeID,
+			"RipeCountryCode": p.CountryCode,
+			"RipeLatitude":    p.RipeLatitude,
+			"RipeLongitude":   p.RipeLongitude,
+			"Country":         geo.Country,
+			"Latitude":        geo.Latitude,
+			"Longitude":       geo.Longitude,
+		}).Warn("faraway places coordinates")
 	} else {
-		ip := p.AddressV4
-		if ip == "" {
-			ip = p.AddressV6
-		}
-		lat, long, countryCode := srv.GeoMgr.IPGeolocation(ip)
-		if countryCode != "" {
-			p.CountryCode = countryCode
-			p.Longitude = lat
-			p.Latitude = long
-			p.CoordinatesStatus = models.CoordinatesStatusOk
-		}
+		p.Latitude = p.RipeLatitude
+		p.Longitude = p.RipeLongitude
 	}
 }
 

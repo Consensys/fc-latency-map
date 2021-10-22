@@ -12,6 +12,7 @@ func NewMockConfig() *viper.Viper {
 	mock.Set("FILECOIN_NODE_URL", "https://node.glif.io/space07/lotus/rpc/v0")
 	mock.Set("FILECOIN_BLOCKS_OFFSET", 10)
 	mock.Set("DB_CONNECTION", "data/database.db")
+	mock.Set("GEOLITE2_MMDB", "../data/GeoLite2-City.mmdb")
 	mock.Set("RIPE_API_KEY", "changeme")
 	mock.Set("RIPE_ONE_OFF", true)
 	mock.Set("RIPE_PING_INTERVAL", 60)

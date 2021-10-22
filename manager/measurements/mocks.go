@@ -49,20 +49,6 @@ func (mr *MockMeasurementServiceMockRecorder) GetMinersWithGeolocation() *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMinersWithGeolocation", reflect.TypeOf((*MockMeasurementService)(nil).GetMinersWithGeolocation))
 }
 
-// GetMinersWithoutGeolocation mocks base method.
-func (m *MockMeasurementService) GetMinersWithoutGeolocation() []*models.Miner {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMinersWithoutGeolocation")
-	ret0, _ := ret[0].([]*models.Miner)
-	return ret0
-}
-
-// GetMinersWithoutGeolocation indicates an expected call of GetMinersWithoutGeolocation.
-func (mr *MockMeasurementServiceMockRecorder) GetMinersWithoutGeolocation() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMinersWithoutGeolocation", reflect.TypeOf((*MockMeasurementService)(nil).GetMinersWithoutGeolocation))
-}
-
 // ImportMeasurement mocks base method.
 func (m *MockMeasurementService) ImportMeasurement(arg0 []ripe_atlas.MeasurementResult) {
 	m.ctrl.T.Helper()
