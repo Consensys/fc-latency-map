@@ -77,13 +77,14 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 			continue
 		}
 		ip, port := getMinerIPPort(&minerInfo)
-		lat, long, _ := srv.getGeolocation(ip)
+		geo := srv.getGeolocation(ip)
 		miners = append(miners, &models.Miner{
 			Address:   address,
 			IP:        ip,
 			Port:      port,
-			Latitude:  lat,
-			Longitude: long,
+			Latitude:  geo.Latitude,
+			Longitude: geo.Longitude,
+			Country:   geo.Country,
 		})
 	}
 	if len(miners) > 0 {
@@ -98,18 +99,22 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 	return miners
 }
 
-func (srv *MinerServiceImpl) getGeolocation(ips string) (lat, long float64, countryCode string) {
-	if ips != "" {
-		ip := strings.Split(ips, ",")
-		for _, address := range ip {
-			lat, long, countryCode = srv.GMgr.IPGeolocation(address)
-			if countryCode != "" {
-				return lat, long, countryCode
-			}
+func (srv *MinerServiceImpl) getGeolocation(ips string) *geomgr.Geolocation {
+	if ips == "" {
+		return &geomgr.Geolocation{}
+	}
+	ip := strings.Split(ips, ",")
+	for _, address := range ip {
+		geolocation, err := srv.GMgr.IPGeolocation(address)
+		if err != nil {
+			continue
+		}
+		if geolocation.Country != "" {
+			return geolocation
 		}
 	}
 
-	return 0, 0, countryCode
+	return &geomgr.Geolocation{}
 }
 
 func getMinerIPPort(minerInfo *miner.MinerInfo) (ips string, port int) {

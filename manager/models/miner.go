@@ -11,4 +11,5 @@ type Miner struct {
 	Latitude   float64 `gorm:"column:latitude;index:idx_miner_lat" json:"latitude,omitempty"`
 	Longitude  float64 `gorm:"column:longitude;index:idx_miner_long" json:"longitude,omitempty"`
 	Port       int     `json:"port,omitempty"`
+	Country    string  `json:"-"`
 }

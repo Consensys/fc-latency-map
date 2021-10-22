@@ -36,6 +36,11 @@ var dummyVerifiedDeals = []fmgr.VerifiedDeal{
 var dummyGeoLatitude = 37.39500
 var dummyGeoLongitude = -122.08167
 var dummyGeoCountry = "US"
+var dummyGeolocation = &geomgr.Geolocation{
+	Country:   dummyGeoCountry,
+	Latitude:  dummyGeoLatitude,
+	Longitude: dummyGeoLongitude,
+}
 var dummyOffset = int(42)
 var dummyBlockHeight = int64(42)
 var dummyMiner = models.Miner{
@@ -218,7 +223,7 @@ func Test_ParseMiners_OK(t *testing.T) {
 	mockFMgr.EXPECT().GetVerifiedDealsByBlockRange(gomock.Any(), gomock.Any()).Return(dummyVerifiedDeals, nil)
 	mockFMgr.EXPECT().GetMinerInfo(gomock.Any()).Return(dummyMinerInfo, nil)
 
-	mockGMgr.EXPECT().IPGeolocation(gomock.Any()).Return(dummyGeoLatitude, dummyGeoLongitude, dummyGeoCountry)
+	mockGMgr.EXPECT().IPGeolocation(gomock.Any()).Return(dummyGeolocation, nil)
 	miners := srv.ParseMinersByBlockOffset(dummyOffset)
 
 	// Assert
@@ -307,7 +312,7 @@ func Test_ParseMinersByBlockHeight_OK(t *testing.T) {
 	// Act
 	mockFMgr.EXPECT().GetVerifiedDealsByBlockHeight(gomock.Any()).Return(dummyVerifiedDeals, nil)
 	mockFMgr.EXPECT().GetMinerInfo(gomock.Any()).Return(dummyMinerInfo, nil)
-	mockGMgr.EXPECT().IPGeolocation(gomock.Any()).Return(dummyGeoLatitude, dummyGeoLongitude, dummyGeoCountry)
+	mockGMgr.EXPECT().IPGeolocation(gomock.Any()).Return(dummyGeolocation, nil)
 	miners := srv.ParseMinersByBlockHeight(dummyBlockHeight)
 
 	// Assert
@@ -356,7 +361,7 @@ func Test_ParseMinersByStateMarket_OK(t *testing.T) {
 
 	mockFMgr.EXPECT().GetVerifiedDealsByStateMarket().Return(dummyVerifiedDeals, nil)
 	mockFMgr.EXPECT().GetMinerInfo(gomock.Any()).Return(dummyMinerInfo, nil)
-	mockGMgr.EXPECT().IPGeolocation(gomock.Any()).Return(dummyGeoLatitude, dummyGeoLongitude, dummyGeoCountry)
+	mockGMgr.EXPECT().IPGeolocation(gomock.Any()).Return(dummyGeolocation, nil)
 	miners := srv.ParseMinersByStateMarket()
 
 	// Assert
