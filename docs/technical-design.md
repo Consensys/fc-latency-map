@@ -58,25 +58,35 @@ Then the active offers are analyzed in order to obtain information about the min
 
 Large airports are used to obtain relevant locations around the world.
 
-They are imported from [https://datahub.io/core/airport-codes#data](https://datahub.io/core/airport-codes#data) and stored in the database.
+They are imported from [https://datahub.io/core/airport-codes#data](https://datahub.io/core/airport-codes#data) and
+stored in the database.
 
 #### Diagram
 
 <img src="./images/diagrams/get-locations.png" width="40%">
 
-### Get probes
+### Import probes
+
+#### Description
+
+All the connected probes from Atlas Ripe are used to get measures.
+
+The coordinates of Ripe Atlas probes can be reversed (the latitude is longitude and vice versa), so that each probe
+location is double-checked with the [Maxmind.com](https://maxmind.com) service.
+
+#### Diagram
+
+<img src="./images/diagrams/import-probes.png" width="60%">
+
+### Update probes
 
 #### Description
 
 For each airport, a list of relevant probes is collected around them.
 
-They are searched at close range and until the limit is reached the search is done continuously with increasing distance.
-
-The coordinates of Ripe Atlas probes can be reversed (the latitude is longitube and vice versa), so that each probe location is double-checked with the [Maxmind.com](https://maxmind.com) service.
-
 #### Diagram
 
-<img src="./images/diagrams/get-probes.png" width="60%">
+<img src="./images/diagrams/update-probes.png" width="60%">
 
 ### Create measures
 
@@ -119,7 +129,7 @@ Each export is represented by a JSON file with all active miners info, selected 
 
 The JSON file schema is: [./json/schema.json](./json/schema.json)
 
-The JSON file naming convention is: `export-YYYY-MM-DD.json`
+The JSON file naming convention is: `export_YYYY-MM-DD.json`
 
 ## Ripe Atlas costs
 
