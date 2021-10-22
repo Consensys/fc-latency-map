@@ -50,7 +50,7 @@ func NewRipeImpl(conf *viper.Viper) (RipeMgr, error) {
 func (rMgr *RipeMgrImpl) GetProbes(opts map[string]string) ([]atlas.Probe, error) {
 	log.WithFields(log.Fields{
 		"filters": opts,
-	}).Error("started get probes from Atlas Ripe")
+	}).Info("started get probes from Atlas Ripe")
 	probes, err := rMgr.c.GetProbes(opts)
 	if err != nil {
 		return nil, err
@@ -109,7 +109,7 @@ func (rMgr *RipeMgrImpl) CreateMeasurements(miners []*models.Miner, probeIDs str
 		},
 	}
 
-	return rMgr.createPing(miners, probes, t)
+	return rMgr.createTraceroute(miners, probes, t)
 }
 
 func (rMgr *RipeMgrImpl) getRequestedProbes(probeIDs string) int {
@@ -120,7 +120,7 @@ func (rMgr *RipeMgrImpl) getRequestedProbes(probeIDs string) int {
 	return requestedProbes
 }
 
-func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.ProbeSet, t int) ([]*atlas.Measurement, error) {
+func (rMgr *RipeMgrImpl) createTraceroute(miners []*models.Miner, probes []atlas.ProbeSet, t int) ([]*atlas.Measurement, error) {
 	var d []atlas.Definition
 
 	isOneOff := rMgr.conf.GetBool("RIPE_ONE_OFF")
@@ -135,16 +135,16 @@ func (rMgr *RipeMgrImpl) createPing(miners []*models.Miner, probes []atlas.Probe
 	mr := rMgr.getMeasurementRequest(d, isOneOff, probes, t)
 
 	if !isOneOff {
-		runningTime := rMgr.conf.GetInt("RIPE_PING_RUNNING_TIME")
+		runningTime := rMgr.conf.GetInt("RIPE_TRACEROUTE_RUNNING_TIME")
 		mr.StopTime = mr.StartTime + runningTime
 	}
 
-	p, err := rMgr.c.Ping(mr)
+	p, err := rMgr.c.Traceroute(mr)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"msg": mr,
 			"err": err.Error(),
-		}).Error("Create ping")
+		}).Error("Create traceroute")
 
 		return nil, err
 	}
@@ -185,7 +185,7 @@ func (rMgr *RipeMgrImpl) getMeasurementRequest(d []atlas.Definition, isOneOff bo
 func (rMgr *RipeMgrImpl) getDefinitions(miner *models.Miner, d []atlas.Definition) []atlas.Definition {
 	isOneOff := rMgr.conf.GetBool("RIPE_ONE_OFF")
 	packets := rMgr.conf.GetInt("RIPE_PACKETS")
-	pingInterval := rMgr.conf.GetInt("RIPE_PING_INTERVAL")
+	tracerouteInterval := rMgr.conf.GetInt("RIPE_TRACEROUTE_INTERVAL")
 
 	for _, ip := range strings.Split(miner.IP, ",") {
 		ipAdd := net.ParseIP(ip)
@@ -214,7 +214,7 @@ func (rMgr *RipeMgrImpl) getDefinitions(miner *models.Miner, d []atlas.Definitio
 			DontFragment:          false,
 		}
 		if !isOneOff {
-			definition.Interval = pingInterval
+			definition.Interval = tracerouteInterval
 		}
 		d = append(d, definition)
 	}

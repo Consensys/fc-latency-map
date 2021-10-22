@@ -20,3 +20,10 @@ CREATE INDEX `idx_measurement_date` ON `measurement_results`(`measurement_date`)
 CREATE INDEX `idx_measurement_results_deleted_at` ON `measurement_results`(`deleted_at`);
 CREATE UNIQUE INDEX `idx_name` ON `measurement_results`(`probe_id`,`measurement_id`,`measurement_timestamp`,`ip`);
 CREATE INDEX `idx_measurement_ip` ON `measurement_results`(`ip`);
+CREATE INDEX `idx_miner_long` ON `miners`(`longitude`);
+CREATE UNIQUE INDEX `idx_miner_address` ON `miners`(`address`);
+CREATE INDEX `idx_miner_ip` ON `miners`(`ip`);
+CREATE INDEX `idx_miner_lat` ON `miners`(`latitude`);
+CREATE UNIQUE INDEX `idx_probe_probe_id` ON `probes`(`probe_id`);
+CREATE INDEX `idx_probe_status` ON `probes`(`status`);
+CREATE INDEX `idx_probe_coord_status` ON `probes`(`coordinates_status`);

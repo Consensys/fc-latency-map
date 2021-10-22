@@ -107,7 +107,7 @@ func (h *Handler) CreateMeasurements(parameters []string) {
 		if err != nil {
 			log.WithFields(log.Fields{
 				"err": err,
-			}).Error("Create Ping")
+			}).Error("Create Traceroute")
 
 			continue
 		}
