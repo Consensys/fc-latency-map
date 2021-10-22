@@ -1,0 +1,52 @@
+# Get miners
+sequenceDiagram
+    Manager->>+Filecoin Node: Get valid deals
+    Filecoin Node-->>-Manager: Returns deals list
+    Manager->>+Manager: Get miners list from deals
+
+    Manager->>+Database: Store miners
+
+# Get locations
+sequenceDiagram
+    Manager->>+Manager: Parse airports JSON file
+    Manager->>+Database: Insert locations list
+    
+# Get probes
+sequenceDiagram
+    Manager->>+Database: Request airports
+    Database-->>-Manager: Get airports list
+
+    loop for each airport
+        Manager->>+Ripe Atlas: Request probes next to the airport
+        Ripe Atlas-->>-Manager: Returns probes list
+
+        Manager->>+Maxmind.com: Get probes coordinates
+        Maxmind.com-->>-Manager: Returns coordinates
+        Manager->>+Manager: Compare data to fix bad coordinates
+        Manager->>+Database: Store probes
+    end
+
+# Create measurements
+sequenceDiagram
+    Manager->>+Database: Get probes
+    Database-->>-Manager: Returns probes list
+
+    Manager->>+Ripe Atlas: Create measurement
+    Ripe Atlas-->>-Manager: Returns measurement ID
+
+# Get measurements
+sequenceDiagram
+    loop Loop
+        Manager->>+Ripe Atlas: Check completion
+        Ripe Atlas-->>-Manager: Returns completion status
+        Manager->>+Ripe Atlas: Get measurement
+        Ripe Atlas-->>-Manager: Returns measurement data
+        Manager->>+Database: Store measurements
+    end
+
+# Export measurements
+sequenceDiagram
+    Manager->>+Database: Get measurements
+    Database-->>-Manager: Returns measurements
+
+    Manager->>+Manager: Export measurements

@@ -5,7 +5,6 @@ import * as am4core from "@amcharts/amcharts4/core";
 import * as am4maps from "@amcharts/amcharts4/maps";
 import am4geodata_worldLow from "@amcharts/amcharts4-geodata/worldLow";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import moment, { Moment } from "moment";
 import { Button } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
@@ -93,7 +92,7 @@ const Map = (props: Props) => {
         fill: "#C0C0C0",
       },
       {
-        name: "Miners",
+        name: "Active Miners",
         fill: "#4169E1",
       },
       {
@@ -363,11 +362,23 @@ const Map = (props: Props) => {
           minHeight: "500px",
         }}
       ></div>
-      <div className={styles.dates}>
-        {isPrevious()}
-        <div className={styles.date}>{date}</div>
-        {isNext()}
-      </div>
+
+      <Row gutter={[16, 16]}>
+        <Col span={8}></Col>
+        <Col span={8}>
+          <div className={styles.dates}>
+            {isPrevious()}
+            <div className={styles.date}>{date}</div>
+            {isNext()}
+          </div>
+        </Col>
+        <Col span={8}>
+          <div className={styles.counter}>
+            <strong>{miners.length}</strong> Active Miners /{" "}
+            <strong>{locations.length}</strong> Locations
+          </div>
+        </Col>
+      </Row>
 
       <Row gutter={[16, 16]} className={styles.informations}>
         <Col span={12}>

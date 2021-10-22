@@ -8,15 +8,23 @@
 
 ## Description
 
-FC Latency Map is a service for [Filecoin](https://filecoin.io/) decentralized storage network to obtain latencies of all active miners.
+FC Latency Map is a service for [Filecoin](https://filecoin.io/) decentralized storage network to obtain the global latencies of all active miners.
 
-It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of active miners from relevant locations in the world.
+It uses [Ripe Atlas](https://atlas.ripe.net/) to collect measurements of active miners from relevant locations around the world.
 
 ## Requirement
 
-- [Docker](https://docs.docker.com/get-docker/) is installed.
+- [Docker](https://docs.docker.com/get-docker/) installed.
 
 - 10Gb of free disk space.
+
+## How it works
+
+See [technical design](./docs/technical-design.md) documentation for details on how the FC Latency Map works.
+
+See [Manager](./manager/README.md) documentation for details on starting the manager.
+
+See [Map](./map/README.md) documentation for details on starting the map.
 
 ## Quickstart
 
