@@ -31,19 +31,25 @@ Is available an example of configuration on [.env.example](./.env.example)
 cp .env.example .env
 ```
 
-| Key | Value type | Description |
-| --- | --- | --- |
-| FILECOIN_NODE_URL | string     | Lotus Filecoin node url |
-| RIPE_API_KEY| string | [Ripe Atlas API Key](https://atlas.ripe.net/keys/)       |
-| RIPE_TRACEROUTE_INTERVAL| number  | Interval between ping to get miners latency |
-| RIPE_TRACEROUTE_RUNNING_TIME| number | Running period get latency|
-| RIPE_ONE_OFF | boolean | On ping only to get latency. When is 'true' the RIPE_TRACEROUTE_INTERVAL and RIPE_TRACEROUTE_RUNNING_TIME are ignored|
-| RIPE_REQUESTED_PROBES | number | Max number of probes to call miners |
-| RIPE_PACKETS | number | Amount of packets to ping miners. |
-| NEAREST_AIRPORTS | number | Amount of airports miner to test latency. |
-| RIPE_PROBES_PER_AIRPORT | number | Amount of probes near to miner to airport. |
-| NEAREST_AIRPORTS | number | Amount of airports miner to test latency. |
-| RIPE_PROBES_PER_AIRPORT | number | Amount of probes near to miner to airport. |
+| Key                           | Value type | Description                                                                                                            |
+| ----------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------- |
+| SERVICE_NAME                  | string     | Service name.                                                                                                          |
+| FILECOIN_NODE_URL             | string     | Lotus Filecoin node url.                                                                                               |
+| FILECOIN_BLOCKS_OFFSET        | string     | Filecoin blocks search offset.                                                                                         |
+| DB_CONNECTION                 | string     | SQLite file path.                                                                                                      |
+| RIPE_API_KEY                  | string     | [Ripe Atlas API Key](https://atlas.ripe.net/keys/)                                                                     |
+| RIPE_ONE_OFF                  | boolean    | On ping only to get latency. When is 'true' the RIPE_TRACEROUTE_INTERVAL and RIPE_TRACEROUTE_RUNNING_TIME are ignored. |
+| RIPE_TRACEROUTE_INTERVAL      | number     | Interval between ping to get miners latency.                                                                           |
+| RIPE_TRACEROUTE_RUNNING_TIME  | number     | Running period get latency.                                                                                            |
+| RIPE_PACKETS                  | number     | Amount of packets to ping miners.                                                                                      |
+| RIPE_REQUESTED_PROBES         | number     | Max number of probes to call miners.                                                                                   |
+| RIPE_PROBES_PER_AIRPORT       | number     | Number of probes closest to airports.                                                                                  |
+| NEAREST_AIRPORTS              | number     | Number of airports closest to miner.                                                                                   |
+| CONSTANT_AIRPORTS             | string     | Airports JSON file path.                                                                                               |
+| SQL_DEBUG                     | boolean    | Display SQL debug.                                                                                                     |
+| CRON_SCHEDULE_CREATE_MEASURES | string     | Cron time to export measures.                                                                                          |
+| CRON_SCHEDULE_IMPORT_MEASURES | string     | Cron time to import measures.                                                                                          |
+| WEBHOOK_NOTIFY_URLS           | string     | Webhooks links.                                                                                                        |
 
 ## Development
 
