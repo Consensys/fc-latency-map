@@ -28,7 +28,7 @@ func NewNotifier(conf *viper.Viper) Notifier {
 
 func (n *NotifierImpl) Notify(files *[]string) bool {
 	if files == nil || len(*files) == 0 {
-		log.Error("Error: files is nil or empty\n")
+		log.Println("No updates to notify")
 		return false
 	}
 	urls := strings.Split(n.Conf.GetString("WEBHOOK_NOTIFY_URLS"), ",")
