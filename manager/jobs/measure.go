@@ -16,42 +16,45 @@ import (
 )
 
 func RunTaskCreateMeasures() {
+	const ctx = "context"
+	const crtMeas = "CreateMeasures"
+
 	log.WithFields(log.Fields{
-		"context": "CreateMeasures",
+		ctx: crtMeas,
 	}).Printf("Task started at %s", time.Now())
 
 	log.WithFields(log.Fields{
-		"context": "CreateMeasures",
+		ctx: crtMeas,
 	}).Println("Update locations...")
 	err := locations.NewLocationHandler().UpdateLocations(constants.AirportTypeLarge)
 	if err != nil {
 		log.WithFields(log.Fields{
-			"context": "CreateMeasures",
+			ctx: crtMeas,
 		}).Errorf("Error: %s", err)
 	}
 
 	log.WithFields(log.Fields{
-		"context": "CreateMeasures",
+		ctx: crtMeas,
 	}).Println("Parse miners...")
 	miners.BuildMinerHandlerInstance().MinersParseStateMarket()
 
 	probeHdlr := probes.NewProbeHandler()
 	log.WithFields(log.Fields{
-		"context": "CreateMeasures",
+		ctx: crtMeas,
 	}).Println("Import probes...")
 	probeHdlr.Import()
 	log.WithFields(log.Fields{
-		"context": "CreateMeasures",
+		ctx: crtMeas,
 	}).Println("Update probes...")
 	probeHdlr.Update()
 
 	log.WithFields(log.Fields{
-		"context": "CreateMeasures",
+		ctx: crtMeas,
 	}).Println("Create measurements...")
 	measurements.NewHandler().CreateMeasurements([]string{})
 
 	log.WithFields(log.Fields{
-		"context": "CreateMeasures",
+		ctx: crtMeas,
 	}).Printf("Task ended at %s", time.Now())
 }
 
