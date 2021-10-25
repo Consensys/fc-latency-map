@@ -52,11 +52,12 @@ func (m *ExportServiceImpl) export() *[]string {
 		).Info("generate file")
 
 		measurements := m.getLatencyMeasurementsStored(date)
+		log.Info("Measurements retrieved, start generating file")
 		j := m.marshalJSON(measurements)
 		file.Create(fn, j)
 		files = append(files, fn)
 	}
-	fmt.Println("Main: Completed")
+	log.Info("Export completed")
 	return &files
 }
 
