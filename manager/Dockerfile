@@ -16,6 +16,8 @@ FROM alpine:latest
 WORKDIR /
 
 COPY ./manager/data/ ./data/
+RUN chmod 777 ./data/
+RUN chown -R 1000:1000 ./data/
 COPY ./manager/constants/ ./constants/
 
 COPY --from=builder /go/bin/manager-server /manager-server
