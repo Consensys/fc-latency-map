@@ -37,7 +37,7 @@ func (srv *MinerServiceImpl) GetAllMiners() []*models.Miner {
 	var miners []*models.Miner
 	srv.DBMgr.GetDB().Find(&miners)
 	for _, m := range miners {
-		log.Printf("Miner address: %s - ip: %s\n", m.Address, m.IP)
+		log.Printf("Miner address: %s - ip: %s", m.Address, m.IP)
 	}
 
 	return miners
@@ -55,7 +55,7 @@ func (srv *MinerServiceImpl) ParseMinersByBlockOffset(offset int) []*models.Mine
 		log.Printf("GetBlockHeight failed: %s", err)
 		return []*models.Miner{}
 	}
-	log.Printf("blockHeight: %+v\n", blockHeight)
+	log.Printf("blockHeight: %+v", blockHeight)
 	deals, err := (srv.FMgr).GetVerifiedDealsByBlockRange(blockHeight, offset)
 	if err != nil {
 		log.Printf("get Verified Deals By Block Range failed: %s", err)
@@ -90,7 +90,7 @@ func (srv *MinerServiceImpl) parseMinersFromDeals(deals []fmgr.VerifiedDeal) []*
 	if len(miners) > 0 {
 		srv.upsertMinersInDB(miners)
 		for _, m := range miners {
-			log.Printf("Miner address: %s - ip: %s\n", m.Address, m.IP)
+			log.Printf("Miner address: %s - ip: %s", m.Address, m.IP)
 		}
 	} else {
 		log.Printf("No miner parsed")

@@ -58,7 +58,7 @@ func (cmd *LocationCommander) Execute(in string) {
 	case locationsDelete:
 		cmd.locationsDelete(blocks)
 	default:
-		log.Printf("unknown command: %s\n", blocks[0])
+		log.Printf("unknown command: %s", blocks[0])
 	}
 }
 
@@ -69,7 +69,7 @@ func (cmd *LocationCommander) locationsUpdate(blocks []string) {
 	}
 	err := cmd.Handler.UpdateLocations(airportType)
 	if err != nil {
-		log.Errorf("Error: %s\n", err)
+		log.Errorf("Error: %s", err)
 	}
 }
 
@@ -85,7 +85,7 @@ func (cmd *LocationCommander) locationsAdd(blocks []string) {
 		log.Error(err)
 		return
 	}
-	log.Printf("ID: %d\n", location.ID)
+	log.Printf("ID: %d", location.ID)
 }
 
 func (cmd *LocationCommander) locationsDelete(blocks []string) {

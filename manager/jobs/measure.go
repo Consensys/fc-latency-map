@@ -1,6 +1,8 @@
 package jobs
 
 import (
+	"time"
+
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
@@ -14,35 +16,69 @@ import (
 )
 
 func RunTaskCreateMeasures() {
-	log.Println("Update locations...")
+	log.WithFields(log.Fields{
+		"context": "CreateMeasures",
+	}).Printf("Task started at %s", time.Now())
+
+	log.WithFields(log.Fields{
+		"context": "CreateMeasures",
+	}).Println("Update locations...")
 	err := locations.NewLocationHandler().UpdateLocations(constants.AirportTypeLarge)
 	if err != nil {
-		log.Errorf("Error: %s\n", err)
+		log.WithFields(log.Fields{
+			"context": "CreateMeasures",
+		}).Errorf("Error: %s", err)
 	}
 
-	log.Println("Parse miners...")
+	log.WithFields(log.Fields{
+		"context": "CreateMeasures",
+	}).Println("Parse miners...")
 	miners.BuildMinerHandlerInstance().MinersParseStateMarket()
 
 	probeHdlr := probes.NewProbeHandler()
-	log.Println("Import probes...")
+	log.WithFields(log.Fields{
+		"context": "CreateMeasures",
+	}).Println("Import probes...")
 	probeHdlr.Import()
-	log.Println("Update probes...")
+	log.WithFields(log.Fields{
+		"context": "CreateMeasures",
+	}).Println("Update probes...")
 	probeHdlr.Update()
 
-	log.Println("Create measurements...")
+	log.WithFields(log.Fields{
+		"context": "CreateMeasures",
+	}).Println("Create measurements...")
 	measurements.NewHandler().CreateMeasurements([]string{})
+
+	log.WithFields(log.Fields{
+		"context": "CreateMeasures",
+	}).Printf("Task ended at %s", time.Now())
 }
 
 func RunTaskImportMeasures() {
+	log.WithFields(log.Fields{
+		"context": "ImportMeasures",
+	}).Printf("Task started at %s", time.Now())
+
 	conf := config.NewConfig()
 
-	log.Println("Import measurements...")
+	log.WithFields(log.Fields{
+		"context": "ImportMeasures",
+	}).Println("Import measurements...")
 	measurements.NewHandler().ImportMeasures()
 
-	log.Println("Export data...")
+	log.WithFields(log.Fields{
+		"context": "ImportMeasures",
+	}).Println("Export data...")
 	files := export.NewExportHandler().Export()
 
-	log.Println("Notify...")
+	log.WithFields(log.Fields{
+		"context": "ImportMeasures",
+	}).Println("Notify...")
 	notif := webhook.NewNotifier(conf)
 	notif.Notify(files)
+
+	log.WithFields(log.Fields{
+		"context": "ImportMeasures",
+	}).Printf("Task ended at %s", time.Now())
 }

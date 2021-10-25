@@ -53,7 +53,7 @@ func (cmd *MesuresCommander) Execute(in string) {
 	case measuresExport:
 		cmd.measuresExport()
 	default:
-		log.Printf("unknown command: %stopped\n", blocks[0])
+		log.Printf("unknown command: %s", blocks[0])
 	}
 }
 

@@ -120,7 +120,7 @@ func (srv *ProbeServiceImpl) ListProbes() []*models.Probe {
 	probesList := []*models.Probe{}
 	srv.DBMgr.GetDB().Find(&probesList)
 	for _, probe := range probesList {
-		log.Printf("Probe ID: %d - Country code: %s \n", probe.ProbeID, probe.CountryCode)
+		log.Printf("Probe ID: %d - Country code: %s", probe.ProbeID, probe.CountryCode)
 	}
 
 	return probesList

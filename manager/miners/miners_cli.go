@@ -51,7 +51,7 @@ func (cmd *MinerCommander) Execute(in string) {
 	case minersParseBlock:
 		cmd.minersParseBlock(blocks)
 	default:
-		log.Printf("unknown command: %s\n", blocks[0])
+		log.Printf("unknown command: %s", blocks[0])
 	}
 }
 

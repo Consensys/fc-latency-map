@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/ConsenSys/fc-latency-map/manager/config"
 	"github.com/ConsenSys/fc-latency-map/manager/db"
