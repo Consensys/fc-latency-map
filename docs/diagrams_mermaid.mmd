@@ -14,7 +14,8 @@ sequenceDiagram
 
 # Import probes
 sequenceDiagram
-Manager->>+Ripe Atlas: Request conencted probes
+Manager->>+Ripe Atlas: Request connected probes
+Ripe Atlas-->>- Manager: Returns all connected probes
 loop for each probe
 
         Manager->>+Maxmind.com: Get probes IP coordinates
