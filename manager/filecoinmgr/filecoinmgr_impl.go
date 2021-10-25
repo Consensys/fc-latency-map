@@ -78,7 +78,7 @@ func (fMgr *FilecoinMgrImpl) GetMinerInfo(addr address.Address) (miner.MinerInfo
 func (fMgr *FilecoinMgrImpl) GetVerifiedDealsByBlockRange(height abi.ChainEpoch, offset int) ([]VerifiedDeal, error) {
 	verifiedDeals := []VerifiedDeal{}
 	for i := height - abi.ChainEpoch(offset); i <= height; i++ {
-		log.Printf("Block number: %v (%v / %v)\n", i, height-i, offset)
+		log.Printf("Block number: %v (%v / %v)", i, height-i, offset)
 
 		newVerifiedDeals, err := fMgr.getVerifiedDealsByBlock(i)
 		if err != nil {
@@ -87,7 +87,7 @@ func (fMgr *FilecoinMgrImpl) GetVerifiedDealsByBlockRange(height abi.ChainEpoch,
 		verifiedDeals = append(verifiedDeals, newVerifiedDeals...)
 	}
 
-	log.Printf("verifiedDeals: %+v\n", verifiedDeals)
+	log.Printf("verifiedDeals: %+v", verifiedDeals)
 
 	return verifiedDeals, nil
 }
@@ -103,7 +103,7 @@ func CheckIsVerifiedDeal(verifiedDeal VerifiedDeal, verifiedDeals []VerifiedDeal
 }
 
 func (fMgr *FilecoinMgrImpl) GetVerifiedDealsByBlockHeight(height abi.ChainEpoch) ([]VerifiedDeal, error) {
-	log.Printf("Block number: %v\n", height)
+	log.Printf("Block number: %v", height)
 	return fMgr.getVerifiedDealsByBlock(height)
 }
 
@@ -130,7 +130,7 @@ func (fMgr *FilecoinMgrImpl) getVerifiedDealsByBlock(height abi.ChainEpoch) ([]V
 		}
 	}
 
-	log.Printf("verifiedDeals: %+v\n", verifiedDeals)
+	log.Printf("verifiedDeals: %+v", verifiedDeals)
 
 	return verifiedDeals, nil
 }

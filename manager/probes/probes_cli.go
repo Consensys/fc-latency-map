@@ -45,6 +45,6 @@ func (cmd *ProbeCommander) Execute(in string) {
 	case probesImport:
 		cmd.Handler.Import()
 	default:
-		log.Printf("unknown command: %s\n", blocks[0])
+		log.Printf("unknown command: %s", blocks[0])
 	}
 }

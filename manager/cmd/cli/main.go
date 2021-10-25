@@ -79,7 +79,7 @@ func (c *LatencyMapCLI) completer(d prompt.Document) []prompt.Suggest {
 func (c *LatencyMapCLI) executor(in string) {
 	blocks := strings.Split(strings.TrimSpace(in), " ")
 
-	log.Printf("Command: %s\n", blocks[0])
+	log.Printf("Command: %s", blocks[0])
 
 	if blocks[0] == "exit" {
 		log.Println("Shutdown ...")
@@ -97,9 +97,9 @@ func (c *LatencyMapCLI) executor(in string) {
 
 	if commander, exists := c.Commanders[command]; exists {
 		commander.Execute(in)
-		log.Printf("Command ends: %s\n", blocks[0])
+		log.Printf("Command ends: %s", blocks[0])
 	} else {
-		log.Printf("unknown command: %s\n", command)
+		log.Printf("unknown command: %s", command)
 	}
 }
 

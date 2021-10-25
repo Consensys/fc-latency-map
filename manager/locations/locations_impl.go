@@ -42,7 +42,7 @@ func (srv *LocationServiceImpl) GetAllLocations() []*models.Location {
 	locsList := []*models.Location{}
 	srv.DBMgr.GetDB().Find(&locsList)
 	for _, location := range locsList {
-		log.Printf("ID:%d - Iata code: %s - Country code: %s - Name: %s - Type: %s\n",
+		log.Printf("ID:%d - Iata code: %s - Country code: %s - Name: %s - Type: %s",
 			location.ID,
 			location.IataCode,
 			location.Country,
@@ -70,19 +70,19 @@ func (srv *LocationServiceImpl) AddLocation(newLocation *models.Location) *model
 	srv.DBMgr.GetDB().Where("iata_code = ?", newLocation.IataCode).First(&location)
 	if location.ID == 0 {
 		srv.DBMgr.GetDB().Create(&newLocation)
-		log.Printf("new location, ID:%d - Country code: %s\n", newLocation.ID, newLocation.Country)
+		log.Printf("new location, ID:%d - Country code: %s", newLocation.ID, newLocation.Country)
 	} else {
-		log.Printf("location already exists, ID:%d\n", location.ID)
+		log.Printf("location already exists, ID:%d", location.ID)
 	}
 	return &location
 }
 
 func (srv *LocationServiceImpl) DeleteLocation(location *models.Location) bool {
 	if l := srv.GetLocation(location); l == nil {
-		log.Printf("unable to find location %s\n", location.Country)
+		log.Printf("unable to find location %s", location.Country)
 	} else {
 		srv.DBMgr.GetDB().Delete(&location)
-		log.Printf("location %d deleted\n", location.ID)
+		log.Printf("location %d deleted", location.ID)
 	}
 
 	return true
@@ -128,7 +128,7 @@ func (srv *LocationServiceImpl) UpdateLocations(airportType, filename string) er
 			}
 		}
 	}
-	log.Printf("%d airport imported, type: %s\n", cpt, airportTypeFormated)
+	log.Printf("%d airport imported, type: %s", cpt, airportTypeFormated)
 
 	return nil
 }
@@ -191,7 +191,7 @@ func (srv *LocationServiceImpl) ExtractAirports(filename string) ([]Airport, err
 	if err != nil {
 		return []Airport{}, err
 	}
-	log.Printf("successfully Opened: %s\n", filename)
+	log.Printf("successfully Opened: %s", filename)
 	defer jsonFile.Close()
 
 	jsonData, err := ioutil.ReadAll(jsonFile)

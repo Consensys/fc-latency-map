@@ -52,11 +52,12 @@ func (m *ExportServiceImpl) export() *[]string {
 		).Info("generate file")
 
 		measurements := m.getLatencyMeasurementsStored(date)
+		log.Info("Measurements retrieved, start generating file")
 		j := m.marshalJSON(measurements)
 		file.Create(fn, j)
 		files = append(files, fn)
 	}
-	fmt.Println("Main: Completed")
+	log.Info("Export completed")
 	return &files
 }
 
@@ -77,6 +78,9 @@ func (m *ExportServiceImpl) getLatencyMeasurementsStored(date string) *Result {
 	loc := m.getLocations()
 	miners := m.getMiners()
 	for _, l := range loc {
+		log.WithFields(log.Fields{
+			"iataCode": l.IataCode,
+		}).Print("Get latency measurements")
 		for _, miner := range miners {
 			latency := &Miner{
 				Address:  miner.Address,

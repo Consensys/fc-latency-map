@@ -152,7 +152,7 @@ func (rMgr *RipeMgrImpl) createTraceroute(miners []*models.Miner, probes []atlas
 	log.WithFields(log.Fields{
 		"id":          p,
 		"isOneOff":    isOneOff,
-		"measurement": fmt.Sprintf("%#v\n", d),
+		"measurement": fmt.Sprintf("%#v", d),
 	}).Info("creat newMeasurement")
 
 	var measurement []*atlas.Measurement

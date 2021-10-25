@@ -59,7 +59,6 @@ func configureAPI(api *operations.ManagerAPI) http.Handler {
 	createSchdl := conf.GetString("CRON_SCHEDULE_CREATE_MEASURES")
 	log.Printf("Scheduling CreateMeasures task: %s\n", createSchdl)
 	err := scheduler.AddFunc(createSchdl, func() {
-		log.Printf("CreateMeasures task started at %s\n", time.Now())
 		jobs.RunTaskCreateMeasures()
 	})
 	if err != nil {

@@ -49,7 +49,7 @@ func (n *NotifierImpl) Notify(files *[]string) bool {
 			bytes.NewBuffer(body),
 		)
 		if err != nil {
-			log.Errorf("Error: %s\n", err)
+			log.Errorf("Error: %s", err)
 			continue
 		}
 		log.Println("Response status:", resp.Status)
