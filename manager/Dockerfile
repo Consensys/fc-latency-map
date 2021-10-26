@@ -13,11 +13,13 @@ RUN go get -d -v github.com/ConsenSys/fc-latency-map/manager/cmd/manager-server
 RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o /go/bin/manager-server ./cmd/manager-server
 
 FROM alpine:latest
+ARG FC_UID
+ARG FC_GID
 WORKDIR /
 
 COPY ./manager/data/ ./data/
 RUN chmod 777 ./data/
-RUN chown -R 1000:1000 ./data/
+RUN chown -R $FC_UID:$FC_GID ./data/
 COPY ./manager/constants/ ./constants/
 
 COPY --from=builder /go/bin/manager-server /manager-server
