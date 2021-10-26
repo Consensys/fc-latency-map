@@ -4,7 +4,7 @@
 default: 
 	./scripts/db-restore.sh
 	./scripts/generate-config.sh
-	docker build -f manager/Dockerfile -t fc-latency-manager .
+	./scripts/build-manager.sh
 	docker build -f map/Dockerfile -t fc-latency-map ./map
 
 run:
