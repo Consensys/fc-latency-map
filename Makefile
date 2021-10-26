@@ -11,7 +11,7 @@ run:
 	./run.sh
 
 manager:
-	docker build -f manager/Dockerfile -t fc-latency-manager .
+	./scripts/build-manager.sh
 
 map:
 	docker build -f map/Dockerfile -t fc-latency-map ./map
